@@ -13,9 +13,12 @@ A crafter may have multiple possible recipes, but only one recipe is active. The
 
 This keeps the graph readable while still allowing deeper recipes.
 
+Markets do not use recipes. A market exposes one universal input for all current resources and automatically converts stocked goods into gold.
+
 ## Current intentional constraints
 
 - Buildings are freely placed on a grid.
+- Buildings cost gold to place.
 - Buildings cannot overlap.
 - Transport infrastructure is abstracted away.
 - Resources move through direct output-to-input connectors.

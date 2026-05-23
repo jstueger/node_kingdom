@@ -1,8 +1,9 @@
 export const CELL = 72;
-export const COLS = 20;
-export const ROWS = 12;
+export const COLS = 10;
+export const ROWS = 10;
 export const W = COLS * CELL;
 export const H = ROWS * CELL;
+export const STARTING_GOLD = 25;
 
 export const ITEMS = {
   iron_ore: { label: 'Iron Ore', icon: '🪨' },
@@ -17,7 +18,7 @@ export const ITEMS = {
 export const BUILDINGS = {
   iron_mine: {
     label: 'Iron Mine', icon: '⛏️', color: '#141c30', w: 1, h: 1,
-    desc: 'Produces iron ore.', capacity: { iron_ore: 12 },
+    desc: 'Produces iron ore.', cost: 5, capacity: { iron_ore: 12 },
     kind: 'producer',
     recipes: {
       iron_ore: {
@@ -30,7 +31,7 @@ export const BUILDINGS = {
   },
   coal_mine: {
     label: 'Coal Mine', icon: '⚫', color: '#171717', w: 1, h: 1,
-    desc: 'Produces coal.', capacity: { coal: 12 },
+    desc: 'Produces coal.', cost: 5, capacity: { coal: 12 },
     kind: 'producer',
     recipes: {
       coal: {
@@ -43,7 +44,7 @@ export const BUILDINGS = {
   },
   lumber: {
     label: 'Lumber Camp', icon: '🌲', color: '#0c1c08', w: 1, h: 1,
-    desc: 'Produces wood.', capacity: { wood: 12 },
+    desc: 'Produces wood.', cost: 5, capacity: { wood: 12 },
     kind: 'producer',
     recipes: {
       wood: {
@@ -57,7 +58,7 @@ export const BUILDINGS = {
   forge: {
     label: 'Forge', icon: '🔥', color: '#281208', w: 2, h: 1,
     desc: 'Configurable crafter with one active output.',
-    kind: 'crafter', capacity: { iron_ore: 9, coal: 8, wood: 6, iron_bar: 8, steel_bar: 6 },
+    kind: 'crafter', cost: 12, capacity: { iron_ore: 9, coal: 8, wood: 6, iron_bar: 8, steel_bar: 6 },
     recipes: {
       iron_bar_charcoal: {
         label: 'Iron Bar',
@@ -76,7 +77,7 @@ export const BUILDINGS = {
   sawmill: {
     label: 'Sawmill', icon: '🪚', color: '#1c1008', w: 2, h: 1,
     desc: 'Turns wood into planks.',
-    kind: 'crafter', capacity: { wood: 8, plank: 8 },
+    kind: 'crafter', cost: 10, capacity: { wood: 8, plank: 8 },
     recipes: {
       plank: {
         label: 'Plank',
@@ -89,7 +90,7 @@ export const BUILDINGS = {
   blacksmith: {
     label: 'Blacksmith', icon: '⚒️', color: '#201018', w: 2, h: 1,
     desc: 'Crafts finished goods from bars and planks.',
-    kind: 'crafter', capacity: { iron_bar: 6, steel_bar: 5, plank: 6, sword: 4 },
+    kind: 'crafter', cost: 18, capacity: { iron_bar: 6, steel_bar: 5, plank: 6, sword: 4 },
     recipes: {
       sword: {
         label: 'Sword',
@@ -107,33 +108,17 @@ export const BUILDINGS = {
   },
   market: {
     label: 'Market', icon: '🏪', color: '#081c0c', w: 1, h: 1,
-    desc: 'Sells selected goods for gold.',
-    kind: 'seller', capacity: { iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },
-    recipes: {
-      sell_iron_bar: {
-        label: 'Sell Iron Bars',
-        inputs: { iron_bar: 1 },
-        output: { res: 'gold', amount: 5 },
-        time: 1
-      },
-      sell_plank: {
-        label: 'Sell Planks',
-        inputs: { plank: 1 },
-        output: { res: 'gold', amount: 3 },
-        time: 1
-      },
-      sell_steel: {
-        label: 'Sell Steel Bars',
-        inputs: { steel_bar: 1 },
-        output: { res: 'gold', amount: 12 },
-        time: 1
-      },
-      sell_sword: {
-        label: 'Sell Swords',
-        inputs: { sword: 1 },
-        output: { res: 'gold', amount: 25 },
-        time: 1
-      }
+    desc: 'Automatically sells any goods it receives.',
+    kind: 'seller', cost: 5,
+    capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },
+    sellPrices: {
+      iron_ore: 1,
+      wood: 1,
+      coal: 2,
+      iron_bar: 5,
+      plank: 3,
+      steel_bar: 12,
+      sword: 25
     }
   }
 };
@@ -147,14 +132,18 @@ export function itemIcon(res) {
 }
 
 export function firstRecipe(type) {
-  return Object.keys(BUILDINGS[type].recipes)[0];
+  const recipes = BUILDINGS[type].recipes;
+  return recipes ? Object.keys(recipes)[0] : null;
 }
 
 export function activeRecipe(building) {
-  return BUILDINGS[building.type].recipes[building.recipe];
+  const recipes = BUILDINGS[building.type].recipes;
+  return recipes ? recipes[building.recipe] : null;
 }
 
 export function inputPorts(building) {
+  const d = BUILDINGS[building.type];
+  if (d.kind === 'seller') return [{ side: 'left', t: 0.5, res: 'any', acceptsAll: true }];
   const inputs = activeRecipe(building).inputs;
   const keys = Object.keys(inputs);
   if (!keys.length) return [];
@@ -162,6 +151,7 @@ export function inputPorts(building) {
 }
 
 export function outputPort(building) {
+  if (BUILDINGS[building.type].kind === 'seller') return null;
   const out = activeRecipe(building).output;
   if (out.res === 'gold') return null;
   return { side: 'right', t: 0.5, res: out.res };

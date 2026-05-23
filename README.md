@@ -35,6 +35,7 @@ Use the Live Server extension and open `index.html`.
 - Different building sizes
 - Producers, crafters, and sellers
 - Recipe-dependent input ports
+- Recipe-less market with one universal input that sells any current resource it receives
 - One active output per node
 - Direct output-to-input connectors
 - Typed resource compatibility checks
@@ -45,10 +46,11 @@ Use the Live Server extension and open `index.html`.
 - Recipe switching
 - Right-click delete for buildings and connections
 - Save/load via browser localStorage
+- Starting gold and building placement costs
 
 ## Suggested next steps
 
-1. Add costs and unlocks.
+1. Add unlocks.
 2. Add a proper research/contracts screen.
 3. Add clearer bottleneck summaries.
 4. Add building movement after placement.

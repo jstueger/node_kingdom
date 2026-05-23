@@ -12,6 +12,9 @@
       <span class="logo">⚔ FACTORY NODE PROTOTYPE</span>
       <span id="gold">💰 0 gold</span>
       <span id="tstat">t=0</span>
+      <button id="zoomOutBtn" class="small-btn" title="Zoom out">−</button>
+      <span id="zoomLabel">100%</span>
+      <button id="zoomInBtn" class="small-btn" title="Zoom in">+</button>
       <button id="saveBtn" class="small-btn">Save</button>
       <button id="loadBtn" class="small-btn">Load</button>
       <button id="resetBtn" class="small-btn danger">Reset</button>
@@ -22,6 +25,11 @@
       <aside id="sidebar">
         <h4>Buildings</h4>
         <div id="buildingCards"></div>
+
+        <section id="techTree">
+          <h4>Tech Tree</h4>
+          <div id="techCards"></div>
+        </section>
 
         <section id="legend">
           <h4>Ports</h4>
@@ -37,10 +45,12 @@
       </aside>
 
       <section id="game">
-        <div id="gc">
-          <canvas id="bg"></canvas>
-          <div id="bl"></div>
-          <svg id="sl"></svg>
+        <div id="zoomStage">
+          <div id="gc">
+            <canvas id="bg"></canvas>
+            <div id="bl"></div>
+            <svg id="sl"></svg>
+          </div>
         </div>
       </section>
 
