@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Factory Node Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="layout">
+    <header id="topbar">
+      <span class="logo">⚔ FACTORY NODE PROTOTYPE</span>
+      <span id="gold">💰 0 gold</span>
+      <span id="tstat">t=0</span>
+      <button id="saveBtn" class="small-btn">Save</button>
+      <button id="loadBtn" class="small-btn">Load</button>
+      <button id="resetBtn" class="small-btn danger">Reset</button>
+      <span id="hint">Select a building from the sidebar to place it</span>
+    </header>
+
+    <main id="body">
+      <aside id="sidebar">
+        <h4>Buildings</h4>
+        <div id="buildingCards"></div>
+
+        <section id="legend">
+          <h4>Ports</h4>
+          <div class="leg"><div class="ldot out"></div>Output — one active output per node</div>
+          <div class="leg"><div class="ldot in"></div>Input — recipe-dependent</div>
+          <div class="leg"><span class="line flowing"></span>Flowing</div>
+          <div class="leg"><span class="line starved"></span>Starved</div>
+          <div class="leg"><span class="line blocked"></span>Blocked</div>
+          <div class="leg muted">Right-click building to delete</div>
+          <div class="leg muted">Right-click connection to delete</div>
+          <div class="leg muted">Esc to cancel</div>
+        </section>
+      </aside>
+
+      <section id="game">
+        <div id="gc">
+          <canvas id="bg"></canvas>
+          <div id="bl"></div>
+          <svg id="sl"></svg>
+        </div>
+      </section>
+
+      <aside id="inspector">
+        <h4>Inspector</h4>
+        <div id="inspectEmpty">Select a building to inspect it.</div>
+        <div id="inspectContent" class="hidden"></div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
