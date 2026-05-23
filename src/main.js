@@ -13,6 +13,8 @@ let worldRows = ROWS;
 let zoom = 1;
 let panOffset = { x: 0, y: 0 };
 let pan = null;
+let moving = null;
+let movingInvalid = false;
 let suppressNextGridClick = false;
 const blds = new Map();
 let grid = createGrid(worldCols, worldRows);
@@ -21,6 +23,24 @@ const techs = {
     label: 'Grid Expansion',
     desc: 'Adds 4 columns and 2 rows to the build grid.',
     cost: 50,
+    bought: false
+  },
+  storage_bins: {
+    label: 'Storage Bins',
+    desc: 'Adds 5 storage capacity to every resource slot.',
+    cost: 35,
+    bought: false
+  },
+  workshop_tuning: {
+    label: 'Workshop Tuning',
+    desc: 'Crafters finish recipes 1 tick faster.',
+    cost: 60,
+    bought: false
+  },
+  market_bargaining: {
+    label: 'Market Bargaining',
+    desc: 'Markets earn 25% more gold from every sale.',
+    cost: 75,
     bought: false
   }
 };
@@ -38,6 +58,7 @@ const zoomLabel = document.getElementById('zoomLabel');
 const inspectEmpty = document.getElementById('inspectEmpty');
 const inspectContent = document.getElementById('inspectContent');
 const toastEl = document.getElementById('toast');
+const techWindow = document.getElementById('techWindow');
 
 function worldW() { return worldCols * CELL; }
 function worldH() { return worldRows * CELL; }
@@ -112,6 +133,12 @@ function gridFree(gx, gy, w, h) {
   return true;
 }
 function gridSet(gx, gy, w, h, value) { for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) grid[r][c] = value; }
+function clampGridPos(gx, gy, w, h) {
+  return {
+    gx: clamp(gx, 0, worldCols - w),
+    gy: clamp(gy, 0, worldRows - h)
+  };
+}
 
 function portPx(b, pd) {
   const d = BUILDINGS[b.type];
@@ -140,18 +167,56 @@ function inputResourceForStorage(ip, outRes) {
   return ip.acceptsAll ? outRes : ip.res;
 }
 
+function inputAlreadyConnected(buildingId, portIndex, port) {
+  return !port.acceptsAll && conns.some(c => c.tb === buildingId && c.tpi === portIndex);
+}
+
+function nearbyInputPort(point, outRes, sourceId) {
+  let closest = null;
+  const snapDistance = 28;
+  for (const [id, b] of blds) {
+    if (id === sourceId) continue;
+    inputPorts(b).forEach((port, pi) => {
+      if (!inputAccepts(port, outRes) || inputAlreadyConnected(id, pi, port)) return;
+      const pos = portPx(b, port);
+      const dist = Math.hypot(pos.x - point.x, pos.y - point.y);
+      if (dist <= snapDistance && (!closest || dist < closest.dist)) closest = { pos, dist };
+    });
+  }
+  return closest?.pos || point;
+}
+
+function storageCapFor(building, res) {
+  return capFor(building, res) + (techs.storage_bins.bought ? 5 : 0);
+}
+
+function recipeTimeFor(building, recipe) {
+  if (BUILDINGS[building.type].kind !== 'crafter') return recipe.time;
+  return Math.max(1, recipe.time - (techs.workshop_tuning.bought ? 1 : 0));
+}
+
+function salePriceFor(type, res) {
+  const base = BUILDINGS[type].sellPrices?.[res] || 0;
+  return Math.floor(base * (techs.market_bargaining.bought ? 1.25 : 1));
+}
+
 function renderBuildings() {
   bl.innerHTML = '';
   for (const [id, b] of blds) {
     const d = BUILDINGS[b.type];
     const rec = activeRecipe(b);
     const el = document.createElement('div');
-    el.className = `bld ${id === selectedId ? 'sel' : ''}`;
+    el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
-    const pct = rec ? Math.min(100, Math.floor(((b.ptimer || 0) / rec.time) * 100)) : 0;
+    const pct = rec ? Math.min(100, Math.floor(((b.ptimer || 0) / recipeTimeFor(b, rec)) * 100)) : 0;
     const statusLabel = rec ? rec.label : 'Auto Sell';
     el.innerHTML = `<div class="b-ico">${d.icon}</div><div class="b-nm">${d.label}</div><div class="b-rec">${statusLabel}</div><div class="b-iv">${inventoryText(b)}</div><div class="prog"><span style="width:${pct}%"></span></div>`;
-    el.addEventListener('click', (e) => { e.stopPropagation(); selectedId = id; renderAll(); });
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (suppressNextGridClick) { suppressNextGridClick = false; return; }
+      selectedId = id; renderAll();
+    });
+    el.addEventListener('pointerdown', (e) => startMoveBuilding(e, id));
     el.addEventListener('contextmenu', (e) => { e.preventDefault(); deleteBuilding(id); });
 
     inputPorts(b).forEach((p, pi) => {
@@ -180,7 +245,7 @@ function connectionStatus(cn) {
   const ip = inputPorts(tb)[cn.tpi];
   if (!out || !inputAccepts(ip, out.res)) return 'blocked';
   const targetRes = inputResourceForStorage(ip, out.res);
-  if ((tb.inv[targetRes] || 0) >= capFor(tb, targetRes)) return 'blocked';
+  if ((tb.inv[targetRes] || 0) >= storageCapFor(tb, targetRes)) return 'blocked';
   if ((fb.inv[out.res] || 0) <= 0) return 'starved';
   return 'flowing';
 }
@@ -211,11 +276,11 @@ function renderInspector() {
   const isSeller = d.kind === 'seller';
   const recipeField = isSeller ? '' : `<div class="field"><div class="field-title">Active Recipe</div><select id="recipeSelect" class="recipe-select">${Object.entries(d.recipes).map(([key, r]) => `<option value="${key}" ${b.recipe === key ? 'selected' : ''}>${r.label}</option>`).join('')}</select></div>`;
   const inputPills = isSeller
-    ? Object.entries(d.sellPrices).map(([res, price]) => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${price} gold</span>`).join('')
+    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res)} gold</span>`).join('')
     : Object.entries(rec.inputs).map(([res, amt]) => `<span class="pill">${itemIcon(res)} ${amt} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
   const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(rec.output.res)} ${rec.output.amount} ${itemLabel(rec.output.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
-  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${capFor(b, res)}</span></div>`).join('');
+  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res)}</span></div>`).join('');
   inspectContent.innerHTML = `
     <div class="field"><div class="field-title">${d.icon} ${d.label}</div><div class="field-sub">${d.desc}</div></div>
     ${recipeField}
@@ -250,7 +315,7 @@ function onPort(e) {
     const op = outputPort(fb), ip = inputPorts(tb)[pi];
     if (!op || !ip) return failConnect('Missing port');
     if (!inputAccepts(ip, op.res)) return failConnect(`${itemLabel(op.res)} does not match ${itemLabel(ip.res)}`);
-    if (!ip.acceptsAll && conns.find(c => c.tb === bid && c.tpi === pi)) return failConnect('Input already connected');
+    if (inputAlreadyConnected(bid, pi, ip)) return failConnect('Input already connected');
     // Intentional design rule: one active output per node, but it may feed multiple compatible inputs.
     conns.push({ id: nextId++, fb: connFrom.bid, tb: bid, tpi: pi });
     cancelConnection(); renderAll(); setHint('Connected. Click another green output to connect more.'); return;
@@ -263,7 +328,7 @@ function cancelConnection() { mode = 'idle'; connFrom = null; const t = sl.query
 gameEl.addEventListener('mousemove', (e) => {
   if (mode !== 'connecting') return;
   const fb = blds.get(connFrom.bid); const out = outputPort(fb); if (!fb || !out) return;
-  const p1 = portPx(fb, out); const p2 = localPoint(e);
+  const p1 = portPx(fb, out); const p2 = nearbyInputPort(localPoint(e), out.res, connFrom.bid);
   ensureTempPath(); sl.querySelector('#tp').setAttribute('d', bez(p1, p2));
 });
 
@@ -291,12 +356,77 @@ gc.addEventListener('click', (e) => {
   renderAll();
 });
 
+function startMoveBuilding(e, id) {
+  if (e.button !== 0 || mode !== 'idle' || e.target.closest('.port')) return;
+  const b = blds.get(id); if (!b) return;
+  const point = localPoint(e);
+  moving = {
+    id,
+    pointerId: e.pointerId,
+    startX: e.clientX,
+    startY: e.clientY,
+    oldGx: b.gx,
+    oldGy: b.gy,
+    offsetX: point.x - b.gx * CELL,
+    offsetY: point.y - b.gy * CELL,
+    active: false
+  };
+  movingInvalid = false;
+}
+
+function moveBuilding(e) {
+  if (!moving || moving.pointerId !== e.pointerId) return;
+  const b = blds.get(moving.id); if (!b) return;
+  const d = BUILDINGS[b.type];
+  const dx = e.clientX - moving.startX;
+  const dy = e.clientY - moving.startY;
+  if (!moving.active && Math.hypot(dx, dy) < 4) return;
+  if (!moving.active) {
+    moving.active = true;
+    selectedId = moving.id;
+    gridSet(moving.oldGx, moving.oldGy, d.w, d.h, 0);
+  }
+  const point = localPoint(e);
+  const next = clampGridPos(Math.round((point.x - moving.offsetX) / CELL), Math.round((point.y - moving.offsetY) / CELL), d.w, d.h);
+  b.gx = next.gx;
+  b.gy = next.gy;
+  movingInvalid = !gridFree(b.gx, b.gy, d.w, d.h);
+  suppressNextGridClick = true;
+  renderBuildings();
+  renderConnections();
+}
+
+function endMoveBuilding(e) {
+  if (!moving || moving.pointerId !== e.pointerId) return;
+  const b = blds.get(moving.id);
+  if (b) {
+    const d = BUILDINGS[b.type];
+    if (!moving.active) {
+      selectedId = moving.id;
+    } else if (movingInvalid) {
+      b.gx = moving.oldGx;
+      b.gy = moving.oldGy;
+      gridSet(b.gx, b.gy, d.w, d.h, moving.id);
+      toast('Move blocked');
+    } else {
+      gridSet(b.gx, b.gy, d.w, d.h, moving.id);
+      toast('Building moved');
+    }
+  }
+  if (moving.active) suppressNextGridClick = true;
+  moving = null;
+  movingInvalid = false;
+  renderAll();
+}
+
 function deleteBuilding(id) {
   const b = blds.get(id); if (!b) return;
+  const refund = Math.floor((BUILDINGS[b.type].cost || 0) / 2);
   gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, 0);
   blds.delete(id); conns = conns.filter(c => c.fb !== id && c.tb !== id);
+  gold += refund;
   if (selectedId === id) selectedId = null;
-  renderAll(); toast('Building deleted');
+  renderAll(); toast(`Building sold +${refund} gold`);
 }
 
 document.addEventListener('keydown', (e) => {
@@ -304,12 +434,15 @@ document.addEventListener('keydown', (e) => {
   if (mode === 'connecting') { cancelConnection(); setHint('Cancelled'); }
   if (mode === 'placing') { mode = 'idle'; placeType = null; document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); setHint('Select a building from the sidebar to place it'); }
 });
+document.addEventListener('pointermove', moveBuilding);
+document.addEventListener('pointerup', endMoveBuilding);
+document.addEventListener('pointercancel', endMoveBuilding);
 
 function canProduce(b) {
   if (BUILDINGS[b.type].kind === 'seller') return canSell(b);
   const rec = activeRecipe(b);
   for (const [res, amt] of Object.entries(rec.inputs)) if ((b.inv[res] || 0) < amt) return false;
-  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > capFor(b, rec.output.res)) return false;
+  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res)) return false;
   return true;
 }
 
@@ -331,7 +464,7 @@ function sellGoods(b) {
   const res = Object.keys(prices).find(key => (b.inv[key] || 0) > 0);
   if (!res) return;
   b.inv[res]--;
-  gold += prices[res];
+  gold += salePriceFor(b.type, res);
 }
 
 function transferResources() {
@@ -342,7 +475,7 @@ function transferResources() {
     if (!out || !inputAccepts(ip, out.res)) continue;
     const res = out.res;
     const targetRes = inputResourceForStorage(ip, res);
-    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < capFor(tb, targetRes)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
+    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
   }
 }
 
@@ -352,8 +485,8 @@ function buyTech(key) {
   if (gold < tech.cost) { toast('Not enough gold'); return; }
   gold -= tech.cost;
   tech.bought = true;
-  expandGrid(4, 2);
-  setHint('Grid expanded');
+  if (key === 'grid_expansion') expandGrid(4, 2);
+  setHint(`${tech.label} purchased`);
   renderAll();
   toast('Tech purchased');
 }
@@ -377,7 +510,7 @@ function tick() {
     const rec = activeRecipe(b);
     if (canProduce(b)) {
       b.ptimer = (b.ptimer || 0) + 1;
-      if (b.ptimer >= rec.time) { produce(b); b.ptimer = 0; }
+      if (b.ptimer >= recipeTimeFor(b, rec)) { produce(b); b.ptimer = 0; }
     } else {
       b.ptimer = 0;
     }
@@ -411,6 +544,8 @@ function resetWorld(confirmFirst = true) {
 document.getElementById('saveBtn').addEventListener('click', saveGame);
 document.getElementById('loadBtn').addEventListener('click', loadGame);
 document.getElementById('resetBtn').addEventListener('click', () => resetWorld(true));
+document.getElementById('techBtn').addEventListener('click', () => { techWindow.classList.toggle('hidden'); renderTechTree(); });
+document.getElementById('techCloseBtn').addEventListener('click', () => techWindow.classList.add('hidden'));
 document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(zoom - 0.25));
 document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(zoom + 0.25));
 gameEl.addEventListener('wheel', (e) => {

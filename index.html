@@ -15,6 +15,7 @@
       <button id="zoomOutBtn" class="small-btn" title="Zoom out">−</button>
       <span id="zoomLabel">100%</span>
       <button id="zoomInBtn" class="small-btn" title="Zoom in">+</button>
+      <button id="techBtn" class="small-btn">Tech</button>
       <button id="saveBtn" class="small-btn">Save</button>
       <button id="loadBtn" class="small-btn">Load</button>
       <button id="resetBtn" class="small-btn danger">Reset</button>
@@ -26,11 +27,6 @@
         <h4>Buildings</h4>
         <div id="buildingCards"></div>
 
-        <section id="techTree">
-          <h4>Tech Tree</h4>
-          <div id="techCards"></div>
-        </section>
-
         <section id="legend">
           <h4>Ports</h4>
           <div class="leg"><div class="ldot out"></div>Output — one active output per node</div>
@@ -38,7 +34,7 @@
           <div class="leg"><span class="line flowing"></span>Flowing</div>
           <div class="leg"><span class="line starved"></span>Starved</div>
           <div class="leg"><span class="line blocked"></span>Blocked</div>
-          <div class="leg muted">Right-click building to delete</div>
+          <div class="leg muted">Right-click building to sell</div>
           <div class="leg muted">Right-click connection to delete</div>
           <div class="leg muted">Esc to cancel</div>
         </section>
@@ -61,6 +57,14 @@
       </aside>
     </main>
   </div>
+
+  <section id="techWindow" class="panel-window hidden">
+    <div class="panel-titlebar">
+      <h4>Tech Tree</h4>
+      <button id="techCloseBtn" class="small-btn">Hide</button>
+    </div>
+    <div id="techCards"></div>
+  </section>
 
   <div id="toast"></div>
 

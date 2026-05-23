@@ -44,9 +44,10 @@ Use the Live Server extension and open `index.html`.
 - Production progress bars
 - Building inspector
 - Recipe switching
-- Right-click delete for buildings and connections
+- Right-click sell for buildings and delete for connections
 - Save/load via browser localStorage
 - Starting gold and building placement costs
+- Toggleable tech tree window with simple upgrades
 
 ## Suggested next steps
 

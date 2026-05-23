@@ -36,11 +36,11 @@ http://localhost:8000
 
 The interface has three main areas:
 
-- Top bar: shows gold, simulation ticks, save/load/reset buttons, and the current hint.
-- Top bar: also includes zoom out and zoom in buttons with the current zoom percentage.
-- Left sidebar: lists placeable buildings, tech tree purchases, and port/connection states.
+- Top bar: shows gold, simulation ticks, zoom controls, the Tech button, save/load/reset buttons, and the current hint.
+- Left sidebar: lists placeable buildings and port/connection states.
 - Center game area: contains the centered placement grid, buildings, ports, and connector paths.
 - Right inspector: shows details for the selected building.
+- Tech window: can be shown or hidden from the top bar.
 
 ## Grid And Placement
 
@@ -62,7 +62,8 @@ Buildings are placed freely on this grid:
 - Buildings cannot be placed outside the grid.
 - A building is not placed and no gold is spent if the target cell is occupied, out of bounds, or the player cannot afford the building.
 - Press `Escape` to cancel placement.
-- Right-click a building to delete it.
+- Right-click a building to sell it for half its original cost.
+- Drag an existing building to move it to another grid position.
 
 Buildings may occupy different grid sizes. Current producer and market buildings occupy one cell, while crafting buildings occupy two cells horizontally.
 
@@ -219,6 +220,8 @@ Connection rules:
 
 While creating a connection, a temporary dashed path follows the pointer from the selected output port.
 
+When the pointer gets close to a compatible input port, the temporary connection path snaps to that port's center. Port click targets are larger than the visible circles to make connection targeting more forgiving.
+
 ## Connection Status
 
 Connections are drawn with status colors:
@@ -231,23 +234,29 @@ Each connection can move one unit of its resource per simulation tick.
 
 ## Tech Tree
 
-The prototype has a simple tech tree in the left sidebar.
+The prototype has a toggleable tech tree window.
 
-The current available tech is:
+Tech controls:
 
-- Grid Expansion: costs 50 gold and adds 4 columns and 2 rows to the playable grid.
+- Click `Tech` in the top bar to show or hide the tech window.
+- Click `Hide` in the tech window to close it.
 
-Grid Expansion can currently be bought once.
-
-Buying the tech:
+Each tech can currently be bought once. Buying a tech:
 
 - Spends the required gold.
 - Marks the tech as purchased.
-- Expands the grid from 10 by 10 cells to 14 by 12 cells.
-- Resizes the background canvas, SVG connection layer, and placement area.
-- Preserves existing buildings, inventories, and connections.
+- Applies that tech's upgrade effect.
 
 The tech buy button is disabled while the player does not have enough gold or after the tech has already been purchased.
+
+Current techs:
+
+- Grid Expansion: costs 50 gold and adds 4 columns and 2 rows to the playable grid.
+- Storage Bins: costs 35 gold and adds 5 storage capacity to every resource slot.
+- Workshop Tuning: costs 60 gold and makes crafters finish recipes 1 tick faster, with a minimum recipe time of 1 tick.
+- Market Bargaining: costs 75 gold and increases Market sale prices by 25%, rounded down.
+
+Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
 ## Production Simulation
 
@@ -272,6 +281,8 @@ If a building cannot produce, its production timer resets to zero.
 Each building stores resources in a local inventory.
 
 Capacity is defined per building type and resource. If no explicit capacity exists for a resource, the fallback capacity is 10.
+
+The Storage Bins tech adds 5 capacity to every resource slot.
 
 Buildings cannot produce a physical output if doing so would exceed their output capacity.
 
@@ -311,18 +322,30 @@ The Load button restores the saved state, rebuilds the occupancy grid, and re-re
 
 The Reset button clears the current world after confirmation.
 
-## Deletion
+## Selling And Deletion
 
-Buildings can be deleted with right-click.
+Buildings can be sold with right-click.
 
-Deleting a building:
+Selling a building:
 
 - Frees its occupied grid cells.
 - Removes the building.
 - Deletes all connections to and from that building.
-- Clears selection if the deleted building was selected.
+- Clears selection if the sold building was selected.
+- Refunds half of the building's original placement cost, rounded down.
 
 Connections can also be deleted directly with right-click.
+
+## Movement
+
+Placed buildings can be moved by dragging them.
+
+Movement behavior:
+
+- Buildings snap to the grid while being dragged.
+- Existing connections remain attached while a building moves.
+- If the destination is occupied or invalid, the building snaps back to its original position.
+- Moving a building does not cost gold.
 
 ## Current Building Recipes
 
