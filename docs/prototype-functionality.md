@@ -136,6 +136,8 @@ Current node display:
 - Production progress at the bottom.
 - Border color for working, waiting, blocked, or idle state.
 
+Nodes also receive display classes for their type: `node--producer`, `node--crafter`, or `node--seller`.
+
 ## Building Costs
 
 Building cards show their gold cost in the left sidebar.

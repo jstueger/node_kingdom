@@ -197,7 +197,7 @@ function renderBuildings() {
     const view = nodeViewState(b, conns, techs);
     const d = view.definition;
     const el = document.createElement('div');
-    el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
+    el.className = `bld node--${d.kind} ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
     el.innerHTML = `
       <div class="node-title">${view.recipeLabel}</div>
