@@ -128,20 +128,20 @@ Placed buildings show compact operational state directly on the grid.
 
 Current node display:
 
-- Header with building identity and current status.
-- Current recipe or behavior below the header.
-- Building icon and name in the center.
-- Input queue rows on the left.
-- Output queue row on the right.
-- Inventory summary in the center.
+- Header with building identity and current status; producers and markets use a compact status dot.
+- Current recipe below the header for crafters.
+- Building icon in the center for crafters and markets.
+- Input queue rows on the left for crafters.
+- Output queue row on the right for crafters.
+- Inventory summary in the center for crafters.
 - Production progress at the bottom.
 - Border color for working, waiting, blocked, or idle state.
 
 Nodes also receive display classes for their type: `node--producer`, `node--crafter`, or `node--seller`.
 
-Producer nodes use a special compact layout with no input column and a more prominent output queue.
+Producer nodes use a special compact layout with no recipe subtitle. They emphasize the produced resource, exact stored amount, capacity, and a compact output meter.
 
-Market nodes use a special sink layout that emphasizes their single input queue, current stocked goods, and sale value.
+Market nodes use a special sink layout that emphasizes selling goods into gold, current stocked goods, and sale value without recipe-like labels.
 
 ## Building Costs
 

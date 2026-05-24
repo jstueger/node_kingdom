@@ -1,6 +1,6 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=grid-scale-40';
-import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=grid-scale-40';
-import { nodeViewState } from './view-models.js?v=grid-scale-40';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=node-polish-1';
+import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=node-polish-1';
+import { nodeViewState } from './view-models.js?v=node-polish-1';
 
 let nextId = 1;
 let gold = STARTING_GOLD;
@@ -179,21 +179,32 @@ function outputQueueHtml(view) {
   return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
 }
 
+function producerOutputHtml(view) {
+  const output = view.output;
+  if (!output) return '';
+  const fill = Math.floor((output.have / output.cap) * 100);
+  return `
+    <div class="producer-output ${output.connected ? 'connected' : 'open'} ${output.have >= output.cap ? 'full' : ''}">
+      <div class="producer-resource"><span>${itemIcon(output.res)}</span><span>${itemLabel(output.res)}</span></div>
+      <div class="producer-meter"><span style="width:${fill}%"></span></div>
+      <div class="producer-count">${output.have}/${output.cap}</div>
+    </div>`;
+}
+
 function marketQueueHtml(view) {
   if (view.inventory.length) {
     const rows = view.inventory.slice(0, 2).map(item => `<div class="qrow connected"><span>${itemIcon(item.res)}</span><span>${item.amount}/${item.cap}</span></div>`).join('');
-    return `<div class="market-queue"><div class="market-label">Input Queue</div>${rows}<div class="market-sale">+${view.inventory[0].salePrice}g each</div></div>`;
+    return `<div class="market-queue"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div>${rows}<div class="market-sale">+${view.inventory[0].salePrice}g each</div></div>`;
   }
   const input = view.inputs[0];
-  return `<div class="market-queue empty"><div class="market-label">Input Queue</div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Empty' : 'No link'}</span><span>${input?.connected ? '0' : '--'}</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
+  return `<div class="market-queue empty"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Ready' : 'No link'}</span><span>0</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
 }
 
 function nodeBodyHtml(view) {
   if (view.definition.kind === 'producer') {
     return `
       <div class="node-main producer-main">
-        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
-        ${outputQueueHtml(view)}
+        ${producerOutputHtml(view)}
       </div>`;
   }
   if (view.definition.kind === 'seller') {
@@ -243,9 +254,10 @@ function renderBuildings() {
     const el = document.createElement('div');
     el.className = `bld node--${d.kind} ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
+    const subtitle = d.kind === 'crafter' ? `<div class="node-subtitle">${view.recipeLabel}</div>` : '';
     el.innerHTML = `
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
-      <div class="node-subtitle">${view.recipeLabel}</div>
+      ${subtitle}
       ${nodeBodyHtml(view)}
       <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (e) => {
