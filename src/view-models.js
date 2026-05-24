@@ -1,5 +1,5 @@
-import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=node-polish-1';
-import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=node-polish-1';
+import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=state-refactor-1';
+import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=state-refactor-1';
 
 export function nodeViewState(building, connections, techs) {
   const definition = BUILDINGS[building.type];

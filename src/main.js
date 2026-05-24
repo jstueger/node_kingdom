@@ -1,51 +1,7 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=node-polish-1';
-import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=node-polish-1';
-import { nodeViewState } from './view-models.js?v=node-polish-1';
-
-let nextId = 1;
-let gold = STARTING_GOLD;
-let ticks = 0;
-let selectedId = null;
-let mode = 'idle';
-let placeType = null;
-let connFrom = null;
-let conns = [];
-let worldCols = COLS;
-let worldRows = ROWS;
-let zoom = 1;
-let panOffset = { x: 0, y: 0 };
-let pan = null;
-let moving = null;
-let movingInvalid = false;
-let suppressNextGridClick = false;
-const blds = new Map();
-let grid = createGrid(worldCols, worldRows);
-const techs = {
-  grid_expansion: {
-    label: 'Grid Expansion',
-    desc: 'Adds 16 columns and 8 rows to the build grid.',
-    cost: 50,
-    bought: false
-  },
-  storage_bins: {
-    label: 'Storage Bins',
-    desc: 'Adds 5 storage capacity to every resource slot.',
-    cost: 35,
-    bought: false
-  },
-  workshop_tuning: {
-    label: 'Workshop Tuning',
-    desc: 'Crafters finish recipes 1 tick faster.',
-    cost: 60,
-    bought: false
-  },
-  market_bargaining: {
-    label: 'Market Bargaining',
-    desc: 'Markets earn 25% more gold from every sale.',
-    cost: 75,
-    bought: false
-  }
-};
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=state-refactor-1';
+import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=state-refactor-1';
+import { createGrid, createTechs, state } from './state.js?v=state-refactor-1';
+import { nodeViewState } from './view-models.js?v=state-refactor-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -62,49 +18,48 @@ const inspectContent = document.getElementById('inspectContent');
 const toastEl = document.getElementById('toast');
 const techWindow = document.getElementById('techWindow');
 
-function worldW() { return worldCols * CELL; }
-function worldH() { return worldRows * CELL; }
-function createGrid(cols, rows) { return Array.from({ length: rows }, () => new Array(cols).fill(0)); }
+function worldW() { return state.world.cols * CELL; }
+function worldH() { return state.world.rows * CELL; }
 function applyWorldSize() {
   const w = worldW();
   const h = worldH();
   gc.style.width = `${w}px`;
   gc.style.height = `${h}px`;
-  zoomStage.style.width = `${w * zoom}px`;
-  zoomStage.style.height = `${h * zoom}px`;
+  zoomStage.style.width = `${w * state.camera.zoom}px`;
+  zoomStage.style.height = `${h * state.camera.zoom}px`;
   sl.setAttribute('width', w);
   sl.setAttribute('height', h);
   sl.setAttribute('viewBox', `0 0 ${w} ${h}`);
 }
 function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
 function applyZoom() {
-  zoom = clamp(zoom, 0.5, 2);
-  gc.style.transform = `scale(${zoom})`;
-  zoomStage.style.width = `${worldW() * zoom}px`;
-  zoomStage.style.height = `${worldH() * zoom}px`;
-  zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+  state.camera.zoom = clamp(state.camera.zoom, 0.5, 2);
+  gc.style.transform = `scale(${state.camera.zoom})`;
+  zoomStage.style.width = `${worldW() * state.camera.zoom}px`;
+  zoomStage.style.height = `${worldH() * state.camera.zoom}px`;
+  zoomLabel.textContent = `${Math.round(state.camera.zoom * 100)}%`;
 }
 function applyPan() {
-  zoomStage.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px)`;
+  zoomStage.style.transform = `translate(${state.camera.panOffset.x}px, ${state.camera.panOffset.y}px)`;
 }
 function setZoom(nextZoom, anchorEvent = null) {
-  const prevZoom = zoom;
+  const prevZoom = state.camera.zoom;
   const anchor = anchorEvent ? {
     clientX: anchorEvent.clientX,
     clientY: anchorEvent.clientY,
     world: localPoint(anchorEvent)
   } : null;
-  zoom = nextZoom;
+  state.camera.zoom = nextZoom;
   applyZoom();
-  if (!anchor || zoom === prevZoom) return;
+  if (!anchor || state.camera.zoom === prevZoom) return;
   const rect = gc.getBoundingClientRect();
-  panOffset.x += anchor.clientX - (rect.left + anchor.world.x * zoom);
-  panOffset.y += anchor.clientY - (rect.top + anchor.world.y * zoom);
+  state.camera.panOffset.x += anchor.clientX - (rect.left + anchor.world.x * state.camera.zoom);
+  state.camera.panOffset.y += anchor.clientY - (rect.top + anchor.world.y * state.camera.zoom);
   applyPan();
 }
 function localPoint(e) {
   const rect = gc.getBoundingClientRect();
-  return { x: (e.clientX - rect.left) / zoom, y: (e.clientY - rect.top) / zoom };
+  return { x: (e.clientX - rect.left) / state.camera.zoom, y: (e.clientY - rect.top) / state.camera.zoom };
 }
 
 function isGridDragTarget(target) {
@@ -121,27 +76,27 @@ function drawBg() {
   const ctx = bg.getContext('2d');
   ctx.fillStyle = '#0c0c1e'; ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = '#181832'; ctx.lineWidth = 1;
-  for (let i = 0; i <= worldCols; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
-  for (let i = 0; i <= worldRows; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
+  for (let i = 0; i <= state.world.cols; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
+  for (let i = 0; i <= state.world.rows; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
   ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 1.25;
-  for (let i = 0; i <= worldCols; i += 4) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
-  for (let i = 0; i <= worldRows; i += 4) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
+  for (let i = 0; i <= state.world.cols; i += 4) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
+  for (let i = 0; i <= state.world.rows; i += 4) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
   ctx.fillStyle = '#242448';
-  for (let ci = 0; ci <= worldCols; ci++) for (let ri = 0; ri <= worldRows; ri++) { ctx.beginPath(); ctx.arc(ci * CELL, ri * CELL, 2, 0, Math.PI * 2); ctx.fill(); }
+  for (let ci = 0; ci <= state.world.cols; ci++) for (let ri = 0; ri <= state.world.rows; ri++) { ctx.beginPath(); ctx.arc(ci * CELL, ri * CELL, 2, 0, Math.PI * 2); ctx.fill(); }
 }
 
 function gridFree(gx, gy, w, h) {
   for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) {
-    if (r < 0 || r >= worldRows || c < 0 || c >= worldCols) return false;
-    if (grid[r][c]) return false;
+    if (r < 0 || r >= state.world.rows || c < 0 || c >= state.world.cols) return false;
+    if (state.grid[r][c]) return false;
   }
   return true;
 }
-function gridSet(gx, gy, w, h, value) { for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) grid[r][c] = value; }
+function gridSet(gx, gy, w, h, value) { for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) state.grid[r][c] = value; }
 function clampGridPos(gx, gy, w, h) {
   return {
-    gx: clamp(gx, 0, worldCols - w),
-    gy: clamp(gy, 0, worldRows - h)
+    gx: clamp(gx, 0, state.world.cols - w),
+    gy: clamp(gy, 0, state.world.rows - h)
   };
 }
 
@@ -234,10 +189,10 @@ function statusLabel(status) {
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
-  for (const [id, b] of blds) {
+  for (const [id, b] of state.buildings) {
     if (id === sourceId) continue;
     inputPorts(b).forEach((port, pi) => {
-      if (!inputAccepts(port, outRes) || inputAlreadyConnected(conns, id, pi)) return;
+      if (!inputAccepts(port, outRes) || inputAlreadyConnected(state.connections, id, pi)) return;
       const pos = portPx(b, port);
       const dist = Math.hypot(pos.x - point.x, pos.y - point.y);
       if (dist <= snapDistance && (!closest || dist < closest.dist)) closest = { pos, dist };
@@ -248,11 +203,11 @@ function nearbyInputPort(point, outRes, sourceId) {
 
 function renderBuildings() {
   bl.innerHTML = '';
-  for (const [id, b] of blds) {
-    const view = nodeViewState(b, conns, techs);
+  for (const [id, b] of state.buildings) {
+    const view = nodeViewState(b, state.connections, state.techs);
     const d = view.definition;
     const el = document.createElement('div');
-    el.className = `bld node--${d.kind} ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
+    el.className = `bld node--${d.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
     const subtitle = d.kind === 'crafter' ? `<div class="node-subtitle">${view.recipeLabel}</div>` : '';
     el.innerHTML = `
@@ -262,8 +217,8 @@ function renderBuildings() {
       <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (suppressNextGridClick) { suppressNextGridClick = false; return; }
-      selectedId = id; renderAll();
+      if (state.interaction.suppressNextGridClick) { state.interaction.suppressNextGridClick = false; return; }
+      state.selectedId = id; renderAll();
     });
     el.addEventListener('pointerdown', (e) => startMoveBuilding(e, id));
     el.addEventListener('contextmenu', (e) => { e.preventDefault(); deleteBuilding(id); });
@@ -291,21 +246,21 @@ function renderConnections() {
   const temp = sl.querySelector('#tp');
   sl.innerHTML = '';
   if (temp) sl.appendChild(temp);
-  for (const cn of conns) {
-    const fb = blds.get(cn.fb), tb = blds.get(cn.tb);
+  for (const cn of state.connections) {
+    const fb = state.buildings.get(cn.fb), tb = state.buildings.get(cn.tb);
     if (!fb || !tb) continue;
     const p1 = portPx(fb, outputPort(fb));
     const p2 = portPx(tb, inputPorts(tb)[cn.tpi]);
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', bez(p1, p2));
-    path.setAttribute('class', `cpath ${connectionStatus(cn, blds, techs)}`);
-    path.addEventListener('contextmenu', (e) => { e.preventDefault(); conns = conns.filter(c => c.id !== cn.id); renderAll(); toast('Connection deleted'); });
+    path.setAttribute('class', `cpath ${connectionStatus(cn, state.buildings, state.techs)}`);
+    path.addEventListener('contextmenu', (e) => { e.preventDefault(); state.connections = state.connections.filter(c => c.id !== cn.id); renderAll(); toast('Connection deleted'); });
     sl.appendChild(path);
   }
 }
 
 function renderInspector() {
-  const b = blds.get(selectedId);
+  const b = state.buildings.get(state.selectedId);
   if (!b) { inspectEmpty.classList.remove('hidden'); inspectContent.classList.add('hidden'); inspectContent.innerHTML = ''; return; }
   const d = BUILDINGS[b.type];
   const rec = activeRecipe(b);
@@ -313,91 +268,91 @@ function renderInspector() {
   const isSeller = d.kind === 'seller';
   const recipeField = isSeller ? '' : `<div class="field"><div class="field-title">Active Recipe</div><select id="recipeSelect" class="recipe-select">${Object.entries(d.recipes).map(([key, r]) => `<option value="${key}" ${b.recipe === key ? 'selected' : ''}>${r.label}</option>`).join('')}</select></div>`;
   const inputPills = isSeller
-    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res, techs)} gold</span>`).join('')
+    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res, state.techs)} gold</span>`).join('')
     : Object.entries(rec.inputs).map(([res, amt]) => `<span class="pill">${itemIcon(res)} ${amt} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
   const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(rec.output.res)} ${rec.output.amount} ${itemLabel(rec.output.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
-  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res, techs)}</span></div>`).join('');
+  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res, state.techs)}</span></div>`).join('');
   inspectContent.innerHTML = `
     <div class="field"><div class="field-title">${d.icon} ${d.label}</div><div class="field-sub">${d.desc}</div></div>
     ${recipeField}
     <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
     <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
     <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>`;
-  if (!isSeller) document.getElementById('recipeSelect').addEventListener('change', (e) => changeRecipe(selectedId, e.target.value));
+  if (!isSeller) document.getElementById('recipeSelect').addEventListener('change', (e) => changeRecipe(state.selectedId, e.target.value));
 }
 
-function renderAll() { renderSidebar(); renderBuildings(); renderConnections(); renderInspector(); renderTechTree(); goldEl.textContent = `💰 ${gold} gold`; tstat.textContent = `t=${ticks}`; }
+function renderAll() { renderSidebar(); renderBuildings(); renderConnections(); renderInspector(); renderTechTree(); goldEl.textContent = `💰 ${state.gold} gold`; tstat.textContent = `t=${state.ticks}`; }
 
 function changeRecipe(id, recipe) {
-  const b = blds.get(id); if (!b) return;
+  const b = state.buildings.get(id); if (!b) return;
   b.recipe = recipe; b.ptimer = 0;
-  conns = conns.filter(c => c.fb !== id && c.tb !== id); // active ports changed, so old links are invalidated intentionally
+  state.connections = state.connections.filter(c => c.fb !== id && c.tb !== id); // active ports changed, so old links are invalidated intentionally
   renderAll(); toast('Recipe changed; links reset');
 }
 
 function onPort(e) {
   e.stopPropagation();
-  if (mode === 'placing') return;
+  if (state.mode === 'placing') return;
   const bid = Number(e.currentTarget.dataset.bid);
   const pi = Number(e.currentTarget.dataset.pi);
   const kind = e.currentTarget.dataset.kind;
-  if (kind === 'out' && mode !== 'connecting') {
-    mode = 'connecting'; connFrom = { bid };
+  if (kind === 'out' && state.mode !== 'connecting') {
+    state.mode = 'connecting'; state.connFrom = { bid };
     setHint('Click a blue input port to connect · Esc to cancel'); ensureTempPath(); return;
   }
-  if (kind === 'in' && mode === 'connecting') {
-    const fb = blds.get(connFrom.bid), tb = blds.get(bid);
-    if (connFrom.bid === bid) return failConnect('Cannot connect a building to itself');
+  if (kind === 'in' && state.mode === 'connecting') {
+    const fb = state.buildings.get(state.connFrom.bid), tb = state.buildings.get(bid);
+    if (state.connFrom.bid === bid) return failConnect('Cannot connect a building to itself');
     const op = outputPort(fb), ip = inputPorts(tb)[pi];
     if (!op || !ip) return failConnect('Missing port');
     if (!inputAccepts(ip, op.res)) return failConnect(`${itemLabel(op.res)} does not match ${itemLabel(ip.res)}`);
-    if (inputAlreadyConnected(conns, bid, pi)) return failConnect('Input already connected');
-    conns = conns.filter(c => c.fb !== connFrom.bid);
-    conns.push({ id: nextId++, fb: connFrom.bid, tb: bid, tpi: pi });
+    if (inputAlreadyConnected(state.connections, bid, pi)) return failConnect('Input already connected');
+    state.connections = state.connections.filter(c => c.fb !== state.connFrom.bid);
+    state.connections.push({ id: state.nextId++, fb: state.connFrom.bid, tb: bid, tpi: pi });
     cancelConnection(); renderAll(); setHint('Connected. Click another green output to connect more.'); return;
   }
 }
 function failConnect(message) { setHint(`❌ ${message}`); cancelConnection(); }
 function ensureTempPath() { if (!sl.querySelector('#tp')) { const t = document.createElementNS('http://www.w3.org/2000/svg', 'path'); t.id = 'tp'; t.setAttribute('class', 'tpath'); sl.appendChild(t); } }
-function cancelConnection() { mode = 'idle'; connFrom = null; const t = sl.querySelector('#tp'); if (t) t.remove(); }
+function cancelConnection() { state.mode = 'idle'; state.connFrom = null; const t = sl.querySelector('#tp'); if (t) t.remove(); }
 
 gameEl.addEventListener('mousemove', (e) => {
-  if (mode !== 'connecting') return;
-  const fb = blds.get(connFrom.bid); const out = outputPort(fb); if (!fb || !out) return;
-  const p1 = portPx(fb, out); const p2 = nearbyInputPort(localPoint(e), out.res, connFrom.bid);
+  if (state.mode !== 'connecting') return;
+  const fb = state.buildings.get(state.connFrom.bid); const out = outputPort(fb); if (!fb || !out) return;
+  const p1 = portPx(fb, out); const p2 = nearbyInputPort(localPoint(e), out.res, state.connFrom.bid);
   ensureTempPath(); sl.querySelector('#tp').setAttribute('d', bez(p1, p2));
 });
 
 gc.addEventListener('click', (e) => {
-  if (suppressNextGridClick) {
-    suppressNextGridClick = false;
+  if (state.interaction.suppressNextGridClick) {
+    state.interaction.suppressNextGridClick = false;
     return;
   }
-  if (mode !== 'placing') { selectedId = null; renderAll(); return; }
+  if (state.mode !== 'placing') { state.selectedId = null; renderAll(); return; }
   if (e.target.closest('.bld') || e.target.closest('.port')) return;
   const point = localPoint(e);
   const gx = Math.floor(point.x / CELL); const gy = Math.floor(point.y / CELL);
-  const d = BUILDINGS[placeType];
+  const d = BUILDINGS[state.placeType];
   if (!gridFree(gx, gy, d.w, d.h)) { setHint('❌ Space occupied — try another cell'); return; }
-  if (gold < d.cost) { setHint(`❌ Need ${d.cost} gold to build ${d.label}`); toast('Not enough gold'); return; }
-  const id = nextId++;
-  gold -= d.cost;
-  blds.set(id, { id, type: placeType, gx, gy, recipe: firstRecipe(placeType), inv: {}, ptimer: 0 });
+  if (state.gold < d.cost) { setHint(`❌ Need ${d.cost} gold to build ${d.label}`); toast('Not enough gold'); return; }
+  const id = state.nextId++;
+  state.gold -= d.cost;
+  state.buildings.set(id, { id, type: state.placeType, gx, gy, recipe: firstRecipe(state.placeType), inv: {}, ptimer: 0 });
   gridSet(gx, gy, d.w, d.h, id);
-  selectedId = id;
-  mode = 'idle';
-  placeType = null;
+  state.selectedId = id;
+  state.mode = 'idle';
+  state.placeType = null;
   document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel'));
   setHint('Building placed');
   renderAll();
 });
 
 function startMoveBuilding(e, id) {
-  if (e.button !== 0 || mode !== 'idle' || e.target.closest('.port')) return;
-  const b = blds.get(id); if (!b) return;
+  if (e.button !== 0 || state.mode !== 'idle' || e.target.closest('.port')) return;
+  const b = state.buildings.get(id); if (!b) return;
   const point = localPoint(e);
-  moving = {
+  state.interaction.moving = {
     id,
     pointerId: e.pointerId,
     startX: e.clientX,
@@ -408,68 +363,68 @@ function startMoveBuilding(e, id) {
     offsetY: point.y - b.gy * CELL,
     active: false
   };
-  movingInvalid = false;
+  state.interaction.movingInvalid = false;
 }
 
 function moveBuilding(e) {
-  if (!moving || moving.pointerId !== e.pointerId) return;
-  const b = blds.get(moving.id); if (!b) return;
+  if (!state.interaction.moving || state.interaction.moving.pointerId !== e.pointerId) return;
+  const b = state.buildings.get(state.interaction.moving.id); if (!b) return;
   const d = BUILDINGS[b.type];
-  const dx = e.clientX - moving.startX;
-  const dy = e.clientY - moving.startY;
-  if (!moving.active && Math.hypot(dx, dy) < 4) return;
-  if (!moving.active) {
-    moving.active = true;
-    selectedId = moving.id;
-    gridSet(moving.oldGx, moving.oldGy, d.w, d.h, 0);
+  const dx = e.clientX - state.interaction.moving.startX;
+  const dy = e.clientY - state.interaction.moving.startY;
+  if (!state.interaction.moving.active && Math.hypot(dx, dy) < 4) return;
+  if (!state.interaction.moving.active) {
+    state.interaction.moving.active = true;
+    state.selectedId = state.interaction.moving.id;
+    gridSet(state.interaction.moving.oldGx, state.interaction.moving.oldGy, d.w, d.h, 0);
   }
   const point = localPoint(e);
-  const next = clampGridPos(Math.round((point.x - moving.offsetX) / CELL), Math.round((point.y - moving.offsetY) / CELL), d.w, d.h);
+  const next = clampGridPos(Math.round((point.x - state.interaction.moving.offsetX) / CELL), Math.round((point.y - state.interaction.moving.offsetY) / CELL), d.w, d.h);
   b.gx = next.gx;
   b.gy = next.gy;
-  movingInvalid = !gridFree(b.gx, b.gy, d.w, d.h);
-  suppressNextGridClick = true;
+  state.interaction.movingInvalid = !gridFree(b.gx, b.gy, d.w, d.h);
+  state.interaction.suppressNextGridClick = true;
   renderBuildings();
   renderConnections();
 }
 
 function endMoveBuilding(e) {
-  if (!moving || moving.pointerId !== e.pointerId) return;
-  const b = blds.get(moving.id);
+  if (!state.interaction.moving || state.interaction.moving.pointerId !== e.pointerId) return;
+  const b = state.buildings.get(state.interaction.moving.id);
   if (b) {
     const d = BUILDINGS[b.type];
-    if (!moving.active) {
-      selectedId = moving.id;
-    } else if (movingInvalid) {
-      b.gx = moving.oldGx;
-      b.gy = moving.oldGy;
-      gridSet(b.gx, b.gy, d.w, d.h, moving.id);
+    if (!state.interaction.moving.active) {
+      state.selectedId = state.interaction.moving.id;
+    } else if (state.interaction.movingInvalid) {
+      b.gx = state.interaction.moving.oldGx;
+      b.gy = state.interaction.moving.oldGy;
+      gridSet(b.gx, b.gy, d.w, d.h, state.interaction.moving.id);
       toast('Move blocked');
     } else {
-      gridSet(b.gx, b.gy, d.w, d.h, moving.id);
+      gridSet(b.gx, b.gy, d.w, d.h, state.interaction.moving.id);
       toast('Building moved');
     }
   }
-  if (moving.active) suppressNextGridClick = true;
-  moving = null;
-  movingInvalid = false;
+  if (state.interaction.moving.active) state.interaction.suppressNextGridClick = true;
+  state.interaction.moving = null;
+  state.interaction.movingInvalid = false;
   renderAll();
 }
 
 function deleteBuilding(id) {
-  const b = blds.get(id); if (!b) return;
+  const b = state.buildings.get(id); if (!b) return;
   const refund = Math.floor((BUILDINGS[b.type].cost || 0) / 2);
   gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, 0);
-  blds.delete(id); conns = conns.filter(c => c.fb !== id && c.tb !== id);
-  gold += refund;
-  if (selectedId === id) selectedId = null;
+  state.buildings.delete(id); state.connections = state.connections.filter(c => c.fb !== id && c.tb !== id);
+  state.gold += refund;
+  if (state.selectedId === id) state.selectedId = null;
   renderAll(); toast(`Building sold +${refund} gold`);
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (mode === 'connecting') { cancelConnection(); setHint('Cancelled'); }
-  if (mode === 'placing') { mode = 'idle'; placeType = null; document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); setHint('Select a building from the sidebar to place it'); }
+  if (state.mode === 'connecting') { cancelConnection(); setHint('Cancelled'); }
+  if (state.mode === 'placing') { state.mode = 'idle'; state.placeType = null; document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); setHint('Select a building from the sidebar to place it'); }
 });
 document.addEventListener('pointermove', moveBuilding);
 document.addEventListener('pointerup', endMoveBuilding);
@@ -479,7 +434,7 @@ function canProduce(b) {
   if (BUILDINGS[b.type].kind === 'seller') return canSell(b);
   const rec = activeRecipe(b);
   for (const [res, amt] of Object.entries(rec.inputs)) if ((b.inv[res] || 0) < amt) return false;
-  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res, techs)) return false;
+  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res, state.techs)) return false;
   return true;
 }
 
@@ -487,7 +442,7 @@ function produce(b) {
   if (BUILDINGS[b.type].kind === 'seller') { sellGoods(b); return; }
   const rec = activeRecipe(b);
   for (const [res, amt] of Object.entries(rec.inputs)) b.inv[res] = (b.inv[res] || 0) - amt;
-  if (rec.output.res === 'gold') gold += rec.output.amount;
+  if (rec.output.res === 'gold') state.gold += rec.output.amount;
   else b.inv[rec.output.res] = (b.inv[rec.output.res] || 0) + rec.output.amount;
 }
 
@@ -501,26 +456,26 @@ function sellGoods(b) {
   const res = Object.keys(prices).find(key => (b.inv[key] || 0) > 0);
   if (!res) return;
   b.inv[res]--;
-  gold += salePriceFor(b.type, res, techs);
+  state.gold += salePriceFor(b.type, res, state.techs);
 }
 
 function transferResources() {
   // Each connection can move one unit per tick if source has output and target has capacity.
-  for (const cn of conns) {
-    const fb = blds.get(cn.fb), tb = blds.get(cn.tb); if (!fb || !tb) continue;
+  for (const cn of state.connections) {
+    const fb = state.buildings.get(cn.fb), tb = state.buildings.get(cn.tb); if (!fb || !tb) continue;
     const out = outputPort(fb); const ip = inputPorts(tb)[cn.tpi];
     if (!out || !inputAccepts(ip, out.res)) continue;
     const res = out.res;
     const targetRes = inputResourceForStorage(ip, res);
-    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes, techs)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
+    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes, state.techs)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
   }
 }
 
 function buyTech(key) {
-  const tech = techs[key];
+  const tech = state.techs[key];
   if (!tech || tech.bought) return;
-  if (gold < tech.cost) { toast('Not enough gold'); return; }
-  gold -= tech.cost;
+  if (state.gold < tech.cost) { toast('Not enough gold'); return; }
+  state.gold -= tech.cost;
   tech.bought = true;
   if (key === 'grid_expansion') expandGrid(16, 8);
   setHint(`${tech.label} purchased`);
@@ -529,17 +484,17 @@ function buyTech(key) {
 }
 
 function expandGrid(extraCols, extraRows) {
-  worldCols += extraCols;
-  worldRows += extraRows;
-  for (const row of grid) for (let i = 0; i < extraCols; i++) row.push(0);
-  for (let i = 0; i < extraRows; i++) grid.push(new Array(worldCols).fill(0));
+  state.world.cols += extraCols;
+  state.world.rows += extraRows;
+  for (const row of state.grid) for (let i = 0; i < extraCols; i++) row.push(0);
+  for (let i = 0; i < extraRows; i++) state.grid.push(new Array(state.world.cols).fill(0));
   applyWorldSize();
   drawBg();
 }
 
 function tick() {
-  ticks++;
-  for (const [, b] of blds) {
+  state.ticks++;
+  for (const [, b] of state.buildings) {
     if (BUILDINGS[b.type].kind === 'seller') {
       if (canSell(b)) sellGoods(b);
       continue;
@@ -547,7 +502,7 @@ function tick() {
     const rec = activeRecipe(b);
     if (canProduce(b)) {
       b.ptimer = (b.ptimer || 0) + 1;
-      if (b.ptimer >= recipeTimeFor(b, rec, techs)) { produce(b); b.ptimer = 0; }
+      if (b.ptimer >= recipeTimeFor(b, rec, state.techs)) { produce(b); b.ptimer = 0; }
     } else {
       b.ptimer = 0;
     }
@@ -557,23 +512,31 @@ function tick() {
 }
 
 function saveGame() {
-  const payload = { nextId, gold, ticks, worldCols, worldRows, techs, buildings: [...blds.values()], conns };
+  const payload = {
+    nextId: state.nextId,
+    gold: state.gold,
+    ticks: state.ticks,
+    worldCols: state.world.cols,
+    worldRows: state.world.rows,
+    techs: state.techs,
+    buildings: [...state.buildings.values()],
+    conns: state.connections
+  };
   localStorage.setItem('factory-node-prototype-save', JSON.stringify(payload)); toast('Saved');
 }
 function loadGame() {
   const raw = localStorage.getItem('factory-node-prototype-save'); if (!raw) return toast('No save found');
   const payload = JSON.parse(raw); resetWorld(false);
-  nextId = payload.nextId; gold = payload.gold ?? STARTING_GOLD; ticks = payload.ticks || 0; conns = payload.conns || [];
-  worldCols = Math.max(payload.worldCols || COLS, COLS); worldRows = Math.max(payload.worldRows || ROWS, ROWS); grid = createGrid(worldCols, worldRows);
-  for (const [key, saved] of Object.entries(payload.techs || {})) if (techs[key]) techs[key].bought = Boolean(saved.bought);
+  state.nextId = payload.nextId; state.gold = payload.gold ?? STARTING_GOLD; state.ticks = payload.ticks || 0; state.connections = payload.conns || [];
+  state.world.cols = Math.max(payload.worldCols || COLS, COLS); state.world.rows = Math.max(payload.worldRows || ROWS, ROWS); state.grid = createGrid(state.world.cols, state.world.rows);
+  for (const [key, saved] of Object.entries(payload.techs || {})) if (state.techs[key]) state.techs[key].bought = Boolean(saved.bought);
   applyWorldSize(); drawBg();
-  for (const b of payload.buildings || []) { blds.set(b.id, b); gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, b.id); }
+  for (const b of payload.buildings || []) { state.buildings.set(b.id, b); gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, b.id); }
   renderAll(); toast('Loaded');
 }
 function resetWorld(confirmFirst = true) {
   if (confirmFirst && !confirm('Reset the prototype?')) return;
-  nextId = 1; gold = STARTING_GOLD; ticks = 0; selectedId = null; mode = 'idle'; placeType = null; connFrom = null; conns = []; blds.clear(); worldCols = COLS; worldRows = ROWS; panOffset = { x: 0, y: 0 }; grid = createGrid(worldCols, worldRows);
-  for (const tech of Object.values(techs)) tech.bought = false;
+  state.nextId = 1; state.gold = STARTING_GOLD; state.ticks = 0; state.selectedId = null; state.mode = 'idle'; state.placeType = null; state.connFrom = null; state.connections = []; state.buildings.clear(); state.world.cols = COLS; state.world.rows = ROWS; state.camera.panOffset = { x: 0, y: 0 }; state.grid = createGrid(state.world.cols, state.world.rows); state.techs = createTechs();
   applyWorldSize(); applyPan(); drawBg();
   document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); setHint('Select a building from the sidebar to place it'); renderAll();
 }
@@ -583,50 +546,50 @@ document.getElementById('loadBtn').addEventListener('click', loadGame);
 document.getElementById('resetBtn').addEventListener('click', () => resetWorld(true));
 document.getElementById('techBtn').addEventListener('click', () => { techWindow.classList.toggle('hidden'); renderTechTree(); });
 document.getElementById('techCloseBtn').addEventListener('click', () => techWindow.classList.add('hidden'));
-document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(zoom - 0.25));
-document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(zoom + 0.25));
+document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(state.camera.zoom - 0.25));
+document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(state.camera.zoom + 0.25));
 gameEl.addEventListener('wheel', (e) => {
   e.preventDefault();
-  setZoom(zoom + (e.deltaY < 0 ? 0.1 : -0.1), e);
+  setZoom(state.camera.zoom + (e.deltaY < 0 ? 0.1 : -0.1), e);
 }, { passive: false });
 gameEl.addEventListener('pointerdown', (e) => {
-  if (e.button !== 0 || mode === 'connecting' || !isGridDragTarget(e.target)) return;
-  pan = {
+  if (e.button !== 0 || state.mode === 'connecting' || !isGridDragTarget(e.target)) return;
+  state.interaction.pan = {
     id: e.pointerId,
     x: e.clientX,
     y: e.clientY,
-    offsetX: panOffset.x,
-    offsetY: panOffset.y,
+    offsetX: state.camera.panOffset.x,
+    offsetY: state.camera.panOffset.y,
     active: false,
     captured: false
   };
 });
 gameEl.addEventListener('pointermove', (e) => {
-  if (!pan || pan.id !== e.pointerId) return;
-  const dx = e.clientX - pan.x;
-  const dy = e.clientY - pan.y;
-  if (!pan.active && Math.hypot(dx, dy) < 4) return;
-  if (!pan.captured) {
+  if (!state.interaction.pan || state.interaction.pan.id !== e.pointerId) return;
+  const dx = e.clientX - state.interaction.pan.x;
+  const dy = e.clientY - state.interaction.pan.y;
+  if (!state.interaction.pan.active && Math.hypot(dx, dy) < 4) return;
+  if (!state.interaction.pan.captured) {
     gameEl.setPointerCapture(e.pointerId);
-    pan.captured = true;
+    state.interaction.pan.captured = true;
   }
-  pan.active = true;
-  suppressNextGridClick = true;
+  state.interaction.pan.active = true;
+  state.interaction.suppressNextGridClick = true;
   gameEl.classList.add('panning');
-  panOffset.x = pan.offsetX + dx;
-  panOffset.y = pan.offsetY + dy;
+  state.camera.panOffset.x = state.interaction.pan.offsetX + dx;
+  state.camera.panOffset.y = state.interaction.pan.offsetY + dy;
   applyPan();
 });
 gameEl.addEventListener('pointerup', (e) => {
-  if (!pan || pan.id !== e.pointerId) return;
-  if (pan.active) suppressNextGridClick = true;
-  if (pan.captured) gameEl.releasePointerCapture(e.pointerId);
-  pan = null;
+  if (!state.interaction.pan || state.interaction.pan.id !== e.pointerId) return;
+  if (state.interaction.pan.active) state.interaction.suppressNextGridClick = true;
+  if (state.interaction.pan.captured) gameEl.releasePointerCapture(e.pointerId);
+  state.interaction.pan = null;
   gameEl.classList.remove('panning');
 });
 gameEl.addEventListener('pointercancel', (e) => {
-  if (!pan || pan.id !== e.pointerId) return;
-  pan = null;
+  if (!state.interaction.pan || state.interaction.pan.id !== e.pointerId) return;
+  state.interaction.pan = null;
   gameEl.classList.remove('panning');
 });
 
@@ -634,19 +597,19 @@ function renderSidebar() {
   const cards = document.getElementById('buildingCards'); cards.innerHTML = '';
   for (const [type, d] of Object.entries(BUILDINGS)) {
     const card = document.createElement('div');
-    card.className = `bcard ${placeType === type ? 'sel' : ''} ${gold < d.cost ? 'locked' : ''}`;
+    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < d.cost ? 'locked' : ''}`;
     card.innerHTML = `<div class="bcard-n"><span>${d.icon} ${d.label}</span><span>${d.cost}g</span></div><div class="bcard-d">${d.desc}</div>`;
-    card.addEventListener('click', () => { document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); card.classList.add('sel'); if (mode === 'connecting') cancelConnection(); mode = 'placing'; placeType = type; setHint(`Placing ${d.label} — click the grid · Esc to cancel`); });
+    card.addEventListener('click', () => { document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); card.classList.add('sel'); if (state.mode === 'connecting') cancelConnection(); state.mode = 'placing'; state.placeType = type; setHint(`Placing ${d.label} — click the grid · Esc to cancel`); });
     cards.appendChild(card);
   }
 }
 
 function renderTechTree() {
   const cards = document.getElementById('techCards'); cards.innerHTML = '';
-  for (const [key, tech] of Object.entries(techs)) {
+  for (const [key, tech] of Object.entries(state.techs)) {
     const card = document.createElement('div');
     card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
-    const canBuy = gold >= tech.cost && !tech.bought;
+    const canBuy = state.gold >= tech.cost && !tech.bought;
     card.innerHTML = `
       <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : `${tech.cost} gold`}</span></div>
       <div class="tech-desc">${tech.desc}</div>

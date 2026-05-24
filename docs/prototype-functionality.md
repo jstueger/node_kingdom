@@ -419,7 +419,6 @@ The current prototype does not include:
 
 - Multi-step unlocks or research dependencies.
 - Contracts or goals.
-- Movement of placed buildings.
 - Pathfinding, roads, belts, pipes, or transport infrastructure.
 - Save files outside browser `localStorage`.
 - Production speed controls.
@@ -446,6 +445,7 @@ Useful additions include:
 Current source files:
 
 - `src/data.js`: static building, item, recipe, port, and capacity definitions.
+- `src/state.js`: centralized mutable game state, initial tech definitions, and grid creation.
 - `src/rules.js`: shared game-rule helpers for connection compatibility, connection status, storage capacity, recipe timing, and sale prices.
 - `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: current application state, rendering, simulation loop, persistence, and input wiring.
+- `src/main.js`: rendering, simulation loop, persistence, and input wiring that currently operate on the shared state object.
