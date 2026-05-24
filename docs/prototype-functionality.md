@@ -426,4 +426,5 @@ Current source files:
 
 - `src/data.js`: static building, item, recipe, port, and capacity definitions.
 - `src/rules.js`: shared game-rule helpers for connection compatibility, connection status, storage capacity, recipe timing, and sale prices.
+- `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
 - `src/main.js`: current application state, rendering, simulation loop, persistence, and input wiring.

@@ -1,5 +1,6 @@
 import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
 import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
+import { nodeViewState } from './view-models.js';
 
 let nextId = 1;
 let gold = STARTING_GOLD;
@@ -156,8 +157,8 @@ function bez(p1, p2) {
   return `M${p1.x},${p1.y}C${p1.x + dx},${p1.y} ${p2.x - dx},${p2.y} ${p2.x},${p2.y}`;
 }
 
-function inventoryText(b) {
-  return Object.entries(b.inv).filter(([, v]) => v > 0).map(([k, v]) => `${itemIcon(k)}${v}`).join(' ');
+function inventoryText(view) {
+  return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
 }
 
 function nearbyInputPort(point, outRes, sourceId) {
@@ -178,14 +179,12 @@ function nearbyInputPort(point, outRes, sourceId) {
 function renderBuildings() {
   bl.innerHTML = '';
   for (const [id, b] of blds) {
-    const d = BUILDINGS[b.type];
-    const rec = activeRecipe(b);
+    const view = nodeViewState(b, conns, techs);
+    const d = view.definition;
     const el = document.createElement('div');
-    el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''}`;
+    el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
-    const pct = rec ? Math.min(100, Math.floor(((b.ptimer || 0) / recipeTimeFor(b, rec, techs)) * 100)) : 0;
-    const statusLabel = rec ? rec.label : 'Auto Sell';
-    el.innerHTML = `<div class="b-ico">${d.icon}</div><div class="b-nm">${d.label}</div><div class="b-rec">${statusLabel}</div><div class="b-iv">${inventoryText(b)}</div><div class="prog"><span style="width:${pct}%"></span></div>`;
+    el.innerHTML = `<div class="b-ico">${view.icon}</div><div class="b-nm">${view.label}</div><div class="b-rec">${view.recipeLabel}</div><div class="b-iv">${inventoryText(view)}</div><div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       if (suppressNextGridClick) { suppressNextGridClick = false; return; }
