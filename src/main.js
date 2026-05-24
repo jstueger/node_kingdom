@@ -1,6 +1,6 @@
 import { applyPan, applyZoom, localPoint, setZoom } from './camera.js';
 import { setupInput } from './input.js';
-import { renderAll, renderBuildings, renderConnections, renderTechTree, updateProgressBars } from './render.js';
+import { renderAll, renderBuildings, renderConnections, renderPanels, renderTechTree, renderTopbar, renderWorld, updateProgressBars } from './render.js';
 import { loadGame, resetWorld, saveGame } from './save.js';
 import { tickGame } from './simulation.js';
 import { state } from './state.js';
@@ -53,6 +53,9 @@ const context = {
   clampGridPos: (gx, gy, w, h) => clampGridPos(state, gx, gy, w, h),
 
   renderAll: () => renderAll(context),
+  renderWorld: () => renderWorld(context),
+  renderPanels: () => renderPanels(context),
+  renderTopbar: () => renderTopbar(context),
   renderBuildings: () => renderBuildings(context),
   renderConnections: () => renderConnections(context),
   renderTechTree: () => renderTechTree(context),
@@ -69,7 +72,8 @@ context.actions = setupInput(context);
 function tick() {
   tickGame(state);
   state.clock.lastTickAt = performance.now();
-  context.renderAll();
+  context.renderWorld();
+  context.renderTopbar();
 }
 
 function animate(now) {

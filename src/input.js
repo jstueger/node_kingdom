@@ -220,6 +220,7 @@ export function setupInput(context) {
     state.interaction.placementDrag = {
       type,
       pointerId: event.pointerId,
+      captureTarget: event.currentTarget,
       startX: event.clientX,
       startY: event.clientY,
       gx: 0,
@@ -273,6 +274,9 @@ export function setupInput(context) {
   function endPlacementDrag(event) {
     const drag = state.interaction.placementDrag;
     if (!drag || drag.pointerId !== event.pointerId) return;
+    if (drag.captured && drag.captureTarget?.hasPointerCapture?.(event.pointerId)) {
+      drag.captureTarget.releasePointerCapture(event.pointerId);
+    }
     const didDrag = drag.active;
     const placed = didDrag && drag.valid && placeBuilding(drag.type, drag.gx, drag.gy);
     state.interaction.placementDrag = null;

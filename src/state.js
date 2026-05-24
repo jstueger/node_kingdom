@@ -33,6 +33,17 @@ export function createTechs() {
   };
 }
 
+export function createInteractionState() {
+  return {
+    pan: null,
+    moving: null,
+    placementDrag: null,
+    movingInvalid: false,
+    suppressNextSidebarClick: false,
+    suppressNextGridClick: false
+  };
+}
+
 export const state = {
   nextId: 1,
   gold: STARTING_GOLD,
@@ -50,14 +61,7 @@ export const state = {
   clock: {
     lastTickAt: 0
   },
-  interaction: {
-    pan: null,
-    moving: null,
-    placementDrag: null,
-    movingInvalid: false,
-    suppressNextSidebarClick: false,
-    suppressNextGridClick: false
-  },
+  interaction: createInteractionState(),
   buildings: new Map(),
   grid: createGrid(COLS, ROWS),
   techs: createTechs()

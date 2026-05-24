@@ -1,5 +1,5 @@
 import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createGrid, createTechs } from './state.js';
+import { createGrid, createInteractionState, createTechs } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
 
@@ -62,9 +62,13 @@ export function resetWorld(context, confirmFirst = true) {
   state.world.cols = COLS;
   state.world.rows = ROWS;
   state.camera.panOffset = { x: 0, y: 0 };
+  state.camera.zoom = 1;
+  state.clock.lastTickAt = performance.now();
+  state.interaction = createInteractionState();
   state.grid = createGrid(state.world.cols, state.world.rows);
   state.techs = createTechs();
   context.applyWorldSize();
+  context.applyZoom();
   context.applyPan();
   context.drawBg();
   document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));

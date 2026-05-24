@@ -250,16 +250,28 @@ export function renderTechTree(context) {
   }
 }
 
-export function renderAll(context) {
-  const { state, ui } = context;
-  renderSidebar(context);
+export function renderWorld(context) {
   renderBuildings(context);
   renderConnections(context);
+  updateProgressBars(context);
+}
+
+export function renderPanels(context) {
+  renderSidebar(context);
   renderInspector(context);
   renderTechTree(context);
+}
+
+export function renderTopbar(context) {
+  const { state, ui } = context;
   ui.goldEl.textContent = `💰 ${state.gold} gold`;
   ui.tstat.textContent = `t=${state.ticks}`;
-  updateProgressBars(context);
+}
+
+export function renderAll(context) {
+  renderPanels(context);
+  renderWorld(context);
+  renderTopbar(context);
 }
 
 export function updateProgressBars(context, now = performance.now()) {

@@ -31,7 +31,7 @@ Use the Live Server extension and open `index.html`.
 
 ## Current features
 
-- Free grid placement
+- Free grid placement by click or drag-and-drop from the building menu
 - Different building sizes
 - Producers, crafters, and sellers
 - Recipe-dependent input ports
@@ -41,9 +41,9 @@ Use the Live Server extension and open `index.html`.
 - Typed resource compatibility checks
 - Simple storage capacities
 - Connector status colors
-- Production progress bars
+- Smooth animated production progress bars
 - Building inspector
-- Recipe switching
+- In-node recipe switching for crafters
 - Right-click sell for buildings and delete for connections
 - Drag placed buildings to move them
 - Save/load via browser localStorage
