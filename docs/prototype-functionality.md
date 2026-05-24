@@ -82,6 +82,8 @@ Current building types:
 - Blacksmith: crafts swords.
 - Market: sells goods for gold.
 
+Only Lumber Camp is unlocked at the start of a new game. Other building cards are shown as locked until unlocked by tech.
+
 Each building has:
 
 - label and icon
@@ -230,10 +232,13 @@ Tech controls:
 - Click `Tech` in the top bar to show or hide the tech window.
 - Click `Hide` in the tech window to close it.
 
-Each tech can currently be bought once. Buying a tech spends gold, marks the tech as purchased, and applies its effect.
+Each tech can currently be bought once. Buying a tech spends its resource cost, marks the tech as purchased, and applies its effect.
+
+Techs may have visibility thresholds. A hidden tech appears once its threshold is met. Visibility thresholds are separate from purchase costs.
 
 Current techs:
 
+- Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.
 - Grid Expansion: costs 50 gold and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: costs 35 gold and adds 5 storage capacity to every resource slot.
 - Workshop Tuning: costs 60 gold and makes crafters need 2 fewer work clicks per action.
@@ -253,6 +258,8 @@ Manual work:
 - When the meter fills, the node performs one action: mining, crafting, or selling.
 - If the node is missing inputs, has full output storage, or has nothing to sell, work does not advance.
 - Workshop Tuning reduces crafter actions to 8 clicks.
+
+Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds.
 
 The global simulation tick still advances once per second.
 
@@ -299,6 +306,8 @@ The saved payload includes:
 - gold
 - tick count
 - current grid size
+- lifetime production/sale stats
+- unlocked building types
 - purchased tech state
 - buildings
 - connections

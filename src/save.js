@@ -1,5 +1,5 @@
 import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createGrid, createInteractionState, createTechs } from './state.js';
+import { createGrid, createInteractionState, createStats, createTechs, createUnlockedBuildings } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
 
@@ -10,6 +10,8 @@ export function saveGame({ state, toast }) {
     ticks: state.ticks,
     worldCols: state.world.cols,
     worldRows: state.world.rows,
+    stats: state.stats,
+    unlockedBuildings: state.unlockedBuildings,
     techs: state.techs,
     buildings: [...state.buildings.values()],
     conns: state.connections
@@ -31,16 +33,26 @@ export function loadGame(context) {
   state.gold = payload.gold ?? STARTING_GOLD;
   state.ticks = payload.ticks || 0;
   state.connections = payload.conns || [];
+  state.stats = {
+    lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
+    lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },
+    lifetimeEarned: { gold: 0, ...(payload.stats?.lifetimeEarned || {}) }
+  };
+  state.unlockedBuildings = { ...createUnlockedBuildings(), ...(payload.unlockedBuildings || {}) };
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
   state.world.rows = Math.max(payload.worldRows || ROWS, ROWS);
   state.grid = createGrid(state.world.cols, state.world.rows);
   for (const [key, saved] of Object.entries(payload.techs || {})) {
     if (state.techs[key]) state.techs[key].bought = Boolean(saved.bought);
   }
+  for (const [key, tech] of Object.entries(state.techs)) {
+    if (tech.bought) for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
+  }
   context.applyWorldSize();
   context.drawBg();
   for (const building of payload.buildings || []) {
     state.buildings.set(building.id, building);
+    state.unlockedBuildings[building.type] = true;
     context.gridSet(building.gx, building.gy, BUILDINGS[building.type].w, BUILDINGS[building.type].h, building.id);
   }
   context.renderAll();
@@ -58,6 +70,8 @@ export function resetWorld(context, confirmFirst = true) {
   state.placeType = null;
   state.connFrom = null;
   state.connections = [];
+  state.stats = createStats();
+  state.unlockedBuildings = createUnlockedBuildings();
   state.buildings.clear();
   state.world.cols = COLS;
   state.world.rows = ROWS;

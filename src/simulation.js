@@ -20,6 +20,7 @@ export function produce(state, building) {
   for (const [res, amount] of Object.entries(recipe.inputs)) building.inv[res] = (building.inv[res] || 0) - amount;
   if (recipe.output.res === 'gold') state.gold += recipe.output.amount;
   else building.inv[recipe.output.res] = (building.inv[recipe.output.res] || 0) + recipe.output.amount;
+  state.stats.lifetimeProduced[recipe.output.res] = (state.stats.lifetimeProduced[recipe.output.res] || 0) + recipe.output.amount;
 }
 
 export function canSell(building) {
@@ -31,8 +32,11 @@ export function sellGoods(state, building) {
   const prices = BUILDINGS[building.type].sellPrices || {};
   const res = Object.keys(prices).find(key => (building.inv[key] || 0) > 0);
   if (!res) return;
+  const price = salePriceFor(building.type, res, state.techs);
   building.inv[res]--;
-  state.gold += salePriceFor(building.type, res, state.techs);
+  state.gold += price;
+  state.stats.lifetimeSold[res] = (state.stats.lifetimeSold[res] || 0) + 1;
+  state.stats.lifetimeEarned.gold = (state.stats.lifetimeEarned.gold || 0) + price;
 }
 
 export function workBuilding(state, building) {

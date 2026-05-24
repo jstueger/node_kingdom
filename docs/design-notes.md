@@ -42,6 +42,7 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 - Buildings are freely placed on a grid.
 - Buildings cost gold to place.
 - Buildings cannot overlap.
+- Building types can be locked until researched.
 - Placed buildings can be moved without cost.
 - Nodes start as manual workstations and do not produce automatically.
 - Mining, crafting, and selling advance by clicking the node's work control.
@@ -76,5 +77,6 @@ The next useful product layer is goals:
 The next useful engineering layer is confidence:
 
 1. Tests for rules and simulation.
-2. More focused input modules if interaction state keeps growing.
-3. Save format versioning before save data becomes important.
+2. More complete progression data for the early node unlock chain.
+3. More focused input modules if interaction state keeps growing.
+4. Save format versioning before save data becomes important.

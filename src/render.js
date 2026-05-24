@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { connectionStatus, salePriceFor, storageCapFor } from './rules.js';
+import { canPayCost, connectionStatus, formatCost, isBuildingUnlocked, isTechVisible, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -245,9 +245,10 @@ export function renderSidebar(context) {
   const cards = document.getElementById('buildingCards');
   cards.innerHTML = '';
   for (const [type, definition] of Object.entries(BUILDINGS)) {
+    const unlocked = isBuildingUnlocked(state, type);
     const card = document.createElement('div');
-    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''}`;
-    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${definition.cost}g</span></div><div class="bcard-d">${definition.desc}</div>`;
+    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''} ${unlocked ? '' : 'unavailable'}`;
+    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${unlocked ? `${definition.cost}g` : 'Locked'}</span></div><div class="bcard-d">${unlocked ? definition.desc : 'Unlock through the tech tree.'}</div>`;
     card.addEventListener('click', () => actions.selectBuildingType(type, card));
     card.addEventListener('pointerdown', (event) => actions.startPlacementDrag(event, type));
     cards.appendChild(card);
@@ -259,11 +260,12 @@ export function renderTechTree(context) {
   const cards = document.getElementById('techCards');
   cards.innerHTML = '';
   for (const [key, tech] of Object.entries(state.techs)) {
+    if (!isTechVisible(state, tech)) continue;
     const card = document.createElement('div');
     card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
-    const canBuy = state.gold >= tech.cost && !tech.bought;
+    const canBuy = canPayCost(state, tech.cost) && !tech.bought;
     card.innerHTML = `
-      <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : `${tech.cost} gold`}</span></div>
+      <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : formatCost(tech.cost)}</span></div>
       <div class="tech-desc">${tech.desc}</div>
       <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
     card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
