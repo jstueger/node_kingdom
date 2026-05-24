@@ -189,7 +189,7 @@ Input ports:
 - Are resource-specific.
 - Accept at most one incoming connection.
 
-The Market input port is not resource-specific, may accept multiple incoming connections, and replaces recipe requirements.
+The Market input port is not resource-specific and replaces recipe requirements. It still accepts only one incoming connection.
 
 Output ports:
 
@@ -216,7 +216,7 @@ Connection rules:
 - A building cannot connect to itself.
 - Output and input resources must match.
 - Each input port accepts only one connection.
-- The Market's universal input is the exception: any resource may connect to it, and multiple outputs may feed it.
+- The Market's universal input accepts any resource, but still follows the one-connection input rule.
 - Each output port accepts only one outgoing connection.
 - Connecting an already-connected output to a different valid input rewires that output to the new input.
 - Right-click a connection to delete it.

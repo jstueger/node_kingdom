@@ -167,12 +167,8 @@ function inputResourceForStorage(ip, outRes) {
   return ip.acceptsAll ? outRes : ip.res;
 }
 
-function inputAlreadyConnected(buildingId, portIndex, port) {
-  return !port.acceptsAll && conns.some(c => c.tb === buildingId && c.tpi === portIndex);
-}
-
-function outputAlreadyConnected(buildingId) {
-  return conns.some(c => c.fb === buildingId);
+function inputAlreadyConnected(buildingId, portIndex) {
+  return conns.some(c => c.tb === buildingId && c.tpi === portIndex);
 }
 
 function nearbyInputPort(point, outRes, sourceId) {
@@ -181,7 +177,7 @@ function nearbyInputPort(point, outRes, sourceId) {
   for (const [id, b] of blds) {
     if (id === sourceId) continue;
     inputPorts(b).forEach((port, pi) => {
-      if (!inputAccepts(port, outRes) || inputAlreadyConnected(id, pi, port)) return;
+      if (!inputAccepts(port, outRes) || inputAlreadyConnected(id, pi)) return;
       const pos = portPx(b, port);
       const dist = Math.hypot(pos.x - point.x, pos.y - point.y);
       if (dist <= snapDistance && (!closest || dist < closest.dist)) closest = { pos, dist };
@@ -319,7 +315,7 @@ function onPort(e) {
     const op = outputPort(fb), ip = inputPorts(tb)[pi];
     if (!op || !ip) return failConnect('Missing port');
     if (!inputAccepts(ip, op.res)) return failConnect(`${itemLabel(op.res)} does not match ${itemLabel(ip.res)}`);
-    if (inputAlreadyConnected(bid, pi, ip)) return failConnect('Input already connected');
+    if (inputAlreadyConnected(bid, pi)) return failConnect('Input already connected');
     conns = conns.filter(c => c.fb !== connFrom.bid);
     conns.push({ id: nextId++, fb: connFrom.bid, tb: bid, tpi: pi });
     cancelConnection(); renderAll(); setHint('Connected. Click another green output to connect more.'); return;
