@@ -1,6 +1,6 @@
 import { applyPan, applyZoom, localPoint, setZoom } from './camera.js';
 import { setupInput } from './input.js';
-import { renderAll, renderBuildings, renderConnections, renderTechTree } from './render.js';
+import { renderAll, renderBuildings, renderConnections, renderTechTree, updateProgressBars } from './render.js';
 import { loadGame, resetWorld, saveGame } from './save.js';
 import { tickGame } from './simulation.js';
 import { state } from './state.js';
@@ -56,6 +56,7 @@ const context = {
   renderBuildings: () => renderBuildings(context),
   renderConnections: () => renderConnections(context),
   renderTechTree: () => renderTechTree(context),
+  updateProgressBars: (now) => updateProgressBars(context, now),
   saveGame: () => saveGame(context),
   loadGame: () => loadGame(context),
   resetWorld: (confirmFirst = true) => resetWorld(context, confirmFirst),
@@ -67,12 +68,20 @@ context.actions = setupInput(context);
 
 function tick() {
   tickGame(state);
+  state.clock.lastTickAt = performance.now();
   context.renderAll();
+}
+
+function animate(now) {
+  context.updateProgressBars(now);
+  requestAnimationFrame(animate);
 }
 
 context.applyWorldSize();
 context.applyZoom();
 context.applyPan();
 context.drawBg();
+state.clock.lastTickAt = performance.now();
 context.renderAll();
+requestAnimationFrame(animate);
 setInterval(tick, 1000);

@@ -47,6 +47,9 @@ export const state = {
     zoom: 1,
     panOffset: { x: 0, y: 0 }
   },
+  clock: {
+    lastTickAt: 0
+  },
   interaction: {
     pan: null,
     moving: null,

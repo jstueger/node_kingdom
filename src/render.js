@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { connectionStatus, salePriceFor, storageCapFor } from './rules.js';
+import { connectionStatus, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -87,7 +87,7 @@ export function renderBuildings(context) {
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
       ${subtitle}
       ${nodeBodyHtml(view)}
-      <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
+      <div class="prog"><span data-bid="${id}" style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (event) => {
       event.stopPropagation();
       if (state.interaction.suppressNextGridClick) {
@@ -227,4 +227,22 @@ export function renderAll(context) {
   renderTechTree(context);
   ui.goldEl.textContent = `💰 ${state.gold} gold`;
   ui.tstat.textContent = `t=${state.ticks}`;
+  updateProgressBars(context);
+}
+
+export function updateProgressBars(context, now = performance.now()) {
+  const { state, ui } = context;
+  const elapsedTicks = Math.max(0, Math.min(0.999, (now - state.clock.lastTickAt) / 1000));
+  ui.bl.querySelectorAll('.prog > span[data-bid]').forEach(bar => {
+    const building = state.buildings.get(Number(bar.dataset.bid));
+    if (!building) return;
+    const view = nodeViewState(building, state.connections, state.techs);
+    if (view.definition.kind === 'seller' || view.status !== 'working' || !view.recipe) {
+      bar.style.width = `${view.progressPct}%`;
+      return;
+    }
+    const recipeTime = recipeTimeFor(building, view.recipe, state.techs);
+    const progress = Math.min(1, ((building.ptimer || 0) + elapsedTicks) / recipeTime);
+    bar.style.width = `${(progress * 100).toFixed(1)}%`;
+  });
 }
