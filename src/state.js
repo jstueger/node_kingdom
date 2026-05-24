@@ -53,7 +53,9 @@ export const state = {
   interaction: {
     pan: null,
     moving: null,
+    placementDrag: null,
     movingInvalid: false,
+    suppressNextSidebarClick: false,
     suppressNextGridClick: false
   },
   buildings: new Map(),

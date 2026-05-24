@@ -29,6 +29,27 @@ export function setupInput(context) {
     context.toast('Recipe changed; links reset');
   }
 
+  function placeBuilding(type, gx, gy) {
+    const definition = BUILDINGS[type];
+    if (!definition) return false;
+    if (!context.gridFree(gx, gy, definition.w, definition.h)) {
+      context.setHint('❌ Space occupied — try another cell');
+      return false;
+    }
+    if (state.gold < definition.cost) {
+      context.setHint(`❌ Need ${definition.cost} gold to build ${definition.label}`);
+      context.toast('Not enough gold');
+      return false;
+    }
+    const id = state.nextId++;
+    state.gold -= definition.cost;
+    state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0 });
+    context.gridSet(gx, gy, definition.w, definition.h, id);
+    state.selectedId = id;
+    context.setHint('Building placed');
+    return true;
+  }
+
   function onPort(event) {
     event.stopPropagation();
     if (state.mode === 'placing') return;
@@ -181,12 +202,37 @@ export function setupInput(context) {
   }
 
   function selectBuildingType(type, card) {
+    if (state.interaction.suppressNextSidebarClick) {
+      state.interaction.suppressNextSidebarClick = false;
+      return;
+    }
     document.querySelectorAll('.bcard').forEach(item => item.classList.remove('sel'));
     card.classList.add('sel');
     if (state.mode === 'connecting') cancelConnection();
     state.mode = 'placing';
     state.placeType = type;
     context.setHint(`Placing ${BUILDINGS[type].label} — click the grid · Esc to cancel`);
+  }
+
+  function startPlacementDrag(event, type) {
+    if (event.button !== 0 || state.interaction.moving || state.interaction.pan) return;
+    if (state.mode === 'connecting') cancelConnection();
+    state.interaction.placementDrag = {
+      type,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      gx: 0,
+      gy: 0,
+      active: false,
+      overGrid: false,
+      valid: false,
+      captured: false
+    };
+    if (event.currentTarget.setPointerCapture) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      state.interaction.placementDrag.captured = true;
+    }
   }
 
   function expandGrid(extraCols, extraRows) {
@@ -200,6 +246,44 @@ export function setupInput(context) {
 
   function isGridDragTarget(target) {
     return !target.closest('.bld') && !target.closest('.port');
+  }
+
+  function updatePlacementDrag(event) {
+    const drag = state.interaction.placementDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const definition = BUILDINGS[drag.type];
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    if (!drag.active && Math.hypot(dx, dy) < 4) return;
+    if (!drag.active) {
+      drag.active = true;
+      state.interaction.suppressNextSidebarClick = true;
+      state.mode = 'dragging-placement';
+      state.placeType = drag.type;
+      context.setHint(`Drop ${definition.label} onto the grid`);
+    }
+    const point = context.localPoint(event);
+    drag.overGrid = point.x >= 0 && point.y >= 0 && point.x < state.world.cols * CELL && point.y < state.world.rows * CELL;
+    drag.gx = Math.floor(point.x / CELL);
+    drag.gy = Math.floor(point.y / CELL);
+    drag.valid = drag.overGrid && state.gold >= definition.cost && context.gridFree(drag.gx, drag.gy, definition.w, definition.h);
+    context.renderBuildings();
+  }
+
+  function endPlacementDrag(event) {
+    const drag = state.interaction.placementDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const didDrag = drag.active;
+    const placed = didDrag && drag.valid && placeBuilding(drag.type, drag.gx, drag.gy);
+    state.interaction.placementDrag = null;
+    if (didDrag) {
+      state.mode = 'idle';
+      state.placeType = null;
+      state.interaction.suppressNextGridClick = true;
+      document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
+      if (!placed) context.setHint('Placement cancelled');
+      context.renderAll();
+    }
   }
 
   ui.gameEl.addEventListener('mousemove', (event) => {
@@ -228,25 +312,10 @@ export function setupInput(context) {
     const point = context.localPoint(event);
     const gx = Math.floor(point.x / CELL);
     const gy = Math.floor(point.y / CELL);
-    const definition = BUILDINGS[state.placeType];
-    if (!context.gridFree(gx, gy, definition.w, definition.h)) {
-      context.setHint('❌ Space occupied — try another cell');
-      return;
-    }
-    if (state.gold < definition.cost) {
-      context.setHint(`❌ Need ${definition.cost} gold to build ${definition.label}`);
-      context.toast('Not enough gold');
-      return;
-    }
-    const id = state.nextId++;
-    state.gold -= definition.cost;
-    state.buildings.set(id, { id, type: state.placeType, gx, gy, recipe: firstRecipe(state.placeType), inv: {}, ptimer: 0 });
-    context.gridSet(gx, gy, definition.w, definition.h, id);
-    state.selectedId = id;
+    if (!placeBuilding(state.placeType, gx, gy)) return;
     state.mode = 'idle';
     state.placeType = null;
     document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
-    context.setHint('Building placed');
     context.renderAll();
   });
 
@@ -264,8 +333,11 @@ export function setupInput(context) {
     }
   });
   document.addEventListener('pointermove', moveBuilding);
+  document.addEventListener('pointermove', updatePlacementDrag);
   document.addEventListener('pointerup', endMoveBuilding);
+  document.addEventListener('pointerup', endPlacementDrag);
   document.addEventListener('pointercancel', endMoveBuilding);
+  document.addEventListener('pointercancel', endPlacementDrag);
 
   document.getElementById('saveBtn').addEventListener('click', context.saveGame);
   document.getElementById('loadBtn').addEventListener('click', context.loadGame);
@@ -330,5 +402,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast: context.toast };
 }

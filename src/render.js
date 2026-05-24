@@ -85,6 +85,18 @@ function statusLabel(status) {
   }[status] || status.toUpperCase();
 }
 
+function renderPlacementGhost(context) {
+  const { state, ui } = context;
+  const drag = state.interaction.placementDrag;
+  if (!drag?.active || !drag.overGrid) return;
+  const definition = BUILDINGS[drag.type];
+  const ghost = document.createElement('div');
+  ghost.className = `placement-ghost ${drag.valid ? 'valid' : 'invalid'}`;
+  ghost.style.cssText = `left:${drag.gx * CELL + 2}px;top:${drag.gy * CELL + 2}px;width:${definition.w * CELL - 4}px;height:${definition.h * CELL - 4}px;background:${definition.color};`;
+  ghost.innerHTML = `<div class="placement-ghost-label">${definition.icon} ${definition.label}</div>`;
+  ui.bl.appendChild(ghost);
+}
+
 export function renderBuildings(context) {
   const { state, ui, geometry, actions } = context;
   ui.bl.innerHTML = '';
@@ -153,6 +165,7 @@ export function renderBuildings(context) {
     }
     ui.bl.appendChild(el);
   }
+  renderPlacementGhost(context);
 }
 
 export function renderConnections(context) {
@@ -215,6 +228,7 @@ export function renderSidebar(context) {
     card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''}`;
     card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${definition.cost}g</span></div><div class="bcard-d">${definition.desc}</div>`;
     card.addEventListener('click', () => actions.selectBuildingType(type, card));
+    card.addEventListener('pointerdown', (event) => actions.startPlacementDrag(event, type));
     cards.appendChild(card);
   }
 }
