@@ -1,6 +1,6 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
-import { nodeViewState } from './view-models.js';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=grid-scale-40';
+import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=grid-scale-40';
+import { nodeViewState } from './view-models.js?v=grid-scale-40';
 
 let nextId = 1;
 let gold = STARTING_GOLD;
@@ -120,10 +120,13 @@ function drawBg() {
   bg.width = w; bg.height = h;
   const ctx = bg.getContext('2d');
   ctx.fillStyle = '#0c0c1e'; ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = '#141428'; ctx.lineWidth = 1;
+  ctx.strokeStyle = '#181832'; ctx.lineWidth = 1;
   for (let i = 0; i <= worldCols; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
   for (let i = 0; i <= worldRows; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
-  ctx.fillStyle = '#1c1c38';
+  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 1.25;
+  for (let i = 0; i <= worldCols; i += 4) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
+  for (let i = 0; i <= worldRows; i += 4) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
+  ctx.fillStyle = '#242448';
   for (let ci = 0; ci <= worldCols; ci++) for (let ri = 0; ri <= worldRows; ri++) { ctx.beginPath(); ctx.arc(ci * CELL, ri * CELL, 2, 0, Math.PI * 2); ctx.fill(); }
 }
 
@@ -549,7 +552,7 @@ function loadGame() {
   const raw = localStorage.getItem('factory-node-prototype-save'); if (!raw) return toast('No save found');
   const payload = JSON.parse(raw); resetWorld(false);
   nextId = payload.nextId; gold = payload.gold ?? STARTING_GOLD; ticks = payload.ticks || 0; conns = payload.conns || [];
-  worldCols = payload.worldCols || COLS; worldRows = payload.worldRows || ROWS; grid = createGrid(worldCols, worldRows);
+  worldCols = Math.max(payload.worldCols || COLS, COLS); worldRows = Math.max(payload.worldRows || ROWS, ROWS); grid = createGrid(worldCols, worldRows);
   for (const [key, saved] of Object.entries(payload.techs || {})) if (techs[key]) techs[key].bought = Boolean(saved.bought);
   applyWorldSize(); drawBg();
   for (const b of payload.buildings || []) { blds.set(b.id, b); gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, b.id); }

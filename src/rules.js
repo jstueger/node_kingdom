@@ -1,4 +1,4 @@
-import { BUILDINGS, capFor, inputPorts, outputPort } from './data.js';
+import { BUILDINGS, capFor, inputPorts, outputPort } from './data.js?v=grid-scale-40';
 
 export function inputAccepts(inputPort, resource) {
   return Boolean(inputPort && (inputPort.acceptsAll || inputPort.res === resource));
