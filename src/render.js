@@ -1,6 +1,6 @@
-import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=camera-1';
-import { connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=camera-1';
-import { nodeViewState } from './view-models.js?v=camera-1';
+import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=save-1';
+import { connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=save-1';
+import { nodeViewState } from './view-models.js?v=save-1';
 
 function inventoryText(view) {
   return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');

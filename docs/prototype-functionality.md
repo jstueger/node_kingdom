@@ -451,5 +451,6 @@ Current source files:
 - `src/render.js`: DOM rendering for buildings, connections, inspector, sidebar, tech tree, and top-level UI state.
 - `src/world.js`: world dimensions, grid occupancy helpers, background drawing, port positioning, and connection path geometry.
 - `src/camera.js`: zoom, pan, and screen-to-world coordinate helpers.
+- `src/save.js`: browser `localStorage` save/load/reset behavior and save-state reconstruction.
 - `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: persistence, input wiring, and the interval that calls the simulation update.
+- `src/main.js`: input wiring and the interval that calls the simulation update.

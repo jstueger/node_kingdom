@@ -1,10 +1,11 @@
-import { applyPan as applyCameraPan, applyZoom as applyCameraZoom, localPoint as cameraLocalPoint, setZoom as setCameraZoom } from './camera.js?v=camera-1';
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=camera-1';
-import { inputAccepts, inputAlreadyConnected } from './rules.js?v=camera-1';
-import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=camera-1';
-import { tickGame } from './simulation.js?v=camera-1';
-import { createGrid, createTechs, state } from './state.js?v=camera-1';
-import { applyWorldSize as applyWorldSizeToUi, bez, clampGridPos as clampGridPosition, drawBg as drawWorldBg, gridFree as isGridFree, gridSet as setGridCells, portPx } from './world.js?v=camera-1';
+import { applyPan as applyCameraPan, applyZoom as applyCameraZoom, localPoint as cameraLocalPoint, setZoom as setCameraZoom } from './camera.js?v=save-1';
+import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=save-1';
+import { inputAccepts, inputAlreadyConnected } from './rules.js?v=save-1';
+import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=save-1';
+import { loadGame as loadSavedGame, resetWorld as resetSavedWorld, saveGame as saveCurrentGame } from './save.js?v=save-1';
+import { tickGame } from './simulation.js?v=save-1';
+import { state } from './state.js?v=save-1';
+import { applyWorldSize as applyWorldSizeToUi, bez, clampGridPos as clampGridPosition, drawBg as drawWorldBg, gridFree as isGridFree, gridSet as setGridCells, portPx } from './world.js?v=save-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -22,6 +23,7 @@ const toastEl = document.getElementById('toast');
 const techWindow = document.getElementById('techWindow');
 const ui = { bg, gameEl, zoomStage, gc, bl, sl, hint, goldEl, tstat, zoomLabel, inspectEmpty, inspectContent, toastEl, techWindow };
 let renderContext;
+let saveContext;
 
 function renderAll() { renderAllView(renderContext); }
 function renderBuildings() { renderBuildingsView(renderContext); }
@@ -242,35 +244,9 @@ function tick() {
   renderAll();
 }
 
-function saveGame() {
-  const payload = {
-    nextId: state.nextId,
-    gold: state.gold,
-    ticks: state.ticks,
-    worldCols: state.world.cols,
-    worldRows: state.world.rows,
-    techs: state.techs,
-    buildings: [...state.buildings.values()],
-    conns: state.connections
-  };
-  localStorage.setItem('factory-node-prototype-save', JSON.stringify(payload)); toast('Saved');
-}
-function loadGame() {
-  const raw = localStorage.getItem('factory-node-prototype-save'); if (!raw) return toast('No save found');
-  const payload = JSON.parse(raw); resetWorld(false);
-  state.nextId = payload.nextId; state.gold = payload.gold ?? STARTING_GOLD; state.ticks = payload.ticks || 0; state.connections = payload.conns || [];
-  state.world.cols = Math.max(payload.worldCols || COLS, COLS); state.world.rows = Math.max(payload.worldRows || ROWS, ROWS); state.grid = createGrid(state.world.cols, state.world.rows);
-  for (const [key, saved] of Object.entries(payload.techs || {})) if (state.techs[key]) state.techs[key].bought = Boolean(saved.bought);
-  applyWorldSize(); drawBg();
-  for (const b of payload.buildings || []) { state.buildings.set(b.id, b); gridSet(b.gx, b.gy, BUILDINGS[b.type].w, BUILDINGS[b.type].h, b.id); }
-  renderAll(); toast('Loaded');
-}
-function resetWorld(confirmFirst = true) {
-  if (confirmFirst && !confirm('Reset the prototype?')) return;
-  state.nextId = 1; state.gold = STARTING_GOLD; state.ticks = 0; state.selectedId = null; state.mode = 'idle'; state.placeType = null; state.connFrom = null; state.connections = []; state.buildings.clear(); state.world.cols = COLS; state.world.rows = ROWS; state.camera.panOffset = { x: 0, y: 0 }; state.grid = createGrid(state.world.cols, state.world.rows); state.techs = createTechs();
-  applyWorldSize(); applyPan(); drawBg();
-  document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); setHint('Select a building from the sidebar to place it'); renderAll();
-}
+function saveGame() { saveCurrentGame(saveContext); }
+function loadGame() { loadSavedGame(saveContext); }
+function resetWorld(confirmFirst = true) { resetSavedWorld(saveContext, confirmFirst); }
 
 document.getElementById('saveBtn').addEventListener('click', saveGame);
 document.getElementById('loadBtn').addEventListener('click', loadGame);
@@ -330,5 +306,6 @@ renderContext = {
   geometry: { portPx, bez },
   actions: { onPort, startMoveBuilding, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast }
 };
+saveContext = { state, applyWorldSize, applyPan, drawBg, gridSet, renderAll, setHint, toast };
 
 applyWorldSize(); applyZoom(); applyPan(); drawBg(); renderAll(); setInterval(tick, 1000);
