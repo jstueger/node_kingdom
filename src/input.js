@@ -80,7 +80,7 @@ export function setupInput(context) {
   }
 
   function startMoveBuilding(event, id) {
-    if (event.button !== 0 || state.mode !== 'idle' || event.target.closest('.port')) return;
+    if (event.button !== 0 || state.mode !== 'idle' || event.target.closest('.port') || event.target.closest('.node-recipe-control')) return;
     const building = state.buildings.get(id);
     if (!building) return;
     const point = context.localPoint(event);

@@ -42,6 +42,18 @@ function marketQueueHtml(view) {
   return `<div class="market-queue empty"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Ready' : 'No link'}</span><span>0</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
 }
 
+function recipeControlHtml(view, building) {
+  if (view.definition.kind !== 'crafter') return '';
+  const recipes = Object.keys(view.definition.recipes);
+  const hasChoices = recipes.length > 1;
+  return `
+    <div class="node-recipe-control" data-bid="${building.id}">
+      <button class="recipe-step" data-dir="-1" title="Previous recipe" ${hasChoices ? '' : 'disabled'}>&lt;</button>
+      <span class="node-recipe-label" title="${view.recipeLabel}">${view.recipeLabel}</span>
+      <button class="recipe-step" data-dir="1" title="Next recipe" ${hasChoices ? '' : 'disabled'}>&gt;</button>
+    </div>`;
+}
+
 function nodeBodyHtml(view) {
   if (view.definition.kind === 'producer') {
     return `
@@ -82,12 +94,21 @@ export function renderBuildings(context) {
     const el = document.createElement('div');
     el.className = `bld node--${definition.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${building.gx * CELL + 2}px;top:${building.gy * CELL + 2}px;width:${definition.w * CELL - 4}px;height:${definition.h * CELL - 4}px;background:${definition.color};`;
-    const subtitle = definition.kind === 'crafter' ? `<div class="node-subtitle">${view.recipeLabel}</div>` : '';
     el.innerHTML = `
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
-      ${subtitle}
+      ${recipeControlHtml(view, building)}
       ${nodeBodyHtml(view)}
       <div class="prog"><span data-bid="${id}" style="width:${view.progressPct}%"></span></div>`;
+    el.querySelectorAll('.recipe-step').forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const recipes = Object.keys(definition.recipes);
+        const currentIndex = recipes.indexOf(building.recipe);
+        const dir = Number(event.currentTarget.dataset.dir);
+        const nextIndex = (currentIndex + dir + recipes.length) % recipes.length;
+        actions.changeRecipe(id, recipes[nextIndex]);
+      });
+    });
     el.addEventListener('click', (event) => {
       event.stopPropagation();
       if (state.interaction.suppressNextGridClick) {
@@ -159,7 +180,7 @@ export function renderConnections(context) {
 }
 
 export function renderInspector(context) {
-  const { state, ui, actions } = context;
+  const { state, ui } = context;
   const building = state.buildings.get(state.selectedId);
   if (!building) {
     ui.inspectEmpty.classList.remove('hidden');
@@ -172,7 +193,6 @@ export function renderInspector(context) {
   ui.inspectEmpty.classList.add('hidden');
   ui.inspectContent.classList.remove('hidden');
   const isSeller = definition.kind === 'seller';
-  const recipeField = isSeller ? '' : `<div class="field"><div class="field-title">Active Recipe</div><select id="recipeSelect" class="recipe-select">${Object.entries(definition.recipes).map(([key, item]) => `<option value="${key}" ${building.recipe === key ? 'selected' : ''}>${item.label}</option>`).join('')}</select></div>`;
   const inputPills = isSeller
     ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(building.type, res, state.techs)} gold</span>`).join('')
     : Object.entries(recipe.inputs).map(([res, amount]) => `<span class="pill">${itemIcon(res)} ${amount} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
@@ -181,11 +201,9 @@ export function renderInspector(context) {
   const invRows = Object.keys({ ...definition.capacity, ...building.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${building.inv[res] || 0}/${storageCapFor(building, res, state.techs)}</span></div>`).join('');
   ui.inspectContent.innerHTML = `
     <div class="field"><div class="field-title">${definition.icon} ${definition.label}</div><div class="field-sub">${definition.desc}</div></div>
-    ${recipeField}
     <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
     <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
     <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>`;
-  if (!isSeller) document.getElementById('recipeSelect').addEventListener('change', (event) => actions.changeRecipe(state.selectedId, event.target.value));
 }
 
 export function renderSidebar(context) {
