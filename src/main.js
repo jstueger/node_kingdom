@@ -1,7 +1,8 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=state-refactor-1';
-import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=state-refactor-1';
-import { createGrid, createTechs, state } from './state.js?v=state-refactor-1';
-import { nodeViewState } from './view-models.js?v=state-refactor-1';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=simulation-1';
+import { inputAccepts, inputAlreadyConnected, connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=simulation-1';
+import { tickGame } from './simulation.js?v=simulation-1';
+import { createGrid, createTechs, state } from './state.js?v=simulation-1';
+import { nodeViewState } from './view-models.js?v=simulation-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -430,47 +431,6 @@ document.addEventListener('pointermove', moveBuilding);
 document.addEventListener('pointerup', endMoveBuilding);
 document.addEventListener('pointercancel', endMoveBuilding);
 
-function canProduce(b) {
-  if (BUILDINGS[b.type].kind === 'seller') return canSell(b);
-  const rec = activeRecipe(b);
-  for (const [res, amt] of Object.entries(rec.inputs)) if ((b.inv[res] || 0) < amt) return false;
-  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res, state.techs)) return false;
-  return true;
-}
-
-function produce(b) {
-  if (BUILDINGS[b.type].kind === 'seller') { sellGoods(b); return; }
-  const rec = activeRecipe(b);
-  for (const [res, amt] of Object.entries(rec.inputs)) b.inv[res] = (b.inv[res] || 0) - amt;
-  if (rec.output.res === 'gold') state.gold += rec.output.amount;
-  else b.inv[rec.output.res] = (b.inv[rec.output.res] || 0) + rec.output.amount;
-}
-
-function canSell(b) {
-  const prices = BUILDINGS[b.type].sellPrices || {};
-  return Object.keys(prices).some(res => (b.inv[res] || 0) > 0);
-}
-
-function sellGoods(b) {
-  const prices = BUILDINGS[b.type].sellPrices || {};
-  const res = Object.keys(prices).find(key => (b.inv[key] || 0) > 0);
-  if (!res) return;
-  b.inv[res]--;
-  state.gold += salePriceFor(b.type, res, state.techs);
-}
-
-function transferResources() {
-  // Each connection can move one unit per tick if source has output and target has capacity.
-  for (const cn of state.connections) {
-    const fb = state.buildings.get(cn.fb), tb = state.buildings.get(cn.tb); if (!fb || !tb) continue;
-    const out = outputPort(fb); const ip = inputPorts(tb)[cn.tpi];
-    if (!out || !inputAccepts(ip, out.res)) continue;
-    const res = out.res;
-    const targetRes = inputResourceForStorage(ip, res);
-    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes, state.techs)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
-  }
-}
-
 function buyTech(key) {
   const tech = state.techs[key];
   if (!tech || tech.bought) return;
@@ -493,21 +453,7 @@ function expandGrid(extraCols, extraRows) {
 }
 
 function tick() {
-  state.ticks++;
-  for (const [, b] of state.buildings) {
-    if (BUILDINGS[b.type].kind === 'seller') {
-      if (canSell(b)) sellGoods(b);
-      continue;
-    }
-    const rec = activeRecipe(b);
-    if (canProduce(b)) {
-      b.ptimer = (b.ptimer || 0) + 1;
-      if (b.ptimer >= recipeTimeFor(b, rec, state.techs)) { produce(b); b.ptimer = 0; }
-    } else {
-      b.ptimer = 0;
-    }
-  }
-  transferResources();
+  tickGame(state);
   renderAll();
 }
 

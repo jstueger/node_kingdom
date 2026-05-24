@@ -1,4 +1,4 @@
-import { COLS, ROWS, STARTING_GOLD } from './data.js?v=state-refactor-1';
+import { COLS, ROWS, STARTING_GOLD } from './data.js?v=simulation-1';
 
 export function createGrid(cols, rows) {
   return Array.from({ length: rows }, () => new Array(cols).fill(0));
