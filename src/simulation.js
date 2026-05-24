@@ -1,5 +1,5 @@
-import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=simulation-1';
-import { inputAccepts, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=simulation-1';
+import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=render-1';
+import { inputAccepts, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=render-1';
 
 export function canProduce(state, building) {
   if (BUILDINGS[building.type].kind === 'seller') return canSell(building);

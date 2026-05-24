@@ -1,8 +1,8 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=simulation-1';
-import { inputAccepts, inputAlreadyConnected, connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=simulation-1';
-import { tickGame } from './simulation.js?v=simulation-1';
-import { createGrid, createTechs, state } from './state.js?v=simulation-1';
-import { nodeViewState } from './view-models.js?v=simulation-1';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=render-1';
+import { inputAccepts, inputAlreadyConnected } from './rules.js?v=render-1';
+import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=render-1';
+import { tickGame } from './simulation.js?v=render-1';
+import { createGrid, createTechs, state } from './state.js?v=render-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -18,6 +18,13 @@ const inspectEmpty = document.getElementById('inspectEmpty');
 const inspectContent = document.getElementById('inspectContent');
 const toastEl = document.getElementById('toast');
 const techWindow = document.getElementById('techWindow');
+const ui = { bg, gameEl, zoomStage, gc, bl, sl, hint, goldEl, tstat, zoomLabel, inspectEmpty, inspectContent, toastEl, techWindow };
+let renderContext;
+
+function renderAll() { renderAllView(renderContext); }
+function renderBuildings() { renderBuildingsView(renderContext); }
+function renderConnections() { renderConnectionsView(renderContext); }
+function renderTechTree() { renderTechTreeView(renderContext); }
 
 function worldW() { return state.world.cols * CELL; }
 function worldH() { return state.world.rows * CELL; }
@@ -116,77 +123,6 @@ function bez(p1, p2) {
   return `M${p1.x},${p1.y}C${p1.x + dx},${p1.y} ${p2.x - dx},${p2.y} ${p2.x},${p2.y}`;
 }
 
-function inventoryText(view) {
-  return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
-}
-
-function inputQueueHtml(view) {
-  if (!view.inputs.length) return '';
-  const rows = view.inputs.map(input => {
-    const label = input.acceptsAll ? 'Any' : itemIcon(input.res);
-    const amount = input.need === null ? input.have : `${input.have}/${input.need}`;
-    return `<div class="qrow ${input.connected ? 'connected' : 'open'} ${input.need !== null && input.have < input.need ? 'missing' : ''}"><span>${label}</span><span>${amount}</span></div>`;
-  }).join('');
-  return `<div class="node-queue inq">${rows}</div>`;
-}
-
-function outputQueueHtml(view) {
-  if (!view.output) return '';
-  return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
-}
-
-function producerOutputHtml(view) {
-  const output = view.output;
-  if (!output) return '';
-  const fill = Math.floor((output.have / output.cap) * 100);
-  return `
-    <div class="producer-output ${output.connected ? 'connected' : 'open'} ${output.have >= output.cap ? 'full' : ''}">
-      <div class="producer-resource"><span>${itemIcon(output.res)}</span><span>${itemLabel(output.res)}</span></div>
-      <div class="producer-meter"><span style="width:${fill}%"></span></div>
-      <div class="producer-count">${output.have}/${output.cap}</div>
-    </div>`;
-}
-
-function marketQueueHtml(view) {
-  if (view.inventory.length) {
-    const rows = view.inventory.slice(0, 2).map(item => `<div class="qrow connected"><span>${itemIcon(item.res)}</span><span>${item.amount}/${item.cap}</span></div>`).join('');
-    return `<div class="market-queue"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div>${rows}<div class="market-sale">+${view.inventory[0].salePrice}g each</div></div>`;
-  }
-  const input = view.inputs[0];
-  return `<div class="market-queue empty"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Ready' : 'No link'}</span><span>0</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
-}
-
-function nodeBodyHtml(view) {
-  if (view.definition.kind === 'producer') {
-    return `
-      <div class="node-main producer-main">
-        ${producerOutputHtml(view)}
-      </div>`;
-  }
-  if (view.definition.kind === 'seller') {
-    return `
-      <div class="node-main seller-main">
-        <div class="node-core"><div class="b-ico">${view.icon}</div></div>
-        ${marketQueueHtml(view)}
-      </div>`;
-  }
-  return `
-    <div class="node-main">
-      ${inputQueueHtml(view)}
-      <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
-      ${outputQueueHtml(view)}
-    </div>`;
-}
-
-function statusLabel(status) {
-  return {
-    working: 'WORKING',
-    starved: 'WAITING',
-    blocked: 'BLOCKED',
-    idle: 'IDLE'
-  }[status] || status.toUpperCase();
-}
-
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
@@ -201,89 +137,6 @@ function nearbyInputPort(point, outRes, sourceId) {
   }
   return closest?.pos || point;
 }
-
-function renderBuildings() {
-  bl.innerHTML = '';
-  for (const [id, b] of state.buildings) {
-    const view = nodeViewState(b, state.connections, state.techs);
-    const d = view.definition;
-    const el = document.createElement('div');
-    el.className = `bld node--${d.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.status}`;
-    el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
-    const subtitle = d.kind === 'crafter' ? `<div class="node-subtitle">${view.recipeLabel}</div>` : '';
-    el.innerHTML = `
-      <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
-      ${subtitle}
-      ${nodeBodyHtml(view)}
-      <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (state.interaction.suppressNextGridClick) { state.interaction.suppressNextGridClick = false; return; }
-      state.selectedId = id; renderAll();
-    });
-    el.addEventListener('pointerdown', (e) => startMoveBuilding(e, id));
-    el.addEventListener('contextmenu', (e) => { e.preventDefault(); deleteBuilding(id); });
-
-    inputPorts(b).forEach((p, pi) => {
-      const pos = portPx(b, p);
-      const pe = document.createElement('div');
-      pe.className = 'port in'; pe.style.left = `${pos.x - b.gx * CELL}px`; pe.style.top = `${pos.y - b.gy * CELL}px`;
-      pe.dataset.bid = id; pe.dataset.pi = pi; pe.dataset.kind = 'in'; pe.title = p.acceptsAll ? 'Input: Any resource' : `Input: ${itemLabel(p.res)}`; pe.addEventListener('click', onPort);
-      el.appendChild(pe);
-    });
-    const out = outputPort(b);
-    if (out) {
-      const pos = portPx(b, out);
-      const pe = document.createElement('div');
-      pe.className = 'port out'; pe.style.left = `${pos.x - b.gx * CELL}px`; pe.style.top = `${pos.y - b.gy * CELL}px`;
-      pe.dataset.bid = id; pe.dataset.pi = 0; pe.dataset.kind = 'out'; pe.title = `Output: ${itemLabel(out.res)}`; pe.addEventListener('click', onPort);
-      el.appendChild(pe);
-    }
-    bl.appendChild(el);
-  }
-}
-
-function renderConnections() {
-  const temp = sl.querySelector('#tp');
-  sl.innerHTML = '';
-  if (temp) sl.appendChild(temp);
-  for (const cn of state.connections) {
-    const fb = state.buildings.get(cn.fb), tb = state.buildings.get(cn.tb);
-    if (!fb || !tb) continue;
-    const p1 = portPx(fb, outputPort(fb));
-    const p2 = portPx(tb, inputPorts(tb)[cn.tpi]);
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', bez(p1, p2));
-    path.setAttribute('class', `cpath ${connectionStatus(cn, state.buildings, state.techs)}`);
-    path.addEventListener('contextmenu', (e) => { e.preventDefault(); state.connections = state.connections.filter(c => c.id !== cn.id); renderAll(); toast('Connection deleted'); });
-    sl.appendChild(path);
-  }
-}
-
-function renderInspector() {
-  const b = state.buildings.get(state.selectedId);
-  if (!b) { inspectEmpty.classList.remove('hidden'); inspectContent.classList.add('hidden'); inspectContent.innerHTML = ''; return; }
-  const d = BUILDINGS[b.type];
-  const rec = activeRecipe(b);
-  inspectEmpty.classList.add('hidden'); inspectContent.classList.remove('hidden');
-  const isSeller = d.kind === 'seller';
-  const recipeField = isSeller ? '' : `<div class="field"><div class="field-title">Active Recipe</div><select id="recipeSelect" class="recipe-select">${Object.entries(d.recipes).map(([key, r]) => `<option value="${key}" ${b.recipe === key ? 'selected' : ''}>${r.label}</option>`).join('')}</select></div>`;
-  const inputPills = isSeller
-    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res, state.techs)} gold</span>`).join('')
-    : Object.entries(rec.inputs).map(([res, amt]) => `<span class="pill">${itemIcon(res)} ${amt} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
-  const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(rec.output.res)} ${rec.output.amount} ${itemLabel(rec.output.res)}`;
-  const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
-  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res, state.techs)}</span></div>`).join('');
-  inspectContent.innerHTML = `
-    <div class="field"><div class="field-title">${d.icon} ${d.label}</div><div class="field-sub">${d.desc}</div></div>
-    ${recipeField}
-    <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
-    <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
-    <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>`;
-  if (!isSeller) document.getElementById('recipeSelect').addEventListener('change', (e) => changeRecipe(state.selectedId, e.target.value));
-}
-
-function renderAll() { renderSidebar(); renderBuildings(); renderConnections(); renderInspector(); renderTechTree(); goldEl.textContent = `💰 ${state.gold} gold`; tstat.textContent = `t=${state.ticks}`; }
 
 function changeRecipe(id, recipe) {
   const b = state.buildings.get(id); if (!b) return;
@@ -443,6 +296,15 @@ function buyTech(key) {
   toast('Tech purchased');
 }
 
+function selectBuildingType(type, card) {
+  document.querySelectorAll('.bcard').forEach(item => item.classList.remove('sel'));
+  card.classList.add('sel');
+  if (state.mode === 'connecting') cancelConnection();
+  state.mode = 'placing';
+  state.placeType = type;
+  setHint(`Placing ${BUILDINGS[type].label} — click the grid · Esc to cancel`);
+}
+
 function expandGrid(extraCols, extraRows) {
   state.world.cols += extraCols;
   state.world.rows += extraRows;
@@ -539,30 +401,11 @@ gameEl.addEventListener('pointercancel', (e) => {
   gameEl.classList.remove('panning');
 });
 
-function renderSidebar() {
-  const cards = document.getElementById('buildingCards'); cards.innerHTML = '';
-  for (const [type, d] of Object.entries(BUILDINGS)) {
-    const card = document.createElement('div');
-    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < d.cost ? 'locked' : ''}`;
-    card.innerHTML = `<div class="bcard-n"><span>${d.icon} ${d.label}</span><span>${d.cost}g</span></div><div class="bcard-d">${d.desc}</div>`;
-    card.addEventListener('click', () => { document.querySelectorAll('.bcard').forEach(c => c.classList.remove('sel')); card.classList.add('sel'); if (state.mode === 'connecting') cancelConnection(); state.mode = 'placing'; state.placeType = type; setHint(`Placing ${d.label} — click the grid · Esc to cancel`); });
-    cards.appendChild(card);
-  }
-}
-
-function renderTechTree() {
-  const cards = document.getElementById('techCards'); cards.innerHTML = '';
-  for (const [key, tech] of Object.entries(state.techs)) {
-    const card = document.createElement('div');
-    card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
-    const canBuy = state.gold >= tech.cost && !tech.bought;
-    card.innerHTML = `
-      <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : `${tech.cost} gold`}</span></div>
-      <div class="tech-desc">${tech.desc}</div>
-      <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
-    card.querySelector('button').addEventListener('click', () => buyTech(key));
-    cards.appendChild(card);
-  }
-}
+renderContext = {
+  state,
+  ui,
+  geometry: { portPx, bez },
+  actions: { onPort, startMoveBuilding, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast }
+};
 
 applyWorldSize(); applyZoom(); applyPan(); drawBg(); renderAll(); setInterval(tick, 1000);

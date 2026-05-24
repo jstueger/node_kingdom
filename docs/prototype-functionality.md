@@ -448,5 +448,6 @@ Current source files:
 - `src/state.js`: centralized mutable game state, initial tech definitions, and grid creation.
 - `src/rules.js`: shared game-rule helpers for connection compatibility, connection status, storage capacity, recipe timing, and sale prices.
 - `src/simulation.js`: tick/update logic for production, selling, resource transfer, and simulation time.
+- `src/render.js`: DOM rendering for buildings, connections, inspector, sidebar, tech tree, and top-level UI state.
 - `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: rendering, persistence, input wiring, and the interval that calls the simulation update.
+- `src/main.js`: world/camera helpers, persistence, input wiring, and the interval that calls the simulation update.

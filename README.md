@@ -45,6 +45,7 @@ Use the Live Server extension and open `index.html`.
 - Building inspector
 - Recipe switching
 - Right-click sell for buildings and delete for connections
+- Drag placed buildings to move them
 - Save/load via browser localStorage
 - Starting gold and building placement costs
 - Toggleable tech tree window with simple upgrades
@@ -54,9 +55,9 @@ Use the Live Server extension and open `index.html`.
 1. Add unlocks.
 2. Add a proper research/contracts screen.
 3. Add clearer bottleneck summaries.
-4. Add building movement after placement.
-5. Add recipe categories and better balancing.
-6. Add persistent project save files beyond localStorage.
+4. Add recipe categories and better balancing.
+5. Add persistent project save files beyond localStorage.
+6. Add tests for rules and simulation behavior.
 
 ## File structure
 
@@ -65,11 +66,16 @@ node_kingdom/
 ├── index.html
 ├── styles.css
 ├── README.md
+├── .gitignore
 ├── docs/
-│   └── design-notes.md
+│   ├── design-notes.md
+│   └── prototype-functionality.md
 └── src/
     ├── data.js
+    ├── state.js
     ├── rules.js
+    ├── simulation.js
+    ├── render.js
     ├── view-models.js
     └── main.js
 ```
