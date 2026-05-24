@@ -1,18 +1,25 @@
 # Factory Node Prototype
 
-A small browser-based factory/city-builder prototype focused on free grid placement and direct output-to-input connectors.
+A small browser-based factory/city-builder prototype focused on free grid placement, node recipes, and direct output-to-input resource connectors.
 
-The key design rule is:
+The core rule is:
 
-> Every node has one active output, while crafters may require multiple inputs depending on the selected recipe.
+> Every recipe-based node has one active output at a time. Crafters may have multiple recipes, but only one recipe is active.
 
-## How to run
+Markets are the exception: they do not use recipes and sell any supported goods they receive.
+
+## Purpose Of This File
+
+This README is the project entry point. It explains how to run the prototype, what it currently is at a glance, and where to find the deeper documents.
+
+- `docs/prototype-functionality.md`: current behavior spec for the playable prototype.
+- `docs/design-notes.md`: design intent, constraints, and near-term product direction.
+
+## How To Run
 
 No build step is required.
 
 Because the project uses ES modules, open it through a local web server rather than by double-clicking `index.html`.
-
-### Option 1: Python
 
 ```bash
 cd node_kingdom
@@ -25,48 +32,27 @@ Then open:
 http://localhost:8000
 ```
 
-### Option 2: VS Code
+VS Code Live Server also works.
 
-Use the Live Server extension and open `index.html`.
+## Feature Snapshot
 
-## Current features
+- Grid placement by click or drag-and-drop from the building menu.
+- Movable placed buildings.
+- Producers, crafters, and markets.
+- In-node recipe switching for crafters.
+- One outgoing connection per output and one incoming connection per input.
+- Universal single-input Market that sells whatever supported goods it receives.
+- Resource storage, production timing, and smooth progress bars.
+- Toggleable tech tree with grid, storage, crafting, and market upgrades.
+- Save/load/reset through browser `localStorage`.
 
-- Free grid placement by click or drag-and-drop from the building menu
-- Different building sizes
-- Producers, crafters, and sellers
-- Recipe-dependent input ports
-- Recipe-less market with one universal input that sells any current resource it receives
-- One active output per node
-- Direct output-to-input connectors
-- Typed resource compatibility checks
-- Simple storage capacities
-- Connector status colors
-- Smooth animated production progress bars
-- Building inspector
-- In-node recipe switching for crafters
-- Right-click sell for buildings and delete for connections
-- Drag placed buildings to move them
-- Save/load via browser localStorage
-- Starting gold and building placement costs
-- Toggleable tech tree window with simple upgrades
-
-## Suggested next steps
-
-1. Add unlocks.
-2. Add a proper research/contracts screen.
-3. Add clearer bottleneck summaries.
-4. Add recipe categories and better balancing.
-5. Add persistent project save files beyond localStorage.
-6. Add tests for rules and simulation behavior.
-
-## File structure
+## Source Layout
 
 ```text
 node_kingdom/
 ├── index.html
 ├── styles.css
 ├── README.md
-├── .gitignore
 ├── docs/
 │   ├── design-notes.md
 │   └── prototype-functionality.md
@@ -83,3 +69,9 @@ node_kingdom/
     ├── view-models.js
     └── main.js
 ```
+
+## Development Notes
+
+The project intentionally stays dependency-free for now. The browser is the runtime, and the source files are loaded directly as ES modules.
+
+Good next engineering steps are adding tests for `rules.js`, `simulation.js`, and `world.js`, then continuing to split `input.js` only when interaction complexity makes that worthwhile.

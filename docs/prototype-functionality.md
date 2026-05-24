@@ -1,104 +1,78 @@
 # Prototype Functionality
 
-This document describes the current behavior of the Factory Node Prototype. It is intended to become the ongoing project record for what the prototype does now and what changes over time.
+This document is the current behavior spec for the playable prototype. Update it whenever player-facing behavior, simulation rules, UI controls, persistence, or known limitations change.
+
+For project setup, use `README.md`. For product intent and design principles, use `design-notes.md`.
 
 ## Core Concept
 
-The prototype is a browser-based factory and city-builder experiment built around free grid placement and direct resource connections.
+The prototype is a browser-based factory/city-builder experiment built around free grid placement and direct resource connections.
 
-The main design rule is:
+Players place buildings, connect compatible output ports to input ports, and let the simulation move resources through the resulting production graph.
+
+The main rule is:
 
 > Each recipe-based building has one active output at a time. Crafters may have multiple possible recipes, but only one recipe is active.
 
-Market buildings are the exception: they do not use recipes and instead sell any accepted goods they receive.
+Market buildings are sink nodes. They do not use recipes and instead sell supported goods they receive.
 
-Players place buildings on a fixed grid, connect compatible output ports to input ports, and let the simulation move resources through the resulting production graph.
+## Interface Layout
 
-## Running The Prototype
+The interface has five main areas:
 
-The project has no build step.
-
-Because it uses JavaScript ES modules, it should be served through a local web server instead of opened directly from the filesystem.
-
-Example:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then open:
-
-```text
-http://localhost:8000
-```
-
-## Layout
-
-The interface has three main areas:
-
-- Top bar: shows gold, simulation ticks, zoom controls, the Tech button, save/load/reset buttons, and the current hint.
-- Left sidebar: lists placeable buildings and port/connection states.
-- Center game area: contains the centered placement grid, buildings, ports, and connector paths.
-- Right inspector: shows details for the selected building.
-- Tech window: can be shown or hidden from the top bar.
+- Top bar: gold, simulation tick, zoom controls, Tech button, save/load/reset buttons, and current hint.
+- Left sidebar: placeable building cards with gold costs.
+- Center game area: centered grid, buildings, ports, placement preview, and connector paths.
+- Right inspector: selected-building details.
+- Tech window: toggleable upgrade window.
 
 ## Grid And Placement
 
-The world uses a fixed grid:
+The world starts as a 40 by 40 grid with 18 pixel cells.
 
-- Cell size: 18 pixels.
-- Starting columns: 40.
-- Starting rows: 40.
-- Starting play area: 720 by 720 pixels.
+Buildings are placed freely on this grid. Current producer and market buildings occupy 8 by 8 cells, while crafting buildings occupy 16 by 8 cells.
 
-Buildings are placed freely on this grid:
+Placement controls:
 
-- Select a building from the sidebar.
-- Click an empty grid location to place it.
-- After a successful placement, placement mode ends automatically.
-- Placement costs gold.
+- Click a building card, then click an empty valid grid location.
+- Drag a building card from the sidebar and drop it on the grid.
+- Press `Escape` to cancel click placement.
+
+Placement rules:
+
 - The player starts with 25 gold.
+- Placement costs gold.
 - Buildings cannot overlap.
 - Buildings cannot be placed outside the grid.
-- A building is not placed and no gold is spent if the target cell is occupied, out of bounds, or the player cannot afford the building.
-- Press `Escape` to cancel placement.
-- Right-click a building to sell it for half its original cost.
-- Drag an existing building to move it to another grid position.
+- If placement fails, no gold is spent.
+- Successful click placement automatically exits placement mode.
+- Successful drag placement immediately places the building on drop.
 
-Buildings may occupy different grid sizes. Current producer and market buildings occupy 8 by 8 cells, while crafting buildings occupy 16 by 8 cells.
+Drag placement shows a snapped placement ghost while over the grid. Valid targets are highlighted as valid; occupied, out-of-bounds, or unaffordable targets are invalid.
 
-The grid can be expanded through the tech tree.
+The playable grid has a golden frame attached to the grid container, so it grows when grid expansion upgrades increase the world size.
 
-The playable grid has a golden frame. The frame is attached to the grid container, so it grows when upgrades expand the grid.
+## Camera
 
-## Zooming
-
-The game area supports zooming.
+The game area supports zooming and panning.
 
 Zoom controls:
 
 - Click `-` in the top bar to zoom out.
 - Click `+` in the top bar to zoom in.
-- Use the mouse wheel over the game area to zoom.
+- Use the mouse wheel over the game area to zoom around the cursor.
 
-Current zoom is shown as a percentage in the top bar.
+Zoom range is 50% to 200%. Zoom scales the grid, buildings, ports, connection paths, and placement previews together.
 
-Zoom range:
+Panning:
 
-- Minimum: 50%.
-- Maximum: 200%.
-
-Zooming scales the grid, buildings, ports, and connection paths together. Mouse-wheel zoom anchors around the cursor. Placement and connection preview coordinates account for the current zoom level.
-
-## Panning
-
-The game area can be panned by holding the left mouse button and dragging on empty grid space.
-
-Panning uses a camera offset, so it works even when the grid is smaller than the visible game pane. Panning does not start from buildings or ports. During connection mode, mouse movement is reserved for the temporary connection preview.
+- Hold the left mouse button and drag on empty grid space.
+- Panning uses a camera offset, so it works even when the grid is smaller than the visible pane.
+- Panning does not start from buildings or ports.
 
 ## Buildings
 
-The current building types are:
+Current building types:
 
 - Iron Mine: produces iron ore.
 - Coal Mine: produces coal.
@@ -110,42 +84,15 @@ The current building types are:
 
 Each building has:
 
-- A label and icon.
-- A type-specific grid size.
-- A description.
-- A gold cost.
-- A building kind: producer, crafter, or seller.
-- One or more recipes, except for Markets.
-- Resource storage capacities.
-- A production progress timer.
-- An inventory.
-
-Market buildings do not have recipes. They have accepted goods and sell prices instead.
-
-## Node Display
-
-Placed buildings show compact operational state directly on the grid.
-
-Current node display:
-
-- Header with building identity and current status; producers and markets use a compact status dot.
-- Current recipe below the header for crafters.
-- Building icon in the center for crafters and markets.
-- Input queue rows on the left for crafters.
-- Output queue row on the right for crafters.
-- Inventory summary in the center for crafters.
-- Production progress at the bottom.
-- Border color for working, waiting, blocked, or idle state.
-
-Nodes also receive display classes for their type: `node--producer`, `node--crafter`, or `node--seller`.
-
-Producer nodes use a special compact layout with no recipe subtitle. They emphasize the produced resource, exact stored amount, capacity, and a compact output meter.
-
-Market nodes use a special sink layout that emphasizes selling goods into gold, current stocked goods, and sale value without recipe-like labels.
-
-## Building Costs
-
-Building cards show their gold cost in the left sidebar.
+- label and icon
+- grid size
+- description
+- gold cost
+- kind: producer, crafter, or seller
+- inventory
+- storage capacities
+- production timer
+- recipes, except for Markets
 
 Current placement costs:
 
@@ -157,104 +104,121 @@ Current placement costs:
 - Blacksmith: 18 gold.
 - Market: 5 gold.
 
-Unaffordable building cards are dimmed. They can still be selected, but placement fails until the player has enough gold.
+Unaffordable building cards are dimmed. They can still be selected or dragged, but placement fails until the player has enough gold.
 
-## Items
+## Node Display
 
-The current resource items are:
+Placed buildings show operational state directly on the grid.
 
-- Iron Ore.
-- Iron Bar.
-- Wood.
-- Plank.
-- Coal.
-- Steel Bar.
-- Sword.
+All nodes show:
 
-Gold is treated as an abstract currency sink rather than a physical item that can be transported through ports.
+- building identity
+- current status
+- production progress at the bottom, when applicable
+- border/status styling for working, waiting, blocked, or idle state
+
+Crafter nodes show:
+
+- in-node recipe switching controls
+- current active recipe label
+- input queue rows
+- output queue row
+- inventory summary
+
+Producer nodes use a compact output-focused layout with produced resource, stored amount, capacity, and output meter.
+
+Market nodes use a sink-focused layout that emphasizes selling goods into gold, stocked goods, and sale value.
 
 ## Recipes
 
-Most buildings have one active recipe.
-
 The active recipe determines:
 
-- Which input ports are displayed.
-- Which input resources are required.
-- Which single output is produced.
-- How long production takes.
-- Which output port is displayed, if any.
+- visible input ports
+- required input resources
+- visible output port
+- produced output resource
+- production duration
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts all sellable goods at the same time and sells stocked goods for gold automatically.
+Markets do not use recipes. A Market accepts sellable goods through one universal input and automatically sells stocked goods for gold.
 
-Changing a building recipe:
+Changing a crafter recipe:
 
-- Updates the visible ports.
-- Resets the building production timer.
-- Deletes all existing connections to and from that building.
+- is done with the controls inside the node
+- updates visible ports
+- resets the building production timer
+- deletes all existing connections to and from that building
 
-Connections are removed on recipe change because the old ports may no longer exist or may no longer accept the same resources.
+Connections are removed on recipe change because old ports may no longer exist or may no longer accept the same resources.
 
-## Ports
+## Ports And Connections
 
 Recipe-based buildings expose ports based on their active recipe.
 
-Markets expose one universal input port that accepts every current resource.
-
 Input ports:
 
-- Appear on the left side of a building.
-- Are shown only for resources required by the active recipe.
-- Are resource-specific.
-- Accept at most one incoming connection.
+- appear on the left side
+- are resource-specific for recipe buildings
+- accept at most one incoming connection
 
-The Market input port is not resource-specific and replaces recipe requirements. It still accepts only one incoming connection.
+The Market exposes one universal input port that accepts every current sellable resource, but it still accepts only one incoming connection.
 
 Output ports:
 
-- Appear on the right side of a building.
-- Represent the active recipe output.
-- Are resource-specific.
-- May feed one compatible input port.
-- Are not shown for Markets.
-
-The Market has inputs but no output port because gold is not transported as a physical resource.
-
-## Connections
-
-Connections move resources directly from one building output to another building input.
+- appear on the right side
+- represent the active recipe output
+- are resource-specific
+- may feed one compatible input port
+- are not shown for Markets
 
 To create a connection:
 
-- Click a green output port.
-- Click a compatible blue input port.
-- Press `Escape` to cancel while connecting.
+1. Click a green output port.
+2. Click a compatible blue input port.
+3. Press `Escape` to cancel while connecting.
 
 Connection rules:
 
 - A building cannot connect to itself.
-- Output and input resources must match.
+- Output and input resources must match unless the input accepts any resource.
 - Each input port accepts only one connection.
-- The Market's universal input accepts any resource, but still follows the one-connection input rule.
 - Each output port accepts only one outgoing connection.
 - Connecting an already-connected output to a different valid input rewires that output to the new input.
 - Right-click a connection to delete it.
 
-While creating a connection, a temporary dashed path follows the pointer from the selected output port.
+While creating a connection, a temporary dashed path follows the pointer from the selected output port. When the pointer gets close to a compatible input port, the temporary path snaps to that port's center.
 
-When the pointer gets close to a compatible input port, the temporary connection path snaps to that port's center. Port click targets are larger than the visible circles to make connection targeting more forgiving.
-
-## Connection Status
-
-Connections are drawn with status colors:
+Connection status colors:
 
 - Flowing: source has the resource and target has capacity.
 - Starved: source does not currently have the output resource.
 - Blocked: target storage is full, ports are invalid, or resource types no longer match.
 
 Each connection can move one unit of its resource per simulation tick.
+
+## Movement, Selling, And Deletion
+
+Placed buildings can be moved by dragging them.
+
+Movement behavior:
+
+- Buildings snap to the grid while dragged.
+- Existing connections remain attached while a building moves.
+- If the destination is occupied or invalid, the building snaps back to its original position.
+- Moving a building does not cost gold.
+
+Right-click a building to sell it.
+
+Selling a building:
+
+- frees its occupied grid cells
+- removes the building
+- deletes all connections to and from that building
+- clears selection if the sold building was selected
+- refunds half of the building's original placement cost, rounded down
+
+Right-click a connection to delete it.
 
 ## Tech Tree
 
@@ -265,13 +229,7 @@ Tech controls:
 - Click `Tech` in the top bar to show or hide the tech window.
 - Click `Hide` in the tech window to close it.
 
-Each tech can currently be bought once. Buying a tech:
-
-- Spends the required gold.
-- Marks the tech as purchased.
-- Applies that tech's upgrade effect.
-
-The tech buy button is disabled while the player does not have enough gold or after the tech has already been purchased.
+Each tech can currently be bought once. Buying a tech spends gold, marks the tech as purchased, and applies its effect.
 
 Current techs:
 
@@ -296,9 +254,11 @@ On each tick:
 6. Completed recipes consume their inputs.
 7. Completed recipes create their output resource.
 8. Resource transfer runs across all connections.
-9. The interface re-renders.
+9. The world and topbar re-render.
 
 If a building cannot produce, its production timer resets to zero.
+
+Production progress bars are visually interpolated between simulation ticks for smoother display. The interpolation does not change simulation timing.
 
 ## Inventory And Capacity
 
@@ -318,58 +278,32 @@ Selecting a building opens its details in the inspector.
 
 The inspector shows:
 
-- Building name and description.
-- Active recipe selector for recipe-based buildings.
-- Current recipe inputs or accepted Market goods.
-- Current recipe output or Market sale behavior.
-- Current inventory and capacity for known resources.
+- building name and description
+- current recipe inputs or accepted Market goods
+- current recipe output or Market sale behavior
+- current inventory and capacity for known resources
 
-Recipe changes are made from the inspector.
+Recipe changes are made directly on crafter nodes, not in the inspector.
 
-## Save And Load
+## Save, Load, And Reset
 
 The prototype supports browser `localStorage` persistence.
 
 The saved payload includes:
 
-- Next building/connection id.
-- Gold.
-- Tick count.
-- Current grid size.
-- Purchased tech state.
-- Buildings.
-- Connections.
+- next building/connection id
+- gold
+- tick count
+- current grid size
+- purchased tech state
+- buildings
+- connections
 
 The Save button writes the current state to `localStorage`.
 
 The Load button restores the saved state, rebuilds the occupancy grid, and re-renders the interface.
 
-The Reset button clears the current world after confirmation.
-
-## Selling And Deletion
-
-Buildings can be sold with right-click.
-
-Selling a building:
-
-- Frees its occupied grid cells.
-- Removes the building.
-- Deletes all connections to and from that building.
-- Clears selection if the sold building was selected.
-- Refunds half of the building's original placement cost, rounded down.
-
-Connections can also be deleted directly with right-click.
-
-## Movement
-
-Placed buildings can be moved by dragging them.
-
-Movement behavior:
-
-- Buildings snap to the grid while being dragged.
-- Existing connections remain attached while a building moves.
-- If the destination is occupied or invalid, the building snaps back to its original position.
-- Moving a building does not cost gold.
+The Reset button clears the current world after confirmation. Reset also clears transient interaction state, resets zoom and pan, resets the progress clock, and redraws the world.
 
 ## Current Building Recipes
 
@@ -401,7 +335,7 @@ Movement behavior:
 
 ### Market
 
-The Market has no recipes. It accepts all current resources at once and automatically sells one stocked good per tick.
+The Market has no recipes. It accepts all current resources through one universal input and automatically sells one stocked good per tick.
 
 Current sell prices:
 
@@ -417,41 +351,12 @@ Current sell prices:
 
 The current prototype does not include:
 
-- Multi-step unlocks or research dependencies.
-- Contracts or goals.
-- Pathfinding, roads, belts, pipes, or transport infrastructure.
-- Save files outside browser `localStorage`.
-- Production speed controls.
-- Pause/resume controls.
-- Detailed bottleneck reports.
-- Undo/redo.
-- Mobile-specific interaction handling.
-
-## Documentation Practice
-
-Going forward, this file should be updated whenever prototype behavior changes.
-
-Useful additions include:
-
-- New buildings and recipes.
-- Changed production rules.
-- Changed connection rules.
-- UI control changes.
-- Persistence format changes.
-- Known limitations that become intentional design decisions.
-
-## Code Organization
-
-Current source files:
-
-- `src/data.js`: static building, item, recipe, port, and capacity definitions.
-- `src/state.js`: centralized mutable game state, initial tech definitions, and grid creation.
-- `src/rules.js`: shared game-rule helpers for connection compatibility, connection status, storage capacity, recipe timing, and sale prices.
-- `src/simulation.js`: tick/update logic for production, selling, resource transfer, and simulation time.
-- `src/render.js`: DOM rendering for buildings, connections, inspector, sidebar, tech tree, and top-level UI state.
-- `src/world.js`: world dimensions, grid occupancy helpers, background drawing, port positioning, and connection path geometry.
-- `src/camera.js`: zoom, pan, and screen-to-world coordinate helpers.
-- `src/save.js`: browser `localStorage` save/load/reset behavior and save-state reconstruction.
-- `src/input.js`: DOM event wiring and controller actions for placement, connections, movement, tech purchases, camera gestures, and persistence buttons.
-- `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: application bootstrap, shared context creation, and the interval that calls the simulation update.
+- multi-step unlock dependencies
+- contracts or goals
+- pathfinding, roads, belts, pipes, or transport infrastructure
+- save files outside browser `localStorage`
+- production speed controls
+- pause/resume controls
+- detailed bottleneck reports
+- undo/redo
+- mobile-specific interaction design
