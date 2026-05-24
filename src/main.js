@@ -176,6 +176,22 @@ function outputQueueHtml(view) {
   return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
 }
 
+function nodeBodyHtml(view) {
+  if (view.definition.kind === 'producer') {
+    return `
+      <div class="node-main producer-main">
+        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
+        ${outputQueueHtml(view)}
+      </div>`;
+  }
+  return `
+    <div class="node-main">
+      ${inputQueueHtml(view)}
+      <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
+      ${outputQueueHtml(view)}
+    </div>`;
+}
+
 function statusLabel(status) {
   return {
     working: 'WORKING',
@@ -211,11 +227,7 @@ function renderBuildings() {
     el.innerHTML = `
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
       <div class="node-subtitle">${view.recipeLabel}</div>
-      <div class="node-main">
-        ${inputQueueHtml(view)}
-        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
-        ${outputQueueHtml(view)}
-      </div>
+      ${nodeBodyHtml(view)}
       <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (e) => {
       e.stopPropagation();

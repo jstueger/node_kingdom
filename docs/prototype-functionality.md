@@ -139,6 +139,8 @@ Current node display:
 
 Nodes also receive display classes for their type: `node--producer`, `node--crafter`, or `node--seller`.
 
+Producer nodes use a special compact layout with no input column and a more prominent output queue.
+
 ## Building Costs
 
 Building cards show their gold cost in the left sidebar.
