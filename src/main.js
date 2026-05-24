@@ -36,6 +36,12 @@ function toast(message) {
 const context = {
   state,
   ui,
+
+  geometry: {
+    portPx,
+    bez
+  },
+
   applyWorldSize: () => applyWorldSize(state, ui),
   applyZoom: () => applyZoom(state, ui),
   applyPan: () => applyPan(state, ui),
@@ -45,8 +51,7 @@ const context = {
   gridFree: (gx, gy, w, h) => gridFree(state, gx, gy, w, h),
   gridSet: (gx, gy, w, h, value) => gridSet(state, gx, gy, w, h, value),
   clampGridPos: (gx, gy, w, h) => clampGridPos(state, gx, gy, w, h),
-  portPx,
-  bez,
+
   renderAll: () => renderAll(context),
   renderBuildings: () => renderBuildings(context),
   renderConnections: () => renderConnections(context),
