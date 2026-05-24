@@ -2,7 +2,7 @@ import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from 
 import { inputAccepts, inputAlreadyConnected } from './rules.js';
 
 export function setupInput(context) {
-  const { state, ui } = context;
+  const { state, ui, geometry } = context;
 
   function nearbyInputPort(point, outRes, sourceId) {
     let closest = null;
@@ -11,7 +11,7 @@ export function setupInput(context) {
       if (id === sourceId) continue;
       inputPorts(building).forEach((port, portIndex) => {
         if (!inputAccepts(port, outRes) || inputAlreadyConnected(state.connections, id, portIndex)) return;
-        const pos = context.portPx(building, port);
+        const pos = geometry.portPx(building, port);
         const dist = Math.hypot(pos.x - point.x, pos.y - point.y);
         if (dist <= snapDistance && (!closest || dist < closest.dist)) closest = { pos, dist };
       });
@@ -208,10 +208,10 @@ export function setupInput(context) {
     if (!fromBuilding) return;
     const output = outputPort(fromBuilding);
     if (!output) return;
-    const p1 = context.portPx(fromBuilding, output);
+    const p1 = geometry.portPx(fromBuilding, output);
     const p2 = nearbyInputPort(context.localPoint(event), output.res, state.connFrom.bid);
     ensureTempPath();
-    ui.sl.querySelector('#tp').setAttribute('d', context.bez(p1, p2));
+    ui.sl.querySelector('#tp').setAttribute('d', geometry.bez(p1, p2));
   });
 
   ui.gc.addEventListener('click', (event) => {
@@ -284,7 +284,7 @@ export function setupInput(context) {
   }, { passive: false });
 
   ui.gameEl.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0 || state.mode === 'connecting' || !isGridDragTarget(event.target)) return;
+    if (event.button !== 0 || state.mode !== 'idle' || !isGridDragTarget(event.target)) return;
     state.interaction.pan = {
       id: event.pointerId,
       x: event.clientX,
