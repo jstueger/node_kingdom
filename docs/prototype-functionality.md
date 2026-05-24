@@ -122,6 +122,20 @@ Each building has:
 
 Market buildings do not have recipes. They have accepted goods and sell prices instead.
 
+## Node Display
+
+Placed buildings show compact operational state directly on the grid.
+
+Current node display:
+
+- Current recipe or behavior at the top.
+- Building icon and name in the center.
+- Input queue rows on the left.
+- Output queue row on the right.
+- Inventory summary in the center.
+- Production progress at the bottom.
+- Border color for working, waiting, blocked, or idle state.
+
 ## Building Costs
 
 Building cards show their gold cost in the left sidebar.

@@ -161,6 +161,21 @@ function inventoryText(view) {
   return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
 }
 
+function inputQueueHtml(view) {
+  if (!view.inputs.length) return '';
+  const rows = view.inputs.map(input => {
+    const label = input.acceptsAll ? 'Any' : itemIcon(input.res);
+    const amount = input.need === null ? input.have : `${input.have}/${input.need}`;
+    return `<div class="qrow ${input.connected ? 'connected' : 'open'} ${input.need !== null && input.have < input.need ? 'missing' : ''}"><span>${label}</span><span>${amount}</span></div>`;
+  }).join('');
+  return `<div class="node-queue inq">${rows}</div>`;
+}
+
+function outputQueueHtml(view) {
+  if (!view.output) return '';
+  return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
+}
+
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
@@ -184,7 +199,14 @@ function renderBuildings() {
     const el = document.createElement('div');
     el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
-    el.innerHTML = `<div class="b-ico">${view.icon}</div><div class="b-nm">${view.label}</div><div class="b-rec">${view.recipeLabel}</div><div class="b-iv">${inventoryText(view)}</div><div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
+    el.innerHTML = `
+      <div class="node-title">${view.recipeLabel}</div>
+      <div class="node-main">
+        ${inputQueueHtml(view)}
+        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-nm">${view.label}</div><div class="b-iv">${inventoryText(view)}</div></div>
+        ${outputQueueHtml(view)}
+      </div>
+      <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       if (suppressNextGridClick) { suppressNextGridClick = false; return; }
