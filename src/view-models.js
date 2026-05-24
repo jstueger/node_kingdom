@@ -1,5 +1,5 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { inputAlreadyConnected, recipeTimeFor, storageCapFor } from './rules.js';
+import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function nodeViewState(building, connections, techs) {
   const definition = BUILDINGS[building.type];
@@ -43,7 +43,12 @@ export function nodeViewState(building, connections, techs) {
     output: outputView,
     inventory: Object.entries(building.inv)
       .filter(([, amount]) => amount > 0)
-      .map(([res, amount]) => ({ res, amount }))
+      .map(([res, amount]) => ({
+        res,
+        amount,
+        cap: storageCapFor(building, res, techs),
+        salePrice: salePriceFor(building.type, res, techs)
+      }))
   };
 }
 

@@ -141,6 +141,8 @@ Nodes also receive display classes for their type: `node--producer`, `node--craf
 
 Producer nodes use a special compact layout with no input column and a more prominent output queue.
 
+Market nodes use a special sink layout that emphasizes their single input queue, current stocked goods, and sale value.
+
 ## Building Costs
 
 Building cards show their gold cost in the left sidebar.

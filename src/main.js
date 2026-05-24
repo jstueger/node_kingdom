@@ -176,12 +176,28 @@ function outputQueueHtml(view) {
   return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
 }
 
+function marketQueueHtml(view) {
+  if (view.inventory.length) {
+    const rows = view.inventory.slice(0, 2).map(item => `<div class="qrow connected"><span>${itemIcon(item.res)}</span><span>${item.amount}/${item.cap}</span></div>`).join('');
+    return `<div class="market-queue"><div class="market-label">Input Queue</div>${rows}<div class="market-sale">+${view.inventory[0].salePrice}g each</div></div>`;
+  }
+  const input = view.inputs[0];
+  return `<div class="market-queue empty"><div class="market-label">Input Queue</div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Empty' : 'No link'}</span><span>${input?.connected ? '0' : '--'}</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
+}
+
 function nodeBodyHtml(view) {
   if (view.definition.kind === 'producer') {
     return `
       <div class="node-main producer-main">
         <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
         ${outputQueueHtml(view)}
+      </div>`;
+  }
+  if (view.definition.kind === 'seller') {
+    return `
+      <div class="node-main seller-main">
+        <div class="node-core"><div class="b-ico">${view.icon}</div></div>
+        ${marketQueueHtml(view)}
       </div>`;
   }
   return `
