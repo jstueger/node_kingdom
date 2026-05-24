@@ -18,8 +18,10 @@ export const ITEMS = {
 export const BUILDINGS = {
   iron_mine: {
     label: 'Iron Mine', icon: '⛏️', color: '#141c30', w: 1, h: 1,
-    desc: 'Produces iron ore.', cost: 5, capacity: { iron_ore: 12 },
+    desc: 'Produces iron ore.',
     kind: 'producer',
+    cost: 5,
+    capacity: { iron_ore: 12 },
     recipes: {
       iron_ore: {
         label: 'Mine Iron Ore',
@@ -31,8 +33,10 @@ export const BUILDINGS = {
   },
   coal_mine: {
     label: 'Coal Mine', icon: '⚫', color: '#171717', w: 1, h: 1,
-    desc: 'Produces coal.', cost: 5, capacity: { coal: 12 },
+    desc: 'Produces coal.',
     kind: 'producer',
+    cost: 5,
+    capacity: { coal: 12 },
     recipes: {
       coal: {
         label: 'Mine Coal',
@@ -44,8 +48,10 @@ export const BUILDINGS = {
   },
   lumber: {
     label: 'Lumber Camp', icon: '🌲', color: '#0c1c08', w: 1, h: 1,
-    desc: 'Produces wood.', cost: 5, capacity: { wood: 12 },
+    desc: 'Produces wood.',
     kind: 'producer',
+    cost: 5,
+    capacity: { wood: 12 },
     recipes: {
       wood: {
         label: 'Cut Wood',
@@ -58,7 +64,9 @@ export const BUILDINGS = {
   forge: {
     label: 'Forge', icon: '🔥', color: '#281208', w: 2, h: 1,
     desc: 'Configurable crafter with one active output.',
-    kind: 'crafter', cost: 12, capacity: { iron_ore: 9, coal: 8, wood: 6, iron_bar: 8, steel_bar: 6 },
+    kind: 'crafter',
+    cost: 12,
+    capacity: { iron_ore: 9, coal: 8, wood: 6, iron_bar: 8, steel_bar: 6 },
     recipes: {
       iron_bar_charcoal: {
         label: 'Iron Bar',
@@ -77,7 +85,9 @@ export const BUILDINGS = {
   sawmill: {
     label: 'Sawmill', icon: '🪚', color: '#1c1008', w: 2, h: 1,
     desc: 'Turns wood into planks.',
-    kind: 'crafter', cost: 10, capacity: { wood: 8, plank: 8 },
+    kind: 'crafter',
+    cost: 10,
+    capacity: { wood: 8, plank: 8 },
     recipes: {
       plank: {
         label: 'Plank',
@@ -90,7 +100,9 @@ export const BUILDINGS = {
   blacksmith: {
     label: 'Blacksmith', icon: '⚒️', color: '#201018', w: 2, h: 1,
     desc: 'Crafts finished goods from bars and planks.',
-    kind: 'crafter', cost: 18, capacity: { iron_bar: 6, steel_bar: 5, plank: 6, sword: 4 },
+    kind: 'crafter',
+    cost: 18,
+    capacity: { iron_bar: 6, steel_bar: 5, plank: 6, sword: 4 },
     recipes: {
       sword: {
         label: 'Sword',
@@ -109,7 +121,8 @@ export const BUILDINGS = {
   market: {
     label: 'Market', icon: '🏪', color: '#081c0c', w: 1, h: 1,
     desc: 'Automatically sells any goods it receives.',
-    kind: 'seller', cost: 5,
+    kind: 'seller',
+    cost: 5,
     capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },
     sellPrices: {
       iron_ore: 1,

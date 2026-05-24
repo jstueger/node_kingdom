@@ -69,6 +69,8 @@ Buildings may occupy different grid sizes. Current producer and market buildings
 
 The grid can be expanded through the tech tree.
 
+The playable grid has a golden frame. The frame is attached to the grid container, so it grows when upgrades expand the grid.
+
 ## Zooming
 
 The game area supports zooming.
@@ -194,7 +196,7 @@ Output ports:
 - Appear on the right side of a building.
 - Represent the active recipe output.
 - Are resource-specific.
-- May feed multiple compatible input ports.
+- May feed one compatible input port.
 - Are not shown for Markets.
 
 The Market has inputs but no output port because gold is not transported as a physical resource.
@@ -215,7 +217,8 @@ Connection rules:
 - Output and input resources must match.
 - Each input port accepts only one connection.
 - The Market's universal input is the exception: any resource may connect to it, and multiple outputs may feed it.
-- One output port may feed multiple compatible inputs.
+- Each output port accepts only one outgoing connection.
+- Connecting an already-connected output to a different valid input rewires that output to the new input.
 - Right-click a connection to delete it.
 
 While creating a connection, a temporary dashed path follows the pointer from the selected output port.

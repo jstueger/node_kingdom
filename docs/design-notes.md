@@ -23,7 +23,7 @@ Markets do not use recipes. A market exposes one universal input for all current
 - Transport infrastructure is abstracted away.
 - Resources move through direct output-to-input connectors.
 - A connector transports one unit per tick.
-- Output ports may feed multiple compatible inputs.
+- Each output port may feed one input.
 - Each input port accepts one connection.
 - Recipe changes reset the building's connections because ports may have changed.
 - Inventories have simple capacity limits.

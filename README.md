@@ -15,7 +15,7 @@ Because the project uses ES modules, open it through a local web server rather t
 ### Option 1: Python
 
 ```bash
-cd factory-node-prototype
+cd node_kingdom
 python3 -m http.server 8000
 ```
 

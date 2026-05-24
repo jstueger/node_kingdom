@@ -171,6 +171,10 @@ function inputAlreadyConnected(buildingId, portIndex, port) {
   return !port.acceptsAll && conns.some(c => c.tb === buildingId && c.tpi === portIndex);
 }
 
+function outputAlreadyConnected(buildingId) {
+  return conns.some(c => c.fb === buildingId);
+}
+
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
@@ -316,7 +320,7 @@ function onPort(e) {
     if (!op || !ip) return failConnect('Missing port');
     if (!inputAccepts(ip, op.res)) return failConnect(`${itemLabel(op.res)} does not match ${itemLabel(ip.res)}`);
     if (inputAlreadyConnected(bid, pi, ip)) return failConnect('Input already connected');
-    // Intentional design rule: one active output per node, but it may feed multiple compatible inputs.
+    conns = conns.filter(c => c.fb !== connFrom.bid);
     conns.push({ id: nextId++, fb: connFrom.bid, tb: bid, tpi: pi });
     cancelConnection(); renderAll(); setHint('Connected. Click another green output to connect more.'); return;
   }
