@@ -419,3 +419,11 @@ Useful additions include:
 - UI control changes.
 - Persistence format changes.
 - Known limitations that become intentional design decisions.
+
+## Code Organization
+
+Current source files:
+
+- `src/data.js`: static building, item, recipe, port, and capacity definitions.
+- `src/rules.js`: shared game-rule helpers for connection compatibility, connection status, storage capacity, recipe timing, and sale prices.
+- `src/main.js`: current application state, rendering, simulation loop, persistence, and input wiring.

@@ -1,4 +1,5 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, capFor, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, activeRecipe, firstRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
+import { connectionStatus, inputAccepts, inputAlreadyConnected, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
 
 let nextId = 1;
 let gold = STARTING_GOLD;
@@ -159,45 +160,19 @@ function inventoryText(b) {
   return Object.entries(b.inv).filter(([, v]) => v > 0).map(([k, v]) => `${itemIcon(k)}${v}`).join(' ');
 }
 
-function inputAccepts(ip, res) {
-  return Boolean(ip && (ip.acceptsAll || ip.res === res));
-}
-
-function inputResourceForStorage(ip, outRes) {
-  return ip.acceptsAll ? outRes : ip.res;
-}
-
-function inputAlreadyConnected(buildingId, portIndex) {
-  return conns.some(c => c.tb === buildingId && c.tpi === portIndex);
-}
-
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
   for (const [id, b] of blds) {
     if (id === sourceId) continue;
     inputPorts(b).forEach((port, pi) => {
-      if (!inputAccepts(port, outRes) || inputAlreadyConnected(id, pi)) return;
+      if (!inputAccepts(port, outRes) || inputAlreadyConnected(conns, id, pi)) return;
       const pos = portPx(b, port);
       const dist = Math.hypot(pos.x - point.x, pos.y - point.y);
       if (dist <= snapDistance && (!closest || dist < closest.dist)) closest = { pos, dist };
     });
   }
   return closest?.pos || point;
-}
-
-function storageCapFor(building, res) {
-  return capFor(building, res) + (techs.storage_bins.bought ? 5 : 0);
-}
-
-function recipeTimeFor(building, recipe) {
-  if (BUILDINGS[building.type].kind !== 'crafter') return recipe.time;
-  return Math.max(1, recipe.time - (techs.workshop_tuning.bought ? 1 : 0));
-}
-
-function salePriceFor(type, res) {
-  const base = BUILDINGS[type].sellPrices?.[res] || 0;
-  return Math.floor(base * (techs.market_bargaining.bought ? 1.25 : 1));
 }
 
 function renderBuildings() {
@@ -208,7 +183,7 @@ function renderBuildings() {
     const el = document.createElement('div');
     el.className = `bld ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
-    const pct = rec ? Math.min(100, Math.floor(((b.ptimer || 0) / recipeTimeFor(b, rec)) * 100)) : 0;
+    const pct = rec ? Math.min(100, Math.floor(((b.ptimer || 0) / recipeTimeFor(b, rec, techs)) * 100)) : 0;
     const statusLabel = rec ? rec.label : 'Auto Sell';
     el.innerHTML = `<div class="b-ico">${d.icon}</div><div class="b-nm">${d.label}</div><div class="b-rec">${statusLabel}</div><div class="b-iv">${inventoryText(b)}</div><div class="prog"><span style="width:${pct}%"></span></div>`;
     el.addEventListener('click', (e) => {
@@ -238,18 +213,6 @@ function renderBuildings() {
   }
 }
 
-function connectionStatus(cn) {
-  const fb = blds.get(cn.fb), tb = blds.get(cn.tb);
-  if (!fb || !tb) return 'blocked';
-  const out = outputPort(fb);
-  const ip = inputPorts(tb)[cn.tpi];
-  if (!out || !inputAccepts(ip, out.res)) return 'blocked';
-  const targetRes = inputResourceForStorage(ip, out.res);
-  if ((tb.inv[targetRes] || 0) >= storageCapFor(tb, targetRes)) return 'blocked';
-  if ((fb.inv[out.res] || 0) <= 0) return 'starved';
-  return 'flowing';
-}
-
 function renderConnections() {
   const temp = sl.querySelector('#tp');
   sl.innerHTML = '';
@@ -261,7 +224,7 @@ function renderConnections() {
     const p2 = portPx(tb, inputPorts(tb)[cn.tpi]);
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', bez(p1, p2));
-    path.setAttribute('class', `cpath ${connectionStatus(cn)}`);
+    path.setAttribute('class', `cpath ${connectionStatus(cn, blds, techs)}`);
     path.addEventListener('contextmenu', (e) => { e.preventDefault(); conns = conns.filter(c => c.id !== cn.id); renderAll(); toast('Connection deleted'); });
     sl.appendChild(path);
   }
@@ -276,11 +239,11 @@ function renderInspector() {
   const isSeller = d.kind === 'seller';
   const recipeField = isSeller ? '' : `<div class="field"><div class="field-title">Active Recipe</div><select id="recipeSelect" class="recipe-select">${Object.entries(d.recipes).map(([key, r]) => `<option value="${key}" ${b.recipe === key ? 'selected' : ''}>${r.label}</option>`).join('')}</select></div>`;
   const inputPills = isSeller
-    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res)} gold</span>`).join('')
+    ? Object.keys(d.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(b.type, res, techs)} gold</span>`).join('')
     : Object.entries(rec.inputs).map(([res, amt]) => `<span class="pill">${itemIcon(res)} ${amt} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
   const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(rec.output.res)} ${rec.output.amount} ${itemLabel(rec.output.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
-  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res)}</span></div>`).join('');
+  const invRows = Object.keys({ ...d.capacity, ...b.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${b.inv[res] || 0}/${storageCapFor(b, res, techs)}</span></div>`).join('');
   inspectContent.innerHTML = `
     <div class="field"><div class="field-title">${d.icon} ${d.label}</div><div class="field-sub">${d.desc}</div></div>
     ${recipeField}
@@ -315,7 +278,7 @@ function onPort(e) {
     const op = outputPort(fb), ip = inputPorts(tb)[pi];
     if (!op || !ip) return failConnect('Missing port');
     if (!inputAccepts(ip, op.res)) return failConnect(`${itemLabel(op.res)} does not match ${itemLabel(ip.res)}`);
-    if (inputAlreadyConnected(bid, pi)) return failConnect('Input already connected');
+    if (inputAlreadyConnected(conns, bid, pi)) return failConnect('Input already connected');
     conns = conns.filter(c => c.fb !== connFrom.bid);
     conns.push({ id: nextId++, fb: connFrom.bid, tb: bid, tpi: pi });
     cancelConnection(); renderAll(); setHint('Connected. Click another green output to connect more.'); return;
@@ -442,7 +405,7 @@ function canProduce(b) {
   if (BUILDINGS[b.type].kind === 'seller') return canSell(b);
   const rec = activeRecipe(b);
   for (const [res, amt] of Object.entries(rec.inputs)) if ((b.inv[res] || 0) < amt) return false;
-  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res)) return false;
+  if (rec.output.res !== 'gold' && (b.inv[rec.output.res] || 0) + rec.output.amount > storageCapFor(b, rec.output.res, techs)) return false;
   return true;
 }
 
@@ -464,7 +427,7 @@ function sellGoods(b) {
   const res = Object.keys(prices).find(key => (b.inv[key] || 0) > 0);
   if (!res) return;
   b.inv[res]--;
-  gold += salePriceFor(b.type, res);
+  gold += salePriceFor(b.type, res, techs);
 }
 
 function transferResources() {
@@ -475,7 +438,7 @@ function transferResources() {
     if (!out || !inputAccepts(ip, out.res)) continue;
     const res = out.res;
     const targetRes = inputResourceForStorage(ip, res);
-    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
+    if ((fb.inv[res] || 0) > 0 && (tb.inv[targetRes] || 0) < storageCapFor(tb, targetRes, techs)) { fb.inv[res]--; tb.inv[targetRes] = (tb.inv[targetRes] || 0) + 1; }
   }
 }
 
@@ -510,7 +473,7 @@ function tick() {
     const rec = activeRecipe(b);
     if (canProduce(b)) {
       b.ptimer = (b.ptimer || 0) + 1;
-      if (b.ptimer >= recipeTimeFor(b, rec)) { produce(b); b.ptimer = 0; }
+      if (b.ptimer >= recipeTimeFor(b, rec, techs)) { produce(b); b.ptimer = 0; }
     } else {
       b.ptimer = 0;
     }

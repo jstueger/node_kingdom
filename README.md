@@ -61,7 +61,7 @@ Use the Live Server extension and open `index.html`.
 ## File structure
 
 ```text
-factory-node-prototype/
+node_kingdom_/
 ├── index.html
 ├── styles.css
 ├── README.md
@@ -69,5 +69,6 @@ factory-node-prototype/
 │   └── design-notes.md
 └── src/
     ├── data.js
+    ├── rules.js
     └── main.js
 ```
