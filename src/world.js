@@ -1,4 +1,4 @@
-import { BUILDINGS, CELL } from './data.js?v=world-1';
+import { BUILDINGS, CELL } from './data.js?v=camera-1';
 
 export function worldW(state) {
   return state.world.cols * CELL;

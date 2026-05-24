@@ -450,5 +450,6 @@ Current source files:
 - `src/simulation.js`: tick/update logic for production, selling, resource transfer, and simulation time.
 - `src/render.js`: DOM rendering for buildings, connections, inspector, sidebar, tech tree, and top-level UI state.
 - `src/world.js`: world dimensions, grid occupancy helpers, background drawing, port positioning, and connection path geometry.
+- `src/camera.js`: zoom, pan, and screen-to-world coordinate helpers.
 - `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: camera helpers, persistence, input wiring, and the interval that calls the simulation update.
+- `src/main.js`: persistence, input wiring, and the interval that calls the simulation update.

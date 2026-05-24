@@ -1,9 +1,10 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=world-1';
-import { inputAccepts, inputAlreadyConnected } from './rules.js?v=world-1';
-import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=world-1';
-import { tickGame } from './simulation.js?v=world-1';
-import { createGrid, createTechs, state } from './state.js?v=world-1';
-import { applyWorldSize as applyWorldSizeToUi, bez, clampGridPos as clampGridPosition, drawBg as drawWorldBg, gridFree as isGridFree, gridSet as setGridCells, portPx, worldH, worldW } from './world.js?v=world-1';
+import { applyPan as applyCameraPan, applyZoom as applyCameraZoom, localPoint as cameraLocalPoint, setZoom as setCameraZoom } from './camera.js?v=camera-1';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=camera-1';
+import { inputAccepts, inputAlreadyConnected } from './rules.js?v=camera-1';
+import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=camera-1';
+import { tickGame } from './simulation.js?v=camera-1';
+import { createGrid, createTechs, state } from './state.js?v=camera-1';
+import { applyWorldSize as applyWorldSizeToUi, bez, clampGridPos as clampGridPosition, drawBg as drawWorldBg, gridFree as isGridFree, gridSet as setGridCells, portPx } from './world.js?v=camera-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -27,37 +28,11 @@ function renderBuildings() { renderBuildingsView(renderContext); }
 function renderConnections() { renderConnectionsView(renderContext); }
 function renderTechTree() { renderTechTreeView(renderContext); }
 
-function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
 function applyWorldSize() { applyWorldSizeToUi(state, ui); }
-function applyZoom() {
-  state.camera.zoom = clamp(state.camera.zoom, 0.5, 2);
-  gc.style.transform = `scale(${state.camera.zoom})`;
-  zoomStage.style.width = `${worldW(state) * state.camera.zoom}px`;
-  zoomStage.style.height = `${worldH(state) * state.camera.zoom}px`;
-  zoomLabel.textContent = `${Math.round(state.camera.zoom * 100)}%`;
-}
-function applyPan() {
-  zoomStage.style.transform = `translate(${state.camera.panOffset.x}px, ${state.camera.panOffset.y}px)`;
-}
-function setZoom(nextZoom, anchorEvent = null) {
-  const prevZoom = state.camera.zoom;
-  const anchor = anchorEvent ? {
-    clientX: anchorEvent.clientX,
-    clientY: anchorEvent.clientY,
-    world: localPoint(anchorEvent)
-  } : null;
-  state.camera.zoom = nextZoom;
-  applyZoom();
-  if (!anchor || state.camera.zoom === prevZoom) return;
-  const rect = gc.getBoundingClientRect();
-  state.camera.panOffset.x += anchor.clientX - (rect.left + anchor.world.x * state.camera.zoom);
-  state.camera.panOffset.y += anchor.clientY - (rect.top + anchor.world.y * state.camera.zoom);
-  applyPan();
-}
-function localPoint(e) {
-  const rect = gc.getBoundingClientRect();
-  return { x: (e.clientX - rect.left) / state.camera.zoom, y: (e.clientY - rect.top) / state.camera.zoom };
-}
+function applyZoom() { applyCameraZoom(state, ui); }
+function applyPan() { applyCameraPan(state, ui); }
+function setZoom(nextZoom, anchorEvent = null) { setCameraZoom(state, ui, nextZoom, anchorEvent); }
+function localPoint(event) { return cameraLocalPoint(state, ui, event); }
 
 function isGridDragTarget(target) {
   return !target.closest('.bld') && !target.closest('.port');
