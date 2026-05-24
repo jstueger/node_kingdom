@@ -46,9 +46,9 @@ The interface has three main areas:
 
 The world uses a fixed grid:
 
-- Cell size: 72 pixels.
-- Starting columns: 10.
-- Starting rows: 10.
+- Cell size: 18 pixels.
+- Starting columns: 40.
+- Starting rows: 40.
 - Starting play area: 720 by 720 pixels.
 
 Buildings are placed freely on this grid:
@@ -65,7 +65,7 @@ Buildings are placed freely on this grid:
 - Right-click a building to sell it for half its original cost.
 - Drag an existing building to move it to another grid position.
 
-Buildings may occupy different grid sizes. Current producer and market buildings occupy one cell, while crafting buildings occupy two cells horizontally.
+Buildings may occupy different grid sizes. Current producer and market buildings occupy 8 by 8 cells, while crafting buildings occupy 16 by 8 cells.
 
 The grid can be expanded through the tech tree.
 
@@ -275,7 +275,7 @@ The tech buy button is disabled while the player does not have enough gold or af
 
 Current techs:
 
-- Grid Expansion: costs 50 gold and adds 4 columns and 2 rows to the playable grid.
+- Grid Expansion: costs 50 gold and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: costs 35 gold and adds 5 storage capacity to every resource slot.
 - Workshop Tuning: costs 60 gold and makes crafters finish recipes 1 tick faster, with a minimum recipe time of 1 tick.
 - Market Bargaining: costs 75 gold and increases Market sale prices by 25%, rounded down.

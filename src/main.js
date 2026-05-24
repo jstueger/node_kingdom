@@ -23,7 +23,7 @@ let grid = createGrid(worldCols, worldRows);
 const techs = {
   grid_expansion: {
     label: 'Grid Expansion',
-    desc: 'Adds 4 columns and 2 rows to the build grid.',
+    desc: 'Adds 16 columns and 8 rows to the build grid.',
     cost: 50,
     bought: false
   },
@@ -507,7 +507,7 @@ function buyTech(key) {
   if (gold < tech.cost) { toast('Not enough gold'); return; }
   gold -= tech.cost;
   tech.bought = true;
-  if (key === 'grid_expansion') expandGrid(4, 2);
+  if (key === 'grid_expansion') expandGrid(16, 8);
   setHint(`${tech.label} purchased`);
   renderAll();
   toast('Tech purchased');

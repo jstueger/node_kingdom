@@ -1,6 +1,6 @@
-export const CELL = 72;
-export const COLS = 10;
-export const ROWS = 10;
+export const CELL = 18;
+export const COLS = 40;
+export const ROWS = 40;
 export const W = COLS * CELL;
 export const H = ROWS * CELL;
 export const STARTING_GOLD = 25;
@@ -17,7 +17,7 @@ export const ITEMS = {
 
 export const BUILDINGS = {
   iron_mine: {
-    label: 'Iron Mine', icon: '⛏️', color: '#141c30', w: 1, h: 1,
+    label: 'Iron Mine', icon: '⛏️', color: '#141c30', w: 8, h: 8,
     desc: 'Produces iron ore.',
     kind: 'producer',
     cost: 5,
@@ -32,7 +32,7 @@ export const BUILDINGS = {
     }
   },
   coal_mine: {
-    label: 'Coal Mine', icon: '⚫', color: '#171717', w: 1, h: 1,
+    label: 'Coal Mine', icon: '⚫', color: '#171717', w: 8, h: 8,
     desc: 'Produces coal.',
     kind: 'producer',
     cost: 5,
@@ -47,7 +47,7 @@ export const BUILDINGS = {
     }
   },
   lumber: {
-    label: 'Lumber Camp', icon: '🌲', color: '#0c1c08', w: 1, h: 1,
+    label: 'Lumber Camp', icon: '🌲', color: '#0c1c08', w: 8, h: 8,
     desc: 'Produces wood.',
     kind: 'producer',
     cost: 5,
@@ -62,7 +62,7 @@ export const BUILDINGS = {
     }
   },
   forge: {
-    label: 'Forge', icon: '🔥', color: '#281208', w: 2, h: 1,
+    label: 'Forge', icon: '🔥', color: '#281208', w: 16, h: 8,
     desc: 'Configurable crafter with one active output.',
     kind: 'crafter',
     cost: 12,
@@ -83,7 +83,7 @@ export const BUILDINGS = {
     }
   },
   sawmill: {
-    label: 'Sawmill', icon: '🪚', color: '#1c1008', w: 2, h: 1,
+    label: 'Sawmill', icon: '🪚', color: '#1c1008', w: 16, h: 8,
     desc: 'Turns wood into planks.',
     kind: 'crafter',
     cost: 10,
@@ -98,7 +98,7 @@ export const BUILDINGS = {
     }
   },
   blacksmith: {
-    label: 'Blacksmith', icon: '⚒️', color: '#201018', w: 2, h: 1,
+    label: 'Blacksmith', icon: '⚒️', color: '#201018', w: 16, h: 8,
     desc: 'Crafts finished goods from bars and planks.',
     kind: 'crafter',
     cost: 18,
@@ -119,7 +119,7 @@ export const BUILDINGS = {
     }
   },
   market: {
-    label: 'Market', icon: '🏪', color: '#081c0c', w: 1, h: 1,
+    label: 'Market', icon: '🏪', color: '#081c0c', w: 8, h: 8,
     desc: 'Automatically sells any goods it receives.',
     kind: 'seller',
     cost: 5,
