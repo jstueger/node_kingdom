@@ -234,15 +234,20 @@ Tech controls:
 
 Each tech can currently be bought once. Buying a tech spends its resource cost, marks the tech as purchased, and applies its effect.
 
-Techs may have visibility thresholds. A hidden tech appears once its threshold is met. Visibility thresholds are separate from purchase costs.
+Techs may have visibility thresholds and prerequisite techs. A hidden tech appears once its threshold is met and its prerequisites are purchased. Visibility thresholds are separate from purchase costs.
 
 Current techs:
 
 - Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.
-- Grid Expansion: costs 50 gold and adds 16 columns and 8 rows to the playable grid.
-- Storage Bins: costs 35 gold and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: costs 60 gold and makes crafters need 2 fewer work clicks per action.
-- Market Bargaining: costs 75 gold and increases Market sale prices by 25%, rounded down.
+- Mining: requires Market Access, appears after 8 lifetime gold earned, costs 8 gold and 5 Wood, and unlocks Iron Mine buildings.
+- Woodworking: requires Market Access, appears after 12 lifetime gold earned and 12 lifetime Wood produced, costs 10 gold and 8 Wood, and unlocks Sawmill buildings.
+- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 12 gold, 6 Iron Ore, and 4 Wood, and unlocks Forge buildings.
+- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 15 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
+- Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 25 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
+- Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
+- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 20 gold and 10 Wood, and adds 5 storage capacity to every resource slot.
+- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 60 gold, and makes crafters need 2 fewer work clicks per action.
+- Market Bargaining: requires Market Access and Woodworking, appears after 40 lifetime gold earned, costs 50 gold and 2 Planks, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
@@ -259,7 +264,7 @@ Manual work:
 - If the node is missing inputs, has full output storage, or has nothing to sell, work does not advance.
 - Workshop Tuning reduces crafter actions to 8 clicks.
 
-Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds.
+Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current stored resources and gold are used to pay tech costs.
 
 The global simulation tick still advances once per second.
 
@@ -366,7 +371,6 @@ Current sell prices:
 
 The current prototype does not include:
 
-- multi-step unlock dependencies
 - contracts or goals
 - Manager slots and buyable Managers for node automation
 - pathfinding, roads, belts, pipes, or transport infrastructure

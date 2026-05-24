@@ -74,9 +74,15 @@ The next useful product layer is goals:
 5. Better bottleneck summaries.
 6. Clearer upgrade choices in the tech tree.
 
+The current progression spine is deliberately modest:
+
+1. Wood production reveals Market Access.
+2. Selling goods creates enough gold pressure to reveal Mining and Woodworking.
+3. Ore, planks, and bars then become explicit tech costs for later buildings.
+4. Knowledge, managers, contracts, and node addon menus remain later systems.
+
 The next useful engineering layer is confidence:
 
 1. Tests for rules and simulation.
-2. More complete progression data for the early node unlock chain.
+2. Save format versioning before save data becomes important.
 3. More focused input modules if interaction state keeps growing.
-4. Save format versioning before save data becomes important.

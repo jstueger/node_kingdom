@@ -44,6 +44,7 @@ export function formatCost(cost = {}) {
 
 export function isTechVisible(state, tech) {
   const visibleWhen = tech.visibleWhen || {};
+  if (tech.requires?.some(key => !state.techs[key]?.bought)) return false;
   if (visibleWhen.unlockedBuildings?.some(type => !isBuildingUnlocked(state, type))) return false;
   for (const [resource, amount] of Object.entries(visibleWhen.lifetimeProduced || {})) {
     if ((state.stats.lifetimeProduced[resource] || 0) < amount) return false;

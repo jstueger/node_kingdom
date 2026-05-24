@@ -38,13 +38,13 @@ VS Code Live Server also works.
 
 - Grid placement by click or drag-and-drop from the building menu.
 - Movable placed buildings.
-- Lumber Camp starts unlocked; additional buildings unlock through tech.
+- Lumber Camp starts unlocked; additional buildings unlock through an early resource-and-gold tech spine.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.
 - Universal single-input Market that sells stocked goods when worked.
 - Lifetime production thresholds that reveal new tech.
 - Resource storage, manual node work, and work progress meters.
-- Toggleable tech tree with grid, storage, crafting, and market upgrades.
+- Toggleable tech tree with building unlocks, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 
 ## Source Layout
