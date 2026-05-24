@@ -20,7 +20,7 @@ export function createTechs() {
     },
     workshop_tuning: {
       label: 'Workshop Tuning',
-      desc: 'Crafters finish recipes 1 tick faster.',
+      desc: 'Crafters need 2 fewer work clicks per action.',
       cost: 60,
       bought: false
     },

@@ -1,5 +1,5 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { inputAccepts, inputResourceForStorage, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
+import { actionClicksFor, inputAccepts, inputResourceForStorage, salePriceFor, storageCapFor } from './rules.js';
 
 export function canProduce(state, building) {
   if (BUILDINGS[building.type].kind === 'seller') return canSell(building);
@@ -35,6 +35,19 @@ export function sellGoods(state, building) {
   state.gold += salePriceFor(building.type, res, state.techs);
 }
 
+export function workBuilding(state, building) {
+  if (!building) return { worked: false, completed: false, reason: 'missing' };
+  if (!canProduce(state, building)) {
+    building.ptimer = 0;
+    return { worked: false, completed: false, reason: 'blocked' };
+  }
+  building.ptimer = (building.ptimer || 0) + 1;
+  if (building.ptimer < actionClicksFor(building, state.techs)) return { worked: true, completed: false };
+  produce(state, building);
+  building.ptimer = 0;
+  return { worked: true, completed: true };
+}
+
 export function transferResources(state) {
   // Each connection can move one unit per tick if source has output and target has capacity.
   for (const connection of state.connections) {
@@ -54,21 +67,5 @@ export function transferResources(state) {
 
 export function tickGame(state) {
   state.ticks++;
-  for (const [, building] of state.buildings) {
-    if (BUILDINGS[building.type].kind === 'seller') {
-      if (canSell(building)) sellGoods(state, building);
-      continue;
-    }
-    const recipe = activeRecipe(building);
-    if (canProduce(state, building)) {
-      building.ptimer = (building.ptimer || 0) + 1;
-      if (building.ptimer >= recipeTimeFor(building, recipe, state.techs)) {
-        produce(state, building);
-        building.ptimer = 0;
-      }
-    } else {
-      building.ptimer = 0;
-    }
-  }
   transferResources(state);
 }

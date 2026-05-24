@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { connectionStatus, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
+import { connectionStatus, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -54,6 +54,20 @@ function recipeControlHtml(view, building) {
     </div>`;
 }
 
+function actionControlHtml(view, building) {
+  const labels = {
+    producer: 'Mine',
+    crafter: 'Work',
+    seller: 'Sell'
+  };
+  const disabled = view.status !== 'working';
+  return `
+    <div class="node-action-control">
+      <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${labels[view.definition.kind]}</button>
+      <span>${view.progressClicks}/${view.actionClicks}</span>
+    </div>`;
+}
+
 function nodeBodyHtml(view) {
   if (view.definition.kind === 'producer') {
     return `
@@ -78,7 +92,7 @@ function nodeBodyHtml(view) {
 
 function statusLabel(status) {
   return {
-    working: 'WORKING',
+    working: 'READY',
     starved: 'WAITING',
     blocked: 'BLOCKED',
     idle: 'IDLE'
@@ -110,7 +124,14 @@ export function renderBuildings(context) {
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
       ${recipeControlHtml(view, building)}
       ${nodeBodyHtml(view)}
+      ${actionControlHtml(view, building)}
       <div class="prog"><span data-bid="${id}" style="width:${view.progressPct}%"></span></div>`;
+    el.querySelectorAll('.node-work').forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        actions.workNode(id);
+      });
+    });
     el.querySelectorAll('.recipe-step').forEach(button => {
       button.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -274,19 +295,12 @@ export function renderAll(context) {
   renderTopbar(context);
 }
 
-export function updateProgressBars(context, now = performance.now()) {
+export function updateProgressBars(context) {
   const { state, ui } = context;
-  const elapsedTicks = Math.max(0, Math.min(0.999, (now - state.clock.lastTickAt) / 1000));
   ui.bl.querySelectorAll('.prog > span[data-bid]').forEach(bar => {
     const building = state.buildings.get(Number(bar.dataset.bid));
     if (!building) return;
     const view = nodeViewState(building, state.connections, state.techs);
-    if (view.definition.kind === 'seller' || view.status !== 'working' || !view.recipe) {
-      bar.style.width = `${view.progressPct}%`;
-      return;
-    }
-    const recipeTime = recipeTimeFor(building, view.recipe, state.techs);
-    const progress = Math.min(1, ((building.ptimer || 0) + elapsedTicks) / recipeTime);
-    bar.style.width = `${(progress * 100).toFixed(1)}%`;
+    bar.style.width = `${view.progressPct}%`;
   });
 }

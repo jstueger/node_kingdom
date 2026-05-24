@@ -59,7 +59,7 @@ const context = {
   renderBuildings: () => renderBuildings(context),
   renderConnections: () => renderConnections(context),
   renderTechTree: () => renderTechTree(context),
-  updateProgressBars: (now) => updateProgressBars(context, now),
+  updateProgressBars: () => updateProgressBars(context),
   saveGame: () => saveGame(context),
   loadGame: () => loadGame(context),
   resetWorld: (confirmFirst = true) => resetWorld(context, confirmFirst),
@@ -76,8 +76,8 @@ function tick() {
   context.renderTopbar();
 }
 
-function animate(now) {
-  context.updateProgressBars(now);
+function animate() {
+  context.updateProgressBars();
   requestAnimationFrame(animate);
 }
 

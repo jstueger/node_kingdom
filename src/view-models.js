@@ -1,12 +1,12 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js';
+import { actionClicksFor, inputAlreadyConnected, salePriceFor, storageCapFor } from './rules.js';
 
 export function nodeViewState(building, connections, techs) {
   const definition = BUILDINGS[building.type];
   const recipe = activeRecipe(building);
   const output = outputPort(building);
-  const recipeTime = recipe ? recipeTimeFor(building, recipe, techs) : 0;
-  const progress = recipeTime ? Math.min(1, (building.ptimer || 0) / recipeTime) : 0;
+  const actionClicks = definition.kind === 'seller' || recipe ? actionClicksFor(building, techs) : 0;
+  const progress = actionClicks ? Math.min(1, (building.ptimer || 0) / actionClicks) : 0;
 
   const inputs = inputPorts(building).map((port, index) => {
     const need = recipe?.inputs?.[port.res] || null;
@@ -35,7 +35,9 @@ export function nodeViewState(building, connections, techs) {
     icon: definition.icon,
     color: definition.color,
     size: { w: definition.w, h: definition.h },
-    recipeLabel: recipe ? recipe.label : 'Auto Sell',
+    recipeLabel: recipe ? recipe.label : 'Manual Sell',
+    actionClicks,
+    progressClicks: building.ptimer || 0,
     progress,
     progressPct: Math.floor(progress * 100),
     status: nodeStatus(definition, recipe, inputs, outputView, building),

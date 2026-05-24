@@ -1,5 +1,6 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
 import { inputAccepts, inputAlreadyConnected } from './rules.js';
+import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
   const { state, ui, geometry } = context;
@@ -27,6 +28,20 @@ export function setupInput(context) {
     state.connections = state.connections.filter(connection => connection.fb !== id && connection.tb !== id);
     context.renderAll();
     context.toast('Recipe changed; links reset');
+  }
+
+  function workNode(id) {
+    const building = state.buildings.get(id);
+    if (!building) return;
+    const result = workBuilding(state, building);
+    state.selectedId = id;
+    if (!result.worked) {
+      context.setHint(BUILDINGS[building.type].kind === 'seller' ? 'Nothing to sell' : 'Cannot work: missing inputs or output full');
+      context.renderAll();
+      return;
+    }
+    context.setHint(result.completed ? 'Action complete' : 'Manual work progress');
+    context.renderAll();
   }
 
   function placeBuilding(type, gx, gy) {
@@ -101,7 +116,7 @@ export function setupInput(context) {
   }
 
   function startMoveBuilding(event, id) {
-    if (event.button !== 0 || state.mode !== 'idle' || event.target.closest('.port') || event.target.closest('.node-recipe-control')) return;
+    if (event.button !== 0 || state.mode !== 'idle' || event.target.closest('.port') || event.target.closest('.node-recipe-control') || event.target.closest('.node-action-control')) return;
     const building = state.buildings.get(id);
     if (!building) return;
     const point = context.localPoint(event);
@@ -406,5 +421,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, startPlacementDrag, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast: context.toast };
 }

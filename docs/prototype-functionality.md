@@ -14,7 +14,7 @@ The main rule is:
 
 > Each recipe-based building has one active output at a time. Crafters may have multiple possible recipes, but only one recipe is active.
 
-Market buildings are sink nodes. They do not use recipes and instead sell supported goods they receive.
+Market buildings are sink nodes. They do not use recipes and instead sell supported goods when manually worked.
 
 ## Interface Layout
 
@@ -91,7 +91,7 @@ Each building has:
 - kind: producer, crafter, or seller
 - inventory
 - storage capacities
-- production timer
+- manual work progress
 - recipes, except for Markets
 
 Current placement costs:
@@ -114,7 +114,8 @@ All nodes show:
 
 - building identity
 - current status
-- production progress at the bottom, when applicable
+- manual work progress at the bottom, when applicable
+- a node-local work button
 - border/status styling for working, waiting, blocked, or idle state
 
 Crafter nodes show:
@@ -137,17 +138,17 @@ The active recipe determines:
 - required input resources
 - visible output port
 - produced output resource
-- production duration
+- completed action result
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts sellable goods through one universal input and automatically sells stocked goods for gold.
+Markets do not use recipes. A Market accepts sellable goods through one universal input and sells stocked goods for gold when worked.
 
 Changing a crafter recipe:
 
 - is done with the controls inside the node
 - updates visible ports
-- resets the building production timer
+- resets the building work progress
 - deletes all existing connections to and from that building
 
 Connections are removed on recipe change because old ports may no longer exist or may no longer accept the same resources.
@@ -235,30 +236,33 @@ Current techs:
 
 - Grid Expansion: costs 50 gold and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: costs 35 gold and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: costs 60 gold and makes crafters finish recipes 1 tick faster, with a minimum recipe time of 1 tick.
+- Workshop Tuning: costs 60 gold and makes crafters need 2 fewer work clicks per action.
 - Market Bargaining: costs 75 gold and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
 ## Production Simulation
 
-The simulation advances once per second.
+Nodes do not initially produce, craft, or sell automatically.
+
+Manual work:
+
+- Producer, crafter, and Market nodes have a work button inside the node.
+- One completed action normally requires 10 work clicks.
+- Each valid click advances the node work meter.
+- When the meter fills, the node performs one action: mining, crafting, or selling.
+- If the node is missing inputs, has full output storage, or has nothing to sell, work does not advance.
+- Workshop Tuning reduces crafter actions to 8 clicks.
+
+The global simulation tick still advances once per second.
 
 On each tick:
 
 1. The global tick counter increases.
-2. Markets sell one stocked good for gold if they have any accepted goods in inventory.
-3. Each recipe-based building checks whether it can produce.
-4. Buildings with enough inputs and output capacity advance their production timer.
-5. When a building timer reaches the active recipe time, production completes.
-6. Completed recipes consume their inputs.
-7. Completed recipes create their output resource.
-8. Resource transfer runs across all connections.
-9. The world and topbar re-render.
+2. Resource transfer runs across all connections.
+3. The world and topbar re-render.
 
-If a building cannot produce, its production timer resets to zero.
-
-Production progress bars are visually interpolated between simulation ticks for smoother display. The interpolation does not change simulation timing.
+Work progress bars animate between click states for readability. The animation does not change simulation timing.
 
 ## Inventory And Capacity
 
@@ -307,35 +311,37 @@ The Reset button clears the current world after confirmation. Reset also clears 
 
 ## Current Building Recipes
 
+Each recipe action normally requires 10 work clicks before it completes.
+
 ### Iron Mine
 
-- Mine Iron Ore: produces 1 Iron Ore every 2 ticks.
+- Mine Iron Ore: produces 1 Iron Ore.
 
 ### Coal Mine
 
-- Mine Coal: produces 1 Coal every 2 ticks.
+- Mine Coal: produces 1 Coal.
 
 ### Lumber Camp
 
-- Cut Wood: produces 1 Wood every 2 ticks.
+- Cut Wood: produces 1 Wood.
 
 ### Forge
 
-- Iron Bar: consumes 3 Iron Ore and 1 Wood, produces 1 Iron Bar every 3 ticks.
-- Steel Bar: consumes 2 Iron Ore and 2 Coal, produces 1 Steel Bar every 5 ticks.
+- Iron Bar: consumes 3 Iron Ore and 1 Wood, produces 1 Iron Bar.
+- Steel Bar: consumes 2 Iron Ore and 2 Coal, produces 1 Steel Bar.
 
 ### Sawmill
 
-- Plank: consumes 2 Wood, produces 1 Plank every 2 ticks.
+- Plank: consumes 2 Wood, produces 1 Plank.
 
 ### Blacksmith
 
-- Sword: consumes 2 Iron Bars and 1 Plank, produces 1 Sword every 4 ticks.
-- Steel Sword: consumes 2 Steel Bars and 1 Plank, produces 2 Swords every 6 ticks.
+- Sword: consumes 2 Iron Bars and 1 Plank, produces 1 Sword.
+- Steel Sword: consumes 2 Steel Bars and 1 Plank, produces 2 Swords.
 
 ### Market
 
-The Market has no recipes. It accepts all current resources through one universal input and automatically sells one stocked good per tick.
+The Market has no recipes. It accepts all current resources through one universal input and sells one stocked good when its manual work action completes.
 
 Current sell prices:
 
@@ -353,6 +359,7 @@ The current prototype does not include:
 
 - multi-step unlock dependencies
 - contracts or goals
+- Manager slots and buyable Managers for node automation
 - pathfinding, roads, belts, pipes, or transport infrastructure
 - save files outside browser `localStorage`
 - production speed controls

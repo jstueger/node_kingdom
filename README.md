@@ -41,8 +41,8 @@ VS Code Live Server also works.
 - Producers, crafters, and markets.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.
-- Universal single-input Market that sells whatever supported goods it receives.
-- Resource storage, production timing, and smooth progress bars.
+- Universal single-input Market that sells stocked goods when worked.
+- Resource storage, manual node work, and work progress meters.
 - Toggleable tech tree with grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 

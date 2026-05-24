@@ -1,4 +1,4 @@
-import { BUILDINGS, capFor, inputPorts, outputPort } from './data.js';
+import { BUILDINGS, MANUAL_ACTION_CLICKS, capFor, inputPorts, outputPort } from './data.js';
 
 export function inputAccepts(inputPort, resource) {
   return Boolean(inputPort && (inputPort.acceptsAll || inputPort.res === resource));
@@ -16,9 +16,9 @@ export function storageCapFor(building, resource, techs) {
   return capFor(building, resource) + (techs.storage_bins.bought ? 5 : 0);
 }
 
-export function recipeTimeFor(building, recipe, techs) {
-  if (BUILDINGS[building.type].kind !== 'crafter') return recipe.time;
-  return Math.max(1, recipe.time - (techs.workshop_tuning.bought ? 1 : 0));
+export function actionClicksFor(building, techs) {
+  if (BUILDINGS[building.type].kind !== 'crafter') return MANUAL_ACTION_CLICKS;
+  return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0));
 }
 
 export function salePriceFor(type, resource, techs) {

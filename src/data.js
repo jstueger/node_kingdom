@@ -4,6 +4,7 @@ export const ROWS = 40;
 export const W = COLS * CELL;
 export const H = ROWS * CELL;
 export const STARTING_GOLD = 25;
+export const MANUAL_ACTION_CLICKS = 10;
 
 export const ITEMS = {
   iron_ore: { label: 'Iron Ore', icon: '🪨' },
@@ -26,8 +27,7 @@ export const BUILDINGS = {
       iron_ore: {
         label: 'Mine Iron Ore',
         inputs: {},
-        output: { res: 'iron_ore', amount: 1 },
-        time: 2
+        output: { res: 'iron_ore', amount: 1 }
       }
     }
   },
@@ -41,8 +41,7 @@ export const BUILDINGS = {
       coal: {
         label: 'Mine Coal',
         inputs: {},
-        output: { res: 'coal', amount: 1 },
-        time: 2
+        output: { res: 'coal', amount: 1 }
       }
     }
   },
@@ -56,8 +55,7 @@ export const BUILDINGS = {
       wood: {
         label: 'Cut Wood',
         inputs: {},
-        output: { res: 'wood', amount: 1 },
-        time: 2
+        output: { res: 'wood', amount: 1 }
       }
     }
   },
@@ -71,14 +69,12 @@ export const BUILDINGS = {
       iron_bar_charcoal: {
         label: 'Iron Bar',
         inputs: { iron_ore: 3, wood: 1 },
-        output: { res: 'iron_bar', amount: 1 },
-        time: 3
+        output: { res: 'iron_bar', amount: 1 }
       },
       steel_bar: {
         label: 'Steel Bar',
         inputs: { iron_ore: 2, coal: 2 },
-        output: { res: 'steel_bar', amount: 1 },
-        time: 5
+        output: { res: 'steel_bar', amount: 1 }
       }
     }
   },
@@ -92,8 +88,7 @@ export const BUILDINGS = {
       plank: {
         label: 'Plank',
         inputs: { wood: 2 },
-        output: { res: 'plank', amount: 1 },
-        time: 2
+        output: { res: 'plank', amount: 1 }
       }
     }
   },
@@ -107,20 +102,18 @@ export const BUILDINGS = {
       sword: {
         label: 'Sword',
         inputs: { iron_bar: 2, plank: 1 },
-        output: { res: 'sword', amount: 1 },
-        time: 4
+        output: { res: 'sword', amount: 1 }
       },
       steel_sword: {
         label: 'Steel Sword',
         inputs: { steel_bar: 2, plank: 1 },
-        output: { res: 'sword', amount: 2 },
-        time: 6
+        output: { res: 'sword', amount: 2 }
       }
     }
   },
   market: {
     label: 'Market', icon: '🏪', color: '#081c0c', w: 8, h: 8,
-    desc: 'Automatically sells any goods it receives.',
+    desc: 'Sells any goods it receives.',
     kind: 'seller',
     cost: 5,
     capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },

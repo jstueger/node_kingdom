@@ -20,11 +20,11 @@ A crafter may have multiple possible recipes, but only one recipe is active. The
 - which input resources are required
 - which single output port is shown
 - what the node produces
-- how long production takes
+- what one completed manual work action produces
 
 This keeps each node readable while still allowing deeper production chains.
 
-Markets are sink nodes. They do not use recipes, expose one universal input, and convert stocked goods into gold.
+Markets are sink nodes. They do not use recipes, expose one universal input, and convert stocked goods into gold when worked.
 
 ## Connection Rule
 
@@ -43,6 +43,8 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 - Buildings cost gold to place.
 - Buildings cannot overlap.
 - Placed buildings can be moved without cost.
+- Nodes start as manual workstations and do not produce automatically.
+- Mining, crafting, and selling advance by clicking the node's work control.
 - Resources move through direct output-to-input connectors.
 - A connector transports one unit per tick.
 - Inventories have simple capacity limits.
@@ -54,7 +56,7 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 Node information should live on the node whenever it helps direct manipulation:
 
 - recipe choice belongs on crafter nodes
-- production progress belongs on nodes
+- manual work progress belongs on nodes
 - port state belongs near ports
 - inventory and capacity summaries can be split between node display and inspector
 
@@ -65,9 +67,11 @@ The inspector should support inspection and secondary detail. It should not beco
 The next useful product layer is goals:
 
 1. Unlocks or contracts that ask for specific production outcomes.
-2. Better bottleneck summaries.
-3. Clearer upgrade choices in the tech tree.
-4. Recipe balance passes once goals exist.
+2. Node-specific Manager slot upgrades.
+3. Buyable Managers that automate individual nodes after a slot is unlocked.
+4. Later speed upgrades that reduce required work or manager cycle time.
+5. Better bottleneck summaries.
+6. Clearer upgrade choices in the tech tree.
 
 The next useful engineering layer is confidence:
 
