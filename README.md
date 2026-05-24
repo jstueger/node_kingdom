@@ -76,6 +76,7 @@ node_kingdom/
     ├── rules.js
     ├── simulation.js
     ├── render.js
+    ├── world.js
     ├── view-models.js
     └── main.js
 ```

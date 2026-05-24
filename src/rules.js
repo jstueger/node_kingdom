@@ -1,4 +1,4 @@
-import { BUILDINGS, capFor, inputPorts, outputPort } from './data.js?v=render-1';
+import { BUILDINGS, capFor, inputPorts, outputPort } from './data.js?v=world-1';
 
 export function inputAccepts(inputPort, resource) {
   return Boolean(inputPort && (inputPort.acceptsAll || inputPort.res === resource));

@@ -1,8 +1,9 @@
-import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=render-1';
-import { inputAccepts, inputAlreadyConnected } from './rules.js?v=render-1';
-import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=render-1';
-import { tickGame } from './simulation.js?v=render-1';
-import { createGrid, createTechs, state } from './state.js?v=render-1';
+import { BUILDINGS, CELL, COLS, ROWS, STARTING_GOLD, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js?v=world-1';
+import { inputAccepts, inputAlreadyConnected } from './rules.js?v=world-1';
+import { renderAll as renderAllView, renderBuildings as renderBuildingsView, renderConnections as renderConnectionsView, renderTechTree as renderTechTreeView } from './render.js?v=world-1';
+import { tickGame } from './simulation.js?v=world-1';
+import { createGrid, createTechs, state } from './state.js?v=world-1';
+import { applyWorldSize as applyWorldSizeToUi, bez, clampGridPos as clampGridPosition, drawBg as drawWorldBg, gridFree as isGridFree, gridSet as setGridCells, portPx, worldH, worldW } from './world.js?v=world-1';
 
 const bg = document.getElementById('bg');
 const gameEl = document.getElementById('game');
@@ -26,25 +27,13 @@ function renderBuildings() { renderBuildingsView(renderContext); }
 function renderConnections() { renderConnectionsView(renderContext); }
 function renderTechTree() { renderTechTreeView(renderContext); }
 
-function worldW() { return state.world.cols * CELL; }
-function worldH() { return state.world.rows * CELL; }
-function applyWorldSize() {
-  const w = worldW();
-  const h = worldH();
-  gc.style.width = `${w}px`;
-  gc.style.height = `${h}px`;
-  zoomStage.style.width = `${w * state.camera.zoom}px`;
-  zoomStage.style.height = `${h * state.camera.zoom}px`;
-  sl.setAttribute('width', w);
-  sl.setAttribute('height', h);
-  sl.setAttribute('viewBox', `0 0 ${w} ${h}`);
-}
 function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+function applyWorldSize() { applyWorldSizeToUi(state, ui); }
 function applyZoom() {
   state.camera.zoom = clamp(state.camera.zoom, 0.5, 2);
   gc.style.transform = `scale(${state.camera.zoom})`;
-  zoomStage.style.width = `${worldW() * state.camera.zoom}px`;
-  zoomStage.style.height = `${worldH() * state.camera.zoom}px`;
+  zoomStage.style.width = `${worldW(state) * state.camera.zoom}px`;
+  zoomStage.style.height = `${worldH(state) * state.camera.zoom}px`;
   zoomLabel.textContent = `${Math.round(state.camera.zoom * 100)}%`;
 }
 function applyPan() {
@@ -77,51 +66,10 @@ function isGridDragTarget(target) {
 function setHint(message) { hint.textContent = message; }
 function toast(message) { toastEl.textContent = message; toastEl.style.opacity = '1'; setTimeout(() => toastEl.style.opacity = '0', 1100); }
 
-function drawBg() {
-  const w = worldW();
-  const h = worldH();
-  bg.width = w; bg.height = h;
-  const ctx = bg.getContext('2d');
-  ctx.fillStyle = '#0c0c1e'; ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = '#181832'; ctx.lineWidth = 1;
-  for (let i = 0; i <= state.world.cols; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
-  for (let i = 0; i <= state.world.rows; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
-  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 1.25;
-  for (let i = 0; i <= state.world.cols; i += 4) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, h); ctx.stroke(); }
-  for (let i = 0; i <= state.world.rows; i += 4) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(w, i * CELL); ctx.stroke(); }
-  ctx.fillStyle = '#242448';
-  for (let ci = 0; ci <= state.world.cols; ci++) for (let ri = 0; ri <= state.world.rows; ri++) { ctx.beginPath(); ctx.arc(ci * CELL, ri * CELL, 2, 0, Math.PI * 2); ctx.fill(); }
-}
-
-function gridFree(gx, gy, w, h) {
-  for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) {
-    if (r < 0 || r >= state.world.rows || c < 0 || c >= state.world.cols) return false;
-    if (state.grid[r][c]) return false;
-  }
-  return true;
-}
-function gridSet(gx, gy, w, h, value) { for (let r = gy; r < gy + h; r++) for (let c = gx; c < gx + w; c++) state.grid[r][c] = value; }
-function clampGridPos(gx, gy, w, h) {
-  return {
-    gx: clamp(gx, 0, state.world.cols - w),
-    gy: clamp(gy, 0, state.world.rows - h)
-  };
-}
-
-function portPx(b, pd) {
-  const d = BUILDINGS[b.type];
-  const px = b.gx * CELL, py = b.gy * CELL, bw = d.w * CELL, bh = d.h * CELL;
-  switch (pd.side) {
-    case 'left': return { x: px, y: py + bh * pd.t };
-    case 'right': return { x: px + bw, y: py + bh * pd.t };
-    case 'top': return { x: px + bw * pd.t, y: py };
-    case 'bottom': return { x: px + bw * pd.t, y: py + bh };
-  }
-}
-function bez(p1, p2) {
-  const dx = Math.max(Math.abs(p2.x - p1.x) * 0.5, 48);
-  return `M${p1.x},${p1.y}C${p1.x + dx},${p1.y} ${p2.x - dx},${p2.y} ${p2.x},${p2.y}`;
-}
+function drawBg() { drawWorldBg(state, ui); }
+function gridFree(gx, gy, w, h) { return isGridFree(state, gx, gy, w, h); }
+function gridSet(gx, gy, w, h, value) { setGridCells(state, gx, gy, w, h, value); }
+function clampGridPos(gx, gy, w, h) { return clampGridPosition(state, gx, gy, w, h); }
 
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;

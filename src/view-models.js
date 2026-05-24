@@ -1,5 +1,5 @@
-import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=render-1';
-import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=render-1';
+import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js?v=world-1';
+import { inputAlreadyConnected, recipeTimeFor, salePriceFor, storageCapFor } from './rules.js?v=world-1';
 
 export function nodeViewState(building, connections, techs) {
   const definition = BUILDINGS[building.type];

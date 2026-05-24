@@ -1,6 +1,6 @@
-import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=render-1';
-import { connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=render-1';
-import { nodeViewState } from './view-models.js?v=render-1';
+import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=world-1';
+import { connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=world-1';
+import { nodeViewState } from './view-models.js?v=world-1';
 
 function inventoryText(view) {
   return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
