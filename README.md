@@ -61,7 +61,7 @@ Use the Live Server extension and open `index.html`.
 ## File structure
 
 ```text
-node_kingdom_/
+node_kingdom/
 ├── index.html
 ├── styles.css
 ├── README.md
