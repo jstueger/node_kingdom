@@ -1,4 +1,4 @@
-import { worldH, worldW } from './world.js?v=save-1';
+import { worldH, worldW } from './world.js';
 
 export function applyZoom(state, ui) {
   state.camera.zoom = clamp(state.camera.zoom, 0.5, 2);

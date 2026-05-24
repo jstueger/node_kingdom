@@ -1,6 +1,6 @@
-import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js?v=save-1';
-import { connectionStatus, salePriceFor, storageCapFor } from './rules.js?v=save-1';
-import { nodeViewState } from './view-models.js?v=save-1';
+import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
+import { connectionStatus, salePriceFor, storageCapFor } from './rules.js';
+import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
   return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
@@ -113,7 +113,7 @@ export function renderBuildings(context) {
       portEl.dataset.pi = portIndex;
       portEl.dataset.kind = 'in';
       portEl.title = port.acceptsAll ? 'Input: Any resource' : `Input: ${itemLabel(port.res)}`;
-      portEl.addEventListener('click', actions.onPort);
+      portEl.addEventListener('click', context.actions.onPort);
       el.appendChild(portEl);
     });
     const output = outputPort(building);
@@ -127,7 +127,7 @@ export function renderBuildings(context) {
       portEl.dataset.pi = 0;
       portEl.dataset.kind = 'out';
       portEl.title = `Output: ${itemLabel(output.res)}`;
-      portEl.addEventListener('click', actions.onPort);
+      portEl.addEventListener('click', context.actions.onPort);
       el.appendChild(portEl);
     }
     ui.bl.appendChild(el);

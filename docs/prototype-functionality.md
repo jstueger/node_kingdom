@@ -452,5 +452,6 @@ Current source files:
 - `src/world.js`: world dimensions, grid occupancy helpers, background drawing, port positioning, and connection path geometry.
 - `src/camera.js`: zoom, pan, and screen-to-world coordinate helpers.
 - `src/save.js`: browser `localStorage` save/load/reset behavior and save-state reconstruction.
+- `src/input.js`: DOM event wiring and controller actions for placement, connections, movement, tech purchases, camera gestures, and persistence buttons.
 - `src/view-models.js`: display-ready node state derived from building state, connections, techs, and rules.
-- `src/main.js`: input wiring and the interval that calls the simulation update.
+- `src/main.js`: application bootstrap, shared context creation, and the interval that calls the simulation update.

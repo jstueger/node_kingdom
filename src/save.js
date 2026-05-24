@@ -1,5 +1,5 @@
-import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js?v=save-1';
-import { createGrid, createTechs } from './state.js?v=save-1';
+import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
+import { createGrid, createTechs } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
 

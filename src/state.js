@@ -1,4 +1,4 @@
-import { COLS, ROWS, STARTING_GOLD } from './data.js?v=save-1';
+import { COLS, ROWS, STARTING_GOLD } from './data.js';
 
 export function createGrid(cols, rows) {
   return Array.from({ length: rows }, () => new Array(cols).fill(0));
