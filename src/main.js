@@ -176,6 +176,15 @@ function outputQueueHtml(view) {
   return `<div class="node-queue outq"><div class="qrow ${view.output.connected ? 'connected' : 'open'} ${view.output.have >= view.output.cap ? 'full' : ''}"><span>${itemIcon(view.output.res)}</span><span>${view.output.have}/${view.output.cap}</span></div></div>`;
 }
 
+function statusLabel(status) {
+  return {
+    working: 'WORKING',
+    starved: 'WAITING',
+    blocked: 'BLOCKED',
+    idle: 'IDLE'
+  }[status] || status.toUpperCase();
+}
+
 function nearbyInputPort(point, outRes, sourceId) {
   let closest = null;
   const snapDistance = 28;
@@ -200,10 +209,11 @@ function renderBuildings() {
     el.className = `bld node--${d.kind} ${id === selectedId ? 'sel' : ''} ${moving?.id === id ? 'moving' : ''} ${moving?.id === id && movingInvalid ? 'invalid' : ''} ${view.status}`;
     el.style.cssText = `left:${b.gx * CELL + 2}px;top:${b.gy * CELL + 2}px;width:${d.w * CELL - 4}px;height:${d.h * CELL - 4}px;background:${d.color};`;
     el.innerHTML = `
-      <div class="node-title">${view.recipeLabel}</div>
+      <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
+      <div class="node-subtitle">${view.recipeLabel}</div>
       <div class="node-main">
         ${inputQueueHtml(view)}
-        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-nm">${view.label}</div><div class="b-iv">${inventoryText(view)}</div></div>
+        <div class="node-core"><div class="b-ico">${view.icon}</div><div class="b-iv">${inventoryText(view)}</div></div>
         ${outputQueueHtml(view)}
       </div>
       <div class="prog"><span style="width:${view.progressPct}%"></span></div>`;
