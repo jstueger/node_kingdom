@@ -335,6 +335,7 @@ The inspector shows:
 - current recipe inputs or accepted Market goods
 - current recipe output or Market sale behavior
 - current inventory and capacity for known resources
+- current efficiency summary, including work clicks, manager pace, effective inputs, and effective output
 - Manager slots and Manager hire controls for the selected building
 - node-type addons available for the selected building type
 
@@ -365,10 +366,14 @@ Current addons:
 
 - Lumber Camp, Sharper Axes: costs 10 gold and 8 Wood; Lumber Camps need 2 fewer work clicks.
 - Lumber Camp, Wood Yard: costs 8 gold and 10 Wood; Lumber Camps store 8 more Wood.
+- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45 gold, 4 Knowledge, and 20 Wood; managed Lumber Camps gain 1 extra work progress per tick.
+- Sawmill, Thin Kerf Blades: requires Woodworking, costs 30 gold and 4 Planks; Sawmills need 1 less Wood when making Planks.
+- Forge, Paired Molds: requires Smelting and Knowledge Production, costs 55 gold, 4 Iron Bars, and 3 Knowledge; Forges produce 1 extra Iron Bar per Iron Bar craft.
 - Market, Larger Stall: costs 15 gold and 10 Wood; Markets store 5 more of every good.
 - Market, Better Rates: requires Woodworking, costs 25 gold and 2 Planks; Markets earn 15% more gold from sales.
+- Market, Shift Lead: requires Market Management, costs 50 gold and 4 Knowledge; managed Markets gain 1 extra work progress per tick.
 
-Addon effects stack with tech effects where both apply.
+Addon effects stack with tech effects where both apply. Efficiency addons change the effective recipe shown in the inspector and the actual simulation result.
 
 ## Save, Load, And Reset
 
@@ -397,7 +402,7 @@ The Reset button clears the current world after confirmation. Reset also clears 
 
 ## Current Building Recipes
 
-Each recipe action normally requires 10 work clicks before it completes.
+Each recipe action normally requires 10 work clicks before it completes. Techs and addons can reduce work clicks, input requirements, increase output amounts, or improve manager work progress.
 
 ### Iron Mine
 
@@ -450,7 +455,6 @@ The current prototype does not include:
 - contracts
 - pathfinding, roads, belts, pipes, or transport infrastructure
 - save files outside browser `localStorage`
-- production speed controls
 - pause/resume controls
 - detailed bottleneck reports
 - undo/redo

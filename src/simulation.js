@@ -1,13 +1,13 @@
-import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAccepts, inputResourceForStorage, managerCountFor, salePriceFor, storageCapFor } from './rules.js';
+import { BUILDINGS, inputPorts, outputPort } from './data.js';
+import { actionClicksFor, inputAccepts, inputResourceForStorage, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function canProduce(state, building) {
   if (BUILDINGS[building.type].kind === 'seller') return canSell(building);
-  const recipe = activeRecipe(building);
-  for (const [res, amount] of Object.entries(recipe.inputs)) {
+  const output = recipeOutputFor(building, state.addons);
+  for (const [res, amount] of Object.entries(recipeInputsFor(building, state.addons))) {
     if ((building.inv[res] || 0) < amount) return false;
   }
-  if (recipe.output.res !== 'gold' && (building.inv[recipe.output.res] || 0) + recipe.output.amount > storageCapFor(building, recipe.output.res, state.techs, state.addons)) return false;
+  if (output.res !== 'gold' && (building.inv[output.res] || 0) + output.amount > storageCapFor(building, output.res, state.techs, state.addons)) return false;
   return true;
 }
 
@@ -16,11 +16,11 @@ export function produce(state, building) {
     sellGoods(state, building);
     return;
   }
-  const recipe = activeRecipe(building);
-  for (const [res, amount] of Object.entries(recipe.inputs)) building.inv[res] = (building.inv[res] || 0) - amount;
-  if (recipe.output.res === 'gold') state.gold += recipe.output.amount;
-  else building.inv[recipe.output.res] = (building.inv[recipe.output.res] || 0) + recipe.output.amount;
-  state.stats.lifetimeProduced[recipe.output.res] = (state.stats.lifetimeProduced[recipe.output.res] || 0) + recipe.output.amount;
+  const output = recipeOutputFor(building, state.addons);
+  for (const [res, amount] of Object.entries(recipeInputsFor(building, state.addons))) building.inv[res] = (building.inv[res] || 0) - amount;
+  if (output.res === 'gold') state.gold += output.amount;
+  else building.inv[output.res] = (building.inv[output.res] || 0) + output.amount;
+  state.stats.lifetimeProduced[output.res] = (state.stats.lifetimeProduced[output.res] || 0) + output.amount;
 }
 
 export function canSell(building) {
@@ -40,12 +40,16 @@ export function sellGoods(state, building) {
 }
 
 export function workBuilding(state, building) {
+  return advanceBuildingWork(state, building, 1);
+}
+
+export function advanceBuildingWork(state, building, amount) {
   if (!building) return { worked: false, completed: false, reason: 'missing' };
   if (!canProduce(state, building)) {
     building.ptimer = 0;
     return { worked: false, completed: false, reason: 'blocked' };
   }
-  building.ptimer = (building.ptimer || 0) + 1;
+  building.ptimer = (building.ptimer || 0) + amount;
   if (building.ptimer < actionClicksFor(building, state.techs, state.addons)) return { worked: true, completed: false };
   produce(state, building);
   building.ptimer = 0;
@@ -72,7 +76,7 @@ export function transferResources(state) {
 export function automateManagedBuildings(state) {
   for (const building of state.buildings.values()) {
     if (managerCountFor(building) <= 0) continue;
-    workBuilding(state, building);
+    advanceBuildingWork(state, building, managerWorkFor(building, state.addons));
   }
 }
 

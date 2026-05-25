@@ -1,4 +1,4 @@
-import { BUILDINGS, MANUAL_ACTION_CLICKS, capFor, inputPorts, itemLabel, outputPort } from './data.js';
+import { BUILDINGS, MANUAL_ACTION_CLICKS, activeRecipe, capFor, inputPorts, itemLabel, outputPort } from './data.js';
 import { createManagerCosts } from './progression-data.js';
 
 export function inputAccepts(inputPort, resource) {
@@ -32,6 +32,30 @@ export function actionClicksFor(building, techs, addons = {}) {
   }
   if (BUILDINGS[building.type].kind !== 'crafter') return Math.max(1, MANUAL_ACTION_CLICKS + addonBonus);
   return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0) + addonBonus);
+}
+
+export function managerWorkFor(building, addons = {}) {
+  if (managerCountFor(building) <= 0) return 0;
+  return Math.max(1, 1 + addonManagerWorkBonus(addons, building.type));
+}
+
+export function recipeInputsFor(building, addons = {}) {
+  const recipe = activeRecipe(building);
+  if (!recipe) return {};
+  const reductions = addonInputEfficiency(addons, building.type);
+  return Object.fromEntries(Object.entries(recipe.inputs).map(([resource, amount]) => {
+    return [resource, Math.max(1, amount - (reductions[resource] || 0))];
+  }));
+}
+
+export function recipeOutputFor(building, addons = {}) {
+  const recipe = activeRecipe(building);
+  if (!recipe) return null;
+  const bonus = addonOutputBonus(addons, building.type, recipe.output.res);
+  return {
+    ...recipe.output,
+    amount: recipe.output.amount + bonus
+  };
 }
 
 export function salePriceFor(type, resource, techs, addons = {}) {
@@ -160,6 +184,25 @@ function addonStorageBonus(addons, type, resource) {
 
 function addonActionClickBonus(addons, type) {
   return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.actionClicks || 0), 0);
+}
+
+function addonManagerWorkBonus(addons, type) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.managerWork || 0), 0);
+}
+
+function addonInputEfficiency(addons, type) {
+  return activeAddonsFor(addons, type).reduce((totals, addon) => {
+    for (const [resource, amount] of Object.entries(addon.effects?.inputEfficiency || {})) {
+      totals[resource] = (totals[resource] || 0) + amount;
+    }
+    return totals;
+  }, {});
+}
+
+function addonOutputBonus(addons, type, resource) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => {
+    return total + (addon.effects?.outputBonus?.[resource] || 0);
+  }, 0);
 }
 
 function addonSaleMultiplier(addons, type) {

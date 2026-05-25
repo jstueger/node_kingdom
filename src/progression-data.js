@@ -218,6 +218,33 @@ export function createAddons() {
       effects: { storage: { wood: 8 } },
       bought: false
     },
+    lumber_foreman: {
+      node: 'lumber',
+      label: 'Foreman Routine',
+      desc: 'Managed Lumber Camps gain 1 extra work progress per tick.',
+      cost: { gold: 45, knowledge: 4, wood: 20 },
+      visibleWhen: { techs: ['lumber_management'] },
+      effects: { managerWork: 1 },
+      bought: false
+    },
+    sawmill_thin_kerf: {
+      node: 'sawmill',
+      label: 'Thin Kerf Blades',
+      desc: 'Sawmills need 1 less Wood when making Planks.',
+      cost: { gold: 30, plank: 4 },
+      visibleWhen: { techs: ['woodworking'] },
+      effects: { inputEfficiency: { wood: 1 } },
+      bought: false
+    },
+    forge_paired_molds: {
+      node: 'forge',
+      label: 'Paired Molds',
+      desc: 'Forges produce 1 extra Iron Bar per Iron Bar craft.',
+      cost: { gold: 55, iron_bar: 4, knowledge: 3 },
+      visibleWhen: { techs: ['smelting', 'knowledge_production'] },
+      effects: { outputBonus: { iron_bar: 1 } },
+      bought: false
+    },
     market_larger_stall: {
       node: 'market',
       label: 'Larger Stall',
@@ -233,6 +260,15 @@ export function createAddons() {
       cost: { gold: 25, plank: 2 },
       visibleWhen: { techs: ['woodworking'] },
       effects: { saleMultiplier: 0.15 },
+      bought: false
+    },
+    market_shift_lead: {
+      node: 'market',
+      label: 'Shift Lead',
+      desc: 'Managed Markets gain 1 extra work progress per tick.',
+      cost: { gold: 50, knowledge: 4 },
+      visibleWhen: { techs: ['market_management'] },
+      effects: { managerWork: 1 },
       bought: false
     }
   };

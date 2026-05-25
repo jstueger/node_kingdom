@@ -67,13 +67,12 @@ The inspector should support inspection and secondary detail. It should not beco
 
 The current implementation roadmap lives in `phase-plan.md`.
 
-The next useful product layer is goals:
+The next useful product layer is external demand:
 
-1. Unlocks or contracts that ask for specific production outcomes.
+1. Contracts that ask for specific production outcomes.
 2. Node-specific Manager slot upgrades.
-3. Later speed upgrades that reduce required work or manager cycle time.
-4. Better bottleneck summaries.
-5. Clearer upgrade choices in the tech tree.
+3. Better bottleneck summaries.
+4. Clearer upgrade choices in the tech tree.
 
 The current progression spine is deliberately modest:
 
@@ -83,7 +82,7 @@ The current progression spine is deliberately modest:
 4. Sword production and earned gold reveal the first Knowledge-producing building.
 5. Knowledge pays for early science upgrades, including the first Manager slot unlocks.
 
-Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots and hired Managers now form the first move from direct labor toward production planning.
+Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots and hired Managers form the first move from direct labor toward production planning, and efficiency addons let players improve an existing line before they simply copy more nodes.
 
 Knowledge is reserved for science progression for now. Markets sell trade goods, but Knowledge should not be converted back into gold until knowledge trading becomes a deliberate advanced mechanic.
 

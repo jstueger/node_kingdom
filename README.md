@@ -46,7 +46,7 @@ VS Code Live Server also works.
 - Lifetime production thresholds that reveal new tech.
 - Resource storage, manual node work, and work progress meters.
 - Early milestone goals with small gold rewards.
-- Node-type addons bought from the selected building inspector.
+- Node-type addons bought from the selected building inspector, including storage, speed, manager pace, input efficiency, output, and market value upgrades.
 - Science-unlocked Manager slots with buyable Managers that automate assigned nodes.
 - Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
@@ -81,6 +81,6 @@ node_kingdom/
 
 The project intentionally stays dependency-free for now. The browser is the runtime, and the source files are loaded directly as ES modules.
 
-Production, crafting, and selling begin as manual work. That is intentional early-game bootstrap friction; researched Manager slots and hired Managers now create the first automation layer for individual nodes.
+Production, crafting, and selling begin as manual work. That is intentional early-game bootstrap friction; researched Manager slots and hired Managers now create the first automation layer for individual nodes. Addons can then improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
 
 Good next engineering steps are adding tests for `rules.js`, `simulation.js`, and `world.js`, then continuing to split `input.js` only when interaction complexity makes that worthwhile.

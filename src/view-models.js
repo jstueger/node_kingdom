@@ -1,15 +1,17 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAlreadyConnected, managerCountFor, salePriceFor, storageCapFor } from './rules.js';
+import { actionClicksFor, inputAlreadyConnected, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function nodeViewState(building, connections, techs, addons = {}) {
   const definition = BUILDINGS[building.type];
   const recipe = activeRecipe(building);
   const output = outputPort(building);
+  const effectiveInputs = recipeInputsFor(building, addons);
+  const effectiveOutput = recipeOutputFor(building, addons);
   const actionClicks = definition.kind === 'seller' || recipe ? actionClicksFor(building, techs, addons) : 0;
   const progress = actionClicks ? Math.min(1, (building.ptimer || 0) / actionClicks) : 0;
 
   const inputs = inputPorts(building).map((port, index) => {
-    const need = recipe?.inputs?.[port.res] || null;
+    const need = effectiveInputs[port.res] || null;
     return {
       res: port.res,
       acceptsAll: Boolean(port.acceptsAll),
@@ -38,12 +40,15 @@ export function nodeViewState(building, connections, techs, addons = {}) {
     recipeLabel: recipe ? recipe.label : 'Manual Sell',
     actionClicks,
     managers: managerCountFor(building),
+    managerWork: managerWorkFor(building, addons),
     progressClicks: building.ptimer || 0,
     progress,
     progressPct: Math.floor(progress * 100),
     status: nodeStatus(definition, recipe, inputs, outputView, building),
     inputs,
     output: outputView,
+    effectiveInputs,
+    effectiveOutput,
     inventory: Object.entries(building.inv)
       .filter(([, amount]) => amount > 0)
       .map(([res, amount]) => ({

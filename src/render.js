@@ -1,5 +1,5 @@
-import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, salePriceFor, storageCapFor } from './rules.js';
+import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -64,7 +64,7 @@ function actionControlHtml(view, building) {
   return `
     <div class="node-action-control">
       <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${labels[view.definition.kind]}</button>
-      <span title="${view.managers ? 'Managed automation active' : 'Manual work progress'}">${view.progressClicks}/${view.actionClicks}${view.managers ? ' A' : ''}</span>
+      <span title="${view.managers ? 'Managed automation active' : 'Manual work progress'}">${view.progressClicks}/${view.actionClicks}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}</span>
     </div>`;
 }
 
@@ -192,6 +192,20 @@ function managerSlotsHtml(state, building) {
     </div>`).join('');
 }
 
+function efficiencyHtml(state, building) {
+  const view = nodeViewState(building, state.connections, state.techs, state.addons);
+  const rows = [`<div class="inv-row"><span>Work Required</span><span>${view.actionClicks} clicks</span></div>`];
+  if (view.managers) rows.push(`<div class="inv-row"><span>Manager Pace</span><span>${view.managerWork}/tick</span></div>`);
+  if (view.definition.kind !== 'seller' && view.effectiveOutput) {
+    const inputText = Object.entries(view.effectiveInputs)
+      .map(([res, amount]) => `${itemIcon(res)} ${amount}`)
+      .join(' ') || 'No inputs';
+    rows.push(`<div class="inv-row"><span>Effective Inputs</span><span>${inputText}</span></div>`);
+    rows.push(`<div class="inv-row"><span>Effective Output</span><span>${itemIcon(view.effectiveOutput.res)} ${view.effectiveOutput.amount}</span></div>`);
+  }
+  return rows.join('');
+}
+
 function renderPlacementGhost(context) {
   const { state, ui } = context;
   const drag = state.interaction.placementDrag;
@@ -316,14 +330,15 @@ export function renderInspector(context) {
     return;
   }
   const definition = BUILDINGS[building.type];
-  const recipe = activeRecipe(building);
+  const effectiveInputs = recipeInputsFor(building, state.addons);
+  const effectiveOutput = recipeOutputFor(building, state.addons);
   ui.inspectEmpty.classList.add('hidden');
   ui.inspectContent.classList.remove('hidden');
   const isSeller = definition.kind === 'seller';
   const inputPills = isSeller
     ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(building.type, res, state.techs, state.addons)} gold</span>`).join('')
-    : Object.entries(recipe.inputs).map(([res, amount]) => `<span class="pill">${itemIcon(res)} ${amount} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
-  const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(recipe.output.res)} ${recipe.output.amount} ${itemLabel(recipe.output.res)}`;
+    : Object.entries(effectiveInputs).map(([res, amount]) => `<span class="pill">${itemIcon(res)} ${amount} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
+  const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(effectiveOutput.res)} ${effectiveOutput.amount} ${itemLabel(effectiveOutput.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
   const invRows = Object.keys({ ...definition.capacity, ...building.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${building.inv[res] || 0}/${storageCapFor(building, res, state.techs, state.addons)}</span></div>`).join('');
   ui.inspectContent.innerHTML = `
@@ -331,6 +346,7 @@ export function renderInspector(context) {
     <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
     <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
     <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>
+    <div class="field"><div class="field-title">Efficiency</div>${efficiencyHtml(state, building)}</div>
     <div class="field"><div class="field-title">Managers</div>${managerSlotsHtml(state, building)}</div>
     <div class="field"><div class="field-title">Addons</div>${addonHtml(state, building)}</div>`;
   ui.inspectContent.querySelectorAll('.addon-buy').forEach(button => {
