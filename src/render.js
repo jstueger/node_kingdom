@@ -99,6 +99,51 @@ function statusLabel(status) {
   }[status] || status.toUpperCase();
 }
 
+function amountLabel(resource, amount) {
+  return resource === 'gold' ? `${amount} gold` : `${itemIcon(resource)} ${amount} ${itemLabel(resource)}`;
+}
+
+function lifetimeSummaryHtml(state) {
+  const produced = state.stats.lifetimeProduced;
+  const earned = state.stats.lifetimeEarned;
+  const rows = [
+    ['gold', earned.gold || 0, 'earned'],
+    ['wood', produced.wood || 0, 'produced'],
+    ['iron_ore', produced.iron_ore || 0, 'produced'],
+    ['plank', produced.plank || 0, 'produced'],
+    ['iron_bar', produced.iron_bar || 0, 'produced'],
+    ['sword', produced.sword || 0, 'produced'],
+    ['knowledge', produced.knowledge || 0, 'produced']
+  ];
+  return `
+    <div class="tech-summary">
+      ${rows.map(([resource, amount, mode]) => `<span>${resource === 'gold' ? '💰' : itemIcon(resource)} ${amount} ${mode}</span>`).join('')}
+    </div>`;
+}
+
+function techMetaHtml(state, tech) {
+  const visibleWhen = tech.visibleWhen || {};
+  const milestones = [];
+  for (const [resource, amount] of Object.entries(visibleWhen.lifetimeProduced || {})) {
+    milestones.push(`${itemIcon(resource)} ${state.stats.lifetimeProduced[resource] || 0}/${amount} ${itemLabel(resource)} produced`);
+  }
+  for (const [resource, amount] of Object.entries(visibleWhen.lifetimeEarned || {})) {
+    milestones.push(`${state.stats.lifetimeEarned[resource] || 0}/${amount} ${resource} earned`);
+  }
+  for (const type of visibleWhen.unlockedBuildings || []) {
+    milestones.push(`${BUILDINGS[type].label} unlocked`);
+  }
+
+  const prerequisites = (tech.requires || []).map(key => state.techs[key]?.label || key);
+  const unlocks = (tech.unlocks?.buildings || []).map(type => BUILDINGS[type]?.label || type);
+  const rows = [];
+  if (prerequisites.length) rows.push(`<div><span>Requires</span><b>${prerequisites.join(', ')}</b></div>`);
+  if (milestones.length) rows.push(`<div><span>Milestone</span><b>${milestones.join(', ')}</b></div>`);
+  if (unlocks.length) rows.push(`<div><span>Unlocks</span><b>${unlocks.join(', ')}</b></div>`);
+  if (Object.keys(tech.cost || {}).length) rows.push(`<div><span>Cost</span><b>${Object.entries(tech.cost).map(([resource, amount]) => amountLabel(resource, amount)).join(', ')}</b></div>`);
+  return rows.length ? `<div class="tech-meta">${rows.join('')}</div>` : '';
+}
+
 function renderPlacementGhost(context) {
   const { state, ui } = context;
   const drag = state.interaction.placementDrag;
@@ -259,7 +304,7 @@ export function renderSidebar(context) {
 export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
-  cards.innerHTML = '';
+  cards.innerHTML = lifetimeSummaryHtml(state);
   const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechVisible(state, tech));
   for (const tree of ['technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
@@ -275,6 +320,7 @@ export function renderTechTree(context) {
       card.innerHTML = `
         <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : formatCost(tech.cost)}</span></div>
         <div class="tech-desc">${tech.desc}</div>
+        ${techMetaHtml(state, tech)}
         <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
       card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
       cards.appendChild(card);

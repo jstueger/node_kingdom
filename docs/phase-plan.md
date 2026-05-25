@@ -14,12 +14,15 @@ The prototype already includes parts of the earlier progression direction:
 - Multi-resource tech costs.
 - Hidden locked buildings in the left building menu.
 - A first Knowledge resource, School building, Science heading, and Knowledge-paid upgrade.
+- Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
 ## Phase 1: Stabilize Current Progression
 
 Goal: make the current tech spine understandable, playable, and internally consistent.
+
+Status: complete.
 
 Scope:
 
@@ -142,4 +145,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 1: Stabilize Current Progression.
+The next phase to implement is Phase 2: Tech Tree Presentation.

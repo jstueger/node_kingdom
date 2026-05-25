@@ -238,22 +238,22 @@ Each tech can currently be bought once. Buying a tech spends its resource cost, 
 
 Techs may have visibility thresholds and prerequisite techs. A hidden tech appears once its threshold is met and its prerequisites are purchased. Visibility thresholds are separate from purchase costs.
 
-Visible techs are grouped under Technology or Science headings. Science currently begins with Knowledge Production and Basic Accounting.
+Visible techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned gold.
 
 Current techs:
 
 - Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.
-- Mining: requires Market Access, appears after 8 lifetime gold earned, costs 8 gold and 5 Wood, and unlocks Iron Mine buildings.
-- Woodworking: requires Market Access, appears after 12 lifetime gold earned and 12 lifetime Wood produced, costs 10 gold and 8 Wood, and unlocks Sawmill buildings.
-- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 12 gold, 6 Iron Ore, and 4 Wood, and unlocks Forge buildings.
-- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 15 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
-- Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 25 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
-- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 75 lifetime gold earned, costs 40 gold, 4 Planks, and 1 Sword, and unlocks School buildings.
+- Mining: requires Market Access, appears after 8 lifetime gold earned, costs 5 gold and 5 Wood, and unlocks Iron Mine buildings.
+- Woodworking: requires Market Access, appears after 10 lifetime gold earned and 12 lifetime Wood produced, costs 6 gold and 8 Wood, and unlocks Sawmill buildings.
+- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 8 gold, 6 Iron Ore, and 3 Wood, and unlocks Forge buildings.
+- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 10 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
+- Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 15 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
+- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60 lifetime gold earned, costs 25 gold, 3 Planks, and 1 Sword, and unlocks School buildings.
 - Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Markets need 2 fewer work clicks per sale.
 - Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
-- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 20 gold and 10 Wood, and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 60 gold, and makes crafters need 2 fewer work clicks per action.
-- Market Bargaining: requires Market Access and Woodworking, appears after 40 lifetime gold earned, costs 50 gold and 2 Planks, and increases Market sale prices by 25%, rounded down.
+- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12 gold and 8 Wood, and adds 5 storage capacity to every resource slot.
+- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 35 gold, and makes crafters need 2 fewer work clicks per action.
+- Market Bargaining: requires Market Access and Woodworking, appears after 40 lifetime gold earned, costs 35 gold and 2 Planks, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
@@ -269,6 +269,7 @@ Manual work:
 - When the meter fills, the node performs one action: mining, crafting, or selling.
 - If the node is missing inputs, has full output storage, or has nothing to sell, work does not advance.
 - Workshop Tuning reduces crafter actions to 8 clicks.
+- Basic Accounting reduces Market sale actions to 8 clicks.
 
 Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current stored resources and gold are used to pay tech costs.
 
@@ -365,7 +366,7 @@ Each recipe action normally requires 10 work clicks before it completes.
 
 ### Market
 
-The Market has no recipes. It accepts all current resources through one universal input and sells one stocked good when its manual work action completes.
+The Market has no recipes. It accepts all current resources through one universal input and sells one stocked good when its manual work action completes. Knowledge remains sellable so the universal Market input has no hidden exceptions.
 
 Current sell prices:
 
