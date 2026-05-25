@@ -1,5 +1,5 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAccepts, inputResourceForStorage, salePriceFor, storageCapFor } from './rules.js';
+import { actionClicksFor, inputAccepts, inputResourceForStorage, managerCountFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function canProduce(state, building) {
   if (BUILDINGS[building.type].kind === 'seller') return canSell(building);
@@ -69,7 +69,15 @@ export function transferResources(state) {
   }
 }
 
+export function automateManagedBuildings(state) {
+  for (const building of state.buildings.values()) {
+    if (managerCountFor(building) <= 0) continue;
+    workBuilding(state, building);
+  }
+}
+
 export function tickGame(state) {
   state.ticks++;
   transferResources(state);
+  automateManagedBuildings(state);
 }

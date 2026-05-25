@@ -1,4 +1,5 @@
 import { BUILDINGS, MANUAL_ACTION_CLICKS, capFor, inputPorts, itemLabel, outputPort } from './data.js';
+import { createManagerCosts } from './progression-data.js';
 
 export function inputAccepts(inputPort, resource) {
   if (!inputPort) return false;
@@ -125,6 +126,30 @@ export function activeAddonsFor(addons = {}, type) {
 
 export function managerSlotsFor(state, type) {
   return state.managerSlots[type] || 0;
+}
+
+export function managerCountFor(building) {
+  return building.managers || 0;
+}
+
+export function openManagerSlotsFor(state, building) {
+  return Math.max(0, managerSlotsFor(state, building.type) - managerCountFor(building));
+}
+
+export function managerCostFor(type) {
+  const costs = createManagerCosts();
+  return costs[type] || costs.default || {};
+}
+
+export function canBuyManager(state, building) {
+  return Boolean(building) && openManagerSlotsFor(state, building) > 0 && canPayCost(state, managerCostFor(building.type));
+}
+
+export function buyManager(state, building) {
+  if (!canBuyManager(state, building)) return false;
+  if (!spendCost(state, managerCostFor(building.type))) return false;
+  building.managers = managerCountFor(building) + 1;
+  return true;
 }
 
 function addonStorageBonus(addons, type, resource) {

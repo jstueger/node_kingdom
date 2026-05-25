@@ -69,6 +69,7 @@ export function loadGame(context) {
   context.applyWorldSize();
   context.drawBg();
   for (const building of payload.buildings || []) {
+    building.managers = building.managers || 0;
     state.buildings.set(building.id, building);
     state.unlockedBuildings[building.type] = true;
     context.gridSet(building.gx, building.gy, BUILDINGS[building.type].w, BUILDINGS[building.type].h, building.id);

@@ -245,3 +245,11 @@ export function createUnlockedBuildings() {
 export function createManagerSlots() {
   return {};
 }
+
+export function createManagerCosts() {
+  return {
+    lumber: { gold: 30 },
+    market: { gold: 35 },
+    default: { gold: 40 }
+  };
+}

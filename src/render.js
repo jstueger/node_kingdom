@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerSlotsFor, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -64,7 +64,7 @@ function actionControlHtml(view, building) {
   return `
     <div class="node-action-control">
       <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${labels[view.definition.kind]}</button>
-      <span>${view.progressClicks}/${view.actionClicks}</span>
+      <span title="${view.managers ? 'Managed automation active' : 'Manual work progress'}">${view.progressClicks}/${view.actionClicks}${view.managers ? ' A' : ''}</span>
     </div>`;
 }
 
@@ -180,10 +180,15 @@ function addonHtml(state, building) {
 function managerSlotsHtml(state, building) {
   const slots = managerSlotsFor(state, building.type);
   if (!slots) return '<div class="field-sub">No Manager slot unlocked for this node type.</div>';
+  const managers = managerCountFor(building);
+  const firstOpenIndex = managers;
+  const cost = managerCostFor(building.type);
   return Array.from({ length: slots }, (_, index) => `
-    <div class="manager-slot">
+    <div class="manager-slot ${index < managers ? 'filled' : ''}">
       <span>Manager Slot ${index + 1}</span>
-      <span>Empty</span>
+      ${index < managers
+        ? '<span>Active</span>'
+        : `<button class="manager-buy" data-bid="${building.id}" ${index !== firstOpenIndex || !canBuyManager(state, building) ? 'disabled' : ''}>Hire ${formatCost(cost)}</button>`}
     </div>`).join('');
 }
 
@@ -206,7 +211,7 @@ export function renderBuildings(context) {
     const view = nodeViewState(building, state.connections, state.techs, state.addons);
     const definition = view.definition;
     const el = document.createElement('div');
-    el.className = `bld node--${definition.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.status}`;
+    el.className = `bld node--${definition.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.managers ? 'managed' : ''} ${view.status}`;
     el.style.cssText = `left:${building.gx * CELL + 2}px;top:${building.gy * CELL + 2}px;width:${definition.w * CELL - 4}px;height:${definition.h * CELL - 4}px;background:${definition.color};`;
     el.innerHTML = `
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
@@ -330,6 +335,9 @@ export function renderInspector(context) {
     <div class="field"><div class="field-title">Addons</div>${addonHtml(state, building)}</div>`;
   ui.inspectContent.querySelectorAll('.addon-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));
+  });
+  ui.inspectContent.querySelectorAll('.manager-buy').forEach(button => {
+    button.addEventListener('click', () => actions.buyManager(Number(button.dataset.bid)));
   });
 }
 

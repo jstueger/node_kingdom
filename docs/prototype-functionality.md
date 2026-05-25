@@ -335,7 +335,7 @@ The inspector shows:
 - current recipe inputs or accepted Market goods
 - current recipe output or Market sale behavior
 - current inventory and capacity for known resources
-- Manager slots available for the selected building type
+- Manager slots and Manager hire controls for the selected building
 - node-type addons available for the selected building type
 
 Recipe changes are made directly on crafter nodes, not in the inspector.
@@ -346,10 +346,16 @@ Manager slots are node-type capabilities unlocked through Science techs. They ar
 
 Current Manager slot techs:
 
-- Lumber Management unlocks one empty Manager slot for Lumber Camps.
-- Market Management unlocks one empty Manager slot for Markets.
+- Lumber Management unlocks one Manager slot for Lumber Camps.
+- Market Management unlocks one Manager slot for Markets.
 
-Manager slots are empty placeholders in this phase. Managers cannot be bought or assigned yet, and Manager slots do not automate production, crafting, or selling until the later manager phase.
+Managers are bought per placed node from the inspector after the matching node type has an unlocked Manager slot. A hired Manager occupies one slot on that node and advances that node's normal work action once per game tick. This means managed Producers produce, managed Crafters craft, and managed Markets sell without manual clicks when their normal inputs, inventory, and output constraints allow it.
+
+Current Manager costs:
+
+- Lumber Camp Manager: 30 gold.
+- Market Manager: 35 gold.
+- Other future node Managers use the default 40 gold cost unless given a specific cost.
 
 ## Node Addons
 
@@ -380,7 +386,7 @@ The saved payload includes:
 - unlocked Manager slot state
 - unlocked building types
 - purchased tech state
-- buildings
+- buildings, including hired Manager counts
 - connections
 
 The Save button writes the current state to `localStorage`.
@@ -441,8 +447,7 @@ Current sell prices:
 
 The current prototype does not include:
 
-- contracts or goals
-- buyable Managers or Manager automation
+- contracts
 - pathfinding, roads, belts, pipes, or transport infrastructure
 - save files outside browser `localStorage`
 - production speed controls

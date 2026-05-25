@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
@@ -62,7 +62,7 @@ export function setupInput(context) {
     }
     const id = state.nextId++;
     state.gold -= definition.cost;
-    state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0 });
+    state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0, managers: 0 });
     context.gridSet(gx, gy, definition.w, definition.h, id);
     state.selectedId = id;
     context.setHint('Building placed');
@@ -241,6 +241,18 @@ export function setupInput(context) {
     context.setHint(`${addon.label} purchased`);
     context.renderAll();
     context.toast('Addon purchased');
+  }
+
+  function buyManager(id) {
+    const building = state.buildings.get(id);
+    if (!building) return;
+    if (!purchaseManager(state, building)) {
+      context.toast('Manager unavailable');
+      return;
+    }
+    context.setHint('Manager hired');
+    context.renderAll();
+    context.toast('Manager hired');
   }
 
   function selectBuildingType(type, card) {
@@ -453,5 +465,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyAddon, claimGoal, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyAddon, buyManager, claimGoal, selectBuildingType, toast: context.toast };
 }

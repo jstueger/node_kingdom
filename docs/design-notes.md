@@ -71,10 +71,9 @@ The next useful product layer is goals:
 
 1. Unlocks or contracts that ask for specific production outcomes.
 2. Node-specific Manager slot upgrades.
-3. Buyable Managers that automate individual nodes after a slot is unlocked.
-4. Later speed upgrades that reduce required work or manager cycle time.
-5. Better bottleneck summaries.
-6. Clearer upgrade choices in the tech tree.
+3. Later speed upgrades that reduce required work or manager cycle time.
+4. Better bottleneck summaries.
+5. Clearer upgrade choices in the tech tree.
 
 The current progression spine is deliberately modest:
 
@@ -82,9 +81,9 @@ The current progression spine is deliberately modest:
 2. Selling goods creates enough gold pressure to reveal Mining and Woodworking.
 3. Ore, planks, and bars then become explicit tech costs for later buildings.
 4. Sword production and earned gold reveal the first Knowledge-producing building.
-5. Knowledge pays for early science upgrades, while managers, contracts, and node addon menus remain later systems.
+5. Knowledge pays for early science upgrades, including the first Manager slot unlocks.
 
-Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots, managers, and later automation should move the player from direct labor toward production planning.
+Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots and hired Managers now form the first move from direct labor toward production planning.
 
 Knowledge is reserved for science progression for now. Markets sell trade goods, but Knowledge should not be converted back into gold until knowledge trading becomes a deliberate advanced mechanic.
 

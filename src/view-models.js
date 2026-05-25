@@ -1,5 +1,5 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAlreadyConnected, salePriceFor, storageCapFor } from './rules.js';
+import { actionClicksFor, inputAlreadyConnected, managerCountFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function nodeViewState(building, connections, techs, addons = {}) {
   const definition = BUILDINGS[building.type];
@@ -37,6 +37,7 @@ export function nodeViewState(building, connections, techs, addons = {}) {
     size: { w: definition.w, h: definition.h },
     recipeLabel: recipe ? recipe.label : 'Manual Sell',
     actionClicks,
+    managers: managerCountFor(building),
     progressClicks: building.ptimer || 0,
     progress,
     progressPct: Math.floor(progress * 100),
