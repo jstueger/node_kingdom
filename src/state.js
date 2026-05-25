@@ -126,6 +126,74 @@ export function createStats() {
   };
 }
 
+export function createGoals() {
+  return {
+    first_wood: {
+      label: 'First Timber',
+      desc: 'Produce enough wood to discover trade.',
+      completeWhen: { lifetimeProduced: { wood: 5 } },
+      reward: { gold: 3 },
+      claimed: false
+    },
+    first_trade: {
+      label: 'Open Trade',
+      desc: 'Research Market Access.',
+      visibleWhen: { lifetimeProduced: { wood: 5 } },
+      completeWhen: { techs: ['market_access'] },
+      reward: { gold: 5 },
+      claimed: false
+    },
+    first_sales: {
+      label: 'First Sales',
+      desc: 'Earn 10 lifetime gold from Markets.',
+      visibleWhen: { techs: ['market_access'] },
+      completeWhen: { lifetimeEarned: { gold: 10 } },
+      reward: { gold: 5 },
+      claimed: false
+    },
+    first_ore: {
+      label: 'Strike Ore',
+      desc: 'Produce 6 Iron Ore.',
+      visibleWhen: { techs: ['mining'] },
+      completeWhen: { lifetimeProduced: { iron_ore: 6 } },
+      reward: { gold: 5 },
+      claimed: false
+    },
+    first_planks: {
+      label: 'Cut Planks',
+      desc: 'Produce 3 Planks.',
+      visibleWhen: { techs: ['woodworking'] },
+      completeWhen: { lifetimeProduced: { plank: 3 } },
+      reward: { gold: 6 },
+      claimed: false
+    },
+    first_bars: {
+      label: 'First Bars',
+      desc: 'Produce 2 Iron Bars.',
+      visibleWhen: { techs: ['smelting'] },
+      completeWhen: { lifetimeProduced: { iron_bar: 2 } },
+      reward: { gold: 8 },
+      claimed: false
+    },
+    first_sword: {
+      label: 'Armed Trade',
+      desc: 'Produce 1 Sword.',
+      visibleWhen: { techs: ['blacksmithing'] },
+      completeWhen: { lifetimeProduced: { sword: 1 } },
+      reward: { gold: 10 },
+      claimed: false
+    },
+    first_knowledge: {
+      label: 'Written Records',
+      desc: 'Produce 5 Knowledge.',
+      visibleWhen: { techs: ['knowledge_production'] },
+      completeWhen: { lifetimeProduced: { knowledge: 5 } },
+      reward: { gold: 10 },
+      claimed: false
+    }
+  };
+}
+
 export function createUnlockedBuildings() {
   return { lumber: true };
 }
@@ -151,6 +219,7 @@ export const state = {
   connFrom: null,
   connections: [],
   stats: createStats(),
+  goals: createGoals(),
   unlockedBuildings: createUnlockedBuildings(),
   world: { cols: COLS, rows: ROWS },
   camera: {

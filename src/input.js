@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyTechUnlocks, inputAccepts, inputAlreadyConnected, isBuildingUnlocked, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, inputAccepts, inputAlreadyConnected, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
@@ -220,6 +220,16 @@ export function setupInput(context) {
     context.toast('Tech purchased');
   }
 
+  function claimGoal(key) {
+    const goal = state.goals[key];
+    if (!goal || goal.claimed || !isGoalComplete(state, goal)) return;
+    applyGoalReward(state, goal);
+    goal.claimed = true;
+    context.setHint(`${goal.label} complete`);
+    context.renderAll();
+    context.toast('Goal reward claimed');
+  }
+
   function selectBuildingType(type, card) {
     if (state.interaction.suppressNextSidebarClick) {
       state.interaction.suppressNextSidebarClick = false;
@@ -430,5 +440,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, claimGoal, selectBuildingType, toast: context.toast };
 }

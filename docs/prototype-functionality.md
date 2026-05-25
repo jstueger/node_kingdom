@@ -21,7 +21,7 @@ Market buildings are sink nodes. They do not use recipes and instead sell suppor
 The interface has five main areas:
 
 - Top bar: gold, simulation tick, zoom controls, Tech button, save/load/reset buttons, and current hint.
-- Left sidebar: placeable building cards with gold costs.
+- Left sidebar: placeable building cards with gold costs, active goals, and port legend.
 - Center game area: centered grid, buildings, ports, placement preview, and connector paths.
 - Right inspector: selected-building details.
 - Tech window: toggleable upgrade window.
@@ -225,6 +225,25 @@ Selling a building:
 
 Right-click a connection to delete it.
 
+## Goals
+
+The prototype has a compact early-goal panel in the left sidebar.
+
+Goals are not contracts. They do not require delivery, consume resources, or create a separate reputation economy. They are simple milestones that guide the current production chain and award small amounts of gold when claimed.
+
+Current goals:
+
+- First Timber: produce 5 lifetime Wood, rewards 3 gold.
+- Open Trade: research Market Access, rewards 5 gold.
+- First Sales: earn 10 lifetime gold from Markets, rewards 5 gold.
+- Strike Ore: produce 6 lifetime Iron Ore, rewards 5 gold.
+- Cut Planks: produce 3 lifetime Planks, rewards 6 gold.
+- First Bars: produce 2 lifetime Iron Bars, rewards 8 gold.
+- Armed Trade: produce 1 lifetime Sword, rewards 10 gold.
+- Written Records: produce 5 lifetime Knowledge, rewards 10 gold.
+
+The sidebar shows up to three visible unclaimed goals. Completed goals show a claim button. Claimed goals are hidden.
+
 ## Tech Tree
 
 The prototype has a toggleable tech tree window.
@@ -328,6 +347,7 @@ The saved payload includes:
 - tick count
 - current grid size
 - lifetime production/sale stats
+- claimed goal state
 - unlocked building types
 - purchased tech state
 - buildings

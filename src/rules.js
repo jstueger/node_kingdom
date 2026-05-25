@@ -95,6 +95,34 @@ export function applyTechUnlocks(state, tech) {
   for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
 }
 
+export function isGoalVisible(state, goal) {
+  return isConditionMet(state, goal.visibleWhen || {});
+}
+
+export function isGoalComplete(state, goal) {
+  return isConditionMet(state, goal.completeWhen || {});
+}
+
+export function applyGoalReward(state, goal) {
+  if (goal.reward?.gold) state.gold += goal.reward.gold;
+}
+
+function isConditionMet(state, condition) {
+  for (const key of condition.techs || []) {
+    if (!state.techs[key]?.bought) return false;
+  }
+  for (const type of condition.unlockedBuildings || []) {
+    if (!isBuildingUnlocked(state, type)) return false;
+  }
+  for (const [resource, amount] of Object.entries(condition.lifetimeProduced || {})) {
+    if ((state.stats.lifetimeProduced[resource] || 0) < amount) return false;
+  }
+  for (const [resource, amount] of Object.entries(condition.lifetimeEarned || {})) {
+    if ((state.stats.lifetimeEarned[resource] || 0) < amount) return false;
+  }
+  return true;
+}
+
 function spendStoredResource(state, resource, amount) {
   let remaining = amount;
   for (const building of state.buildings.values()) {

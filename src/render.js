@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, isBuildingUnlocked, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -152,6 +152,12 @@ function techStatus(state, tech) {
   if (!areTechMilestonesMet(state, tech)) return { key: 'gated', label: 'Needs milestone', button: 'Locked', disabled: true };
   if (!canPayCost(state, tech.cost)) return { key: 'unaffordable', label: 'Need resources', button: 'Need resources', disabled: true };
   return { key: 'available', label: 'Available', button: 'Buy', disabled: false };
+}
+
+function rewardText(reward = {}) {
+  const parts = [];
+  if (reward.gold) parts.push(`+${reward.gold} gold`);
+  return parts.join(', ');
 }
 
 function renderPlacementGhost(context) {
@@ -311,6 +317,27 @@ export function renderSidebar(context) {
   }
 }
 
+export function renderGoals(context) {
+  const { state, actions } = context;
+  const cards = document.getElementById('goalCards');
+  cards.innerHTML = '';
+  const visibleGoals = Object.entries(state.goals).filter(([, goal]) => isGoalVisible(state, goal) && !goal.claimed);
+  for (const [key, goal] of visibleGoals.slice(0, 3)) {
+    const complete = isGoalComplete(state, goal);
+    const card = document.createElement('div');
+    card.className = `goal-card ${complete ? 'complete' : ''}`;
+    card.innerHTML = `
+      <div class="goal-head"><span>${goal.label}</span><span>${complete ? 'Done' : rewardText(goal.reward)}</span></div>
+      <div class="goal-desc">${goal.desc}</div>
+      <button class="goal-claim" ${complete ? '' : 'disabled'}>${complete ? `Claim ${rewardText(goal.reward)}` : 'In progress'}</button>`;
+    card.querySelector('button').addEventListener('click', () => actions.claimGoal(key));
+    cards.appendChild(card);
+  }
+  if (!visibleGoals.length) {
+    cards.innerHTML = '<div class="goal-empty">No active goals.</div>';
+  }
+}
+
 export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
@@ -346,6 +373,7 @@ export function renderWorld(context) {
 
 export function renderPanels(context) {
   renderSidebar(context);
+  renderGoals(context);
   renderInspector(context);
   renderTechTree(context);
 }

@@ -16,6 +16,7 @@ The prototype already includes parts of the earlier progression direction:
 - A first Knowledge resource, School building, Science heading, and Knowledge-paid upgrade.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
+- Early milestone goals with claimable gold rewards.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -60,6 +61,8 @@ Exit criteria:
 ## Phase 3: Early Goals And Guidance
 
 Goal: give the manual economy short-term targets without adding contracts yet.
+
+Status: complete.
 
 Scope:
 
@@ -148,4 +151,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 3: Early Goals And Guidance.
+The next phase to implement is Phase 4: Node Addon Framework.
