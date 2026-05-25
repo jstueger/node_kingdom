@@ -84,7 +84,9 @@ The current progression spine is deliberately modest:
 4. Sword production and earned gold reveal the first Knowledge-producing building.
 5. Knowledge pays for early science upgrades, while managers, contracts, and node addon menus remain later systems.
 
-Knowledge remains sellable at the Market for now. This preserves the rule that Markets accept anything they are fed, and it avoids hidden resource exceptions during the prototype stage.
+Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots, managers, and later automation should move the player from direct labor toward production planning.
+
+Knowledge is reserved for science progression for now. Markets sell trade goods, but Knowledge should not be converted back into gold until knowledge trading becomes a deliberate advanced mechanic.
 
 The next useful engineering layer is confidence:
 

@@ -6,7 +6,7 @@ The core rule is:
 
 > Every recipe-based node has one active output at a time. Crafters may have multiple recipes, but only one recipe is active.
 
-Markets are the exception: they do not use recipes and sell any supported goods they receive.
+Markets are the exception: they do not use recipes and sell supported trade goods they receive.
 
 ## Purpose Of This File
 
@@ -63,6 +63,7 @@ node_kingdom/
 │   └── prototype-functionality.md
 └── src/
     ├── data.js
+    ├── progression-data.js
     ├── state.js
     ├── rules.js
     ├── simulation.js
@@ -78,5 +79,7 @@ node_kingdom/
 ## Development Notes
 
 The project intentionally stays dependency-free for now. The browser is the runtime, and the source files are loaded directly as ES modules.
+
+Production, crafting, and selling are currently manual-work based. That is intentional early-game bootstrap friction; later manager and automation phases should reduce or remove that clicking burden.
 
 Good next engineering steps are adding tests for `rules.js`, `simulation.js`, and `world.js`, then continuing to split `input.js` only when interaction complexity makes that worthwhile.

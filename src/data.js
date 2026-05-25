@@ -128,10 +128,10 @@ export const BUILDINGS = {
   },
   market: {
     label: 'Market', icon: '🏪', color: '#081c0c', w: 8, h: 8,
-    desc: 'Sells any goods it receives.',
+    desc: 'Sells any trade goods it receives.',
     kind: 'seller',
     cost: 5,
-    capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8, knowledge: 8 },
+    capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },
     sellPrices: {
       iron_ore: 1,
       wood: 1,
@@ -139,8 +139,7 @@ export const BUILDINGS = {
       iron_bar: 5,
       plank: 3,
       steel_bar: 12,
-      sword: 25,
-      knowledge: 8
+      sword: 25
     }
   }
 };
@@ -165,7 +164,7 @@ export function activeRecipe(building) {
 
 export function inputPorts(building) {
   const d = BUILDINGS[building.type];
-  if (d.kind === 'seller') return [{ side: 'left', t: 0.5, res: 'any', acceptsAll: true }];
+  if (d.kind === 'seller') return [{ side: 'left', t: 0.5, res: 'any', acceptsAll: true, acceptedResources: Object.keys(d.sellPrices || {}) }];
   const inputs = activeRecipe(building).inputs;
   const keys = Object.keys(inputs);
   if (!keys.length) return [];

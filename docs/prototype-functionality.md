@@ -146,7 +146,7 @@ The active recipe determines:
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts any resource through one universal input and sells stocked goods for gold when worked.
+Markets do not use recipes. A Market accepts supported trade goods through one universal input and sells stocked goods for gold when worked. Knowledge is reserved for Science and is not accepted by Markets.
 
 Changing a crafter recipe:
 
@@ -167,7 +167,7 @@ Input ports:
 - are resource-specific for recipe buildings
 - accept at most one incoming connection
 
-The Market exposes one universal input port that accepts every current resource, but it still accepts only one incoming connection.
+The Market exposes one universal input port that accepts every current sellable trade good, but it still accepts only one incoming connection.
 
 Output ports:
 
@@ -186,7 +186,7 @@ To create a connection:
 Connection rules:
 
 - A building cannot connect to itself.
-- Output and input resources must match unless the input accepts any resource.
+- Output and input resources must match unless the input accepts any supported trade good.
 - Each input port accepts only one connection.
 - Each output port accepts only one outgoing connection.
 - Connecting an already-connected output to a different valid input rewires that output to the new input.
@@ -410,7 +410,7 @@ Each recipe action normally requires 10 work clicks before it completes.
 
 ### Market
 
-The Market has no recipes. It accepts all current resources through one universal input and sells one stocked good when its manual work action completes. Knowledge remains sellable so the universal Market input has no hidden exceptions.
+The Market has no recipes. It accepts all current sellable trade goods through one universal input and sells one stocked good when its manual work action completes. Knowledge is not sellable.
 
 Current sell prices:
 
@@ -421,7 +421,6 @@ Current sell prices:
 - Plank: 3 gold.
 - Steel Bar: 12 gold.
 - Sword: 25 gold.
-- Knowledge: 8 gold.
 
 ## Current Limitations
 

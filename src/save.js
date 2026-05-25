@@ -1,5 +1,6 @@
 import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createGrid, createInteractionState, createStats, createTechs, createUnlockedBuildings } from './state.js';
+import { createAddons, createGoals, createTechs, createUnlockedBuildings } from './progression-data.js';
+import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
 

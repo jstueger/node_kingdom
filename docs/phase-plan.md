@@ -18,6 +18,7 @@ The prototype already includes parts of the earlier progression direction:
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
 - Early milestone goals with claimable gold rewards.
 - Node-type addons for Lumber Camp and Market, bought from the inspector.
+- Progression definitions split into `progression-data.js`; Knowledge reserved for Science.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -92,6 +93,25 @@ Scope:
 Exit criteria:
 
 - At least Lumber Camp and Market have node-specific upgrades that can be bought and saved.
+
+## Phase 4.5: Progression Data Cleanup
+
+Goal: keep progression content separate from runtime state before manager systems add more data.
+
+Status: complete.
+
+Scope:
+
+- Move tech, goal, addon, and starting unlock definitions into `progression-data.js`.
+- Keep `state.js` focused on runtime state creation.
+- Reserve Knowledge for Science instead of Market sale.
+- Document manual work as early-game bootstrap friction.
+
+Exit criteria:
+
+- Runtime state imports progression definitions from a dedicated data module.
+- Markets do not accept or sell Knowledge.
+- The docs describe manual work as temporary friction that later automation should reduce.
 
 ## Phase 5: Manager Slot Unlocks
 

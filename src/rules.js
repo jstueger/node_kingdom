@@ -1,7 +1,9 @@
 import { BUILDINGS, MANUAL_ACTION_CLICKS, capFor, inputPorts, itemLabel, outputPort } from './data.js';
 
 export function inputAccepts(inputPort, resource) {
-  return Boolean(inputPort && (inputPort.acceptsAll || inputPort.res === resource));
+  if (!inputPort) return false;
+  if (!inputPort.acceptsAll) return inputPort.res === resource;
+  return !inputPort.acceptedResources || inputPort.acceptedResources.includes(resource);
 }
 
 export function inputResourceForStorage(inputPort, outputResource) {
