@@ -13,7 +13,8 @@ export const ITEMS = {
   plank: { label: 'Plank', icon: '🟫' },
   coal: { label: 'Coal', icon: '⚫' },
   steel_bar: { label: 'Steel Bar', icon: '🔩' },
-  sword: { label: 'Sword', icon: '🗡️' }
+  sword: { label: 'Sword', icon: '🗡️' },
+  knowledge: { label: 'Knowledge', icon: '📜' }
 };
 
 export const BUILDINGS = {
@@ -111,12 +112,26 @@ export const BUILDINGS = {
       }
     }
   },
+  school: {
+    label: 'School', icon: '📚', color: '#10201c', w: 16, h: 8,
+    desc: 'Produces knowledge for science upgrades.',
+    kind: 'producer',
+    cost: 25,
+    capacity: { knowledge: 10 },
+    recipes: {
+      knowledge: {
+        label: 'Study',
+        inputs: {},
+        output: { res: 'knowledge', amount: 1 }
+      }
+    }
+  },
   market: {
     label: 'Market', icon: '🏪', color: '#081c0c', w: 8, h: 8,
     desc: 'Sells any goods it receives.',
     kind: 'seller',
     cost: 5,
-    capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8 },
+    capacity: { iron_ore: 10, wood: 10, coal: 10, iron_bar: 10, plank: 10, steel_bar: 8, sword: 8, knowledge: 8 },
     sellPrices: {
       iron_ore: 1,
       wood: 1,
@@ -124,7 +139,8 @@ export const BUILDINGS = {
       iron_bar: 5,
       plank: 3,
       steel_bar: 12,
-      sword: 25
+      sword: 25,
+      knowledge: 8
     }
   }
 };

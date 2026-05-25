@@ -44,7 +44,7 @@ VS Code Live Server also works.
 - Universal single-input Market that sells stocked goods when worked.
 - Lifetime production thresholds that reveal new tech.
 - Resource storage, manual node work, and work progress meters.
-- Toggleable tech tree with building unlocks, grid, storage, crafting, and market upgrades.
+- Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 
 ## Source Layout

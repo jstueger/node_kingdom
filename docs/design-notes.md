@@ -79,7 +79,8 @@ The current progression spine is deliberately modest:
 1. Wood production reveals Market Access.
 2. Selling goods creates enough gold pressure to reveal Mining and Woodworking.
 3. Ore, planks, and bars then become explicit tech costs for later buildings.
-4. Knowledge, managers, contracts, and node addon menus remain later systems.
+4. Sword production and earned gold reveal the first Knowledge-producing building.
+5. Knowledge pays for early science upgrades, while managers, contracts, and node addon menus remain later systems.
 
 The next useful engineering layer is confidence:
 

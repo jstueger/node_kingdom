@@ -21,6 +21,9 @@ export function isBuildingUnlocked(state, type) {
 }
 
 export function actionClicksFor(building, techs) {
+  if (BUILDINGS[building.type].kind === 'seller') {
+    return Math.max(1, MANUAL_ACTION_CLICKS - (techs.basic_accounting?.bought ? 2 : 0));
+  }
   if (BUILDINGS[building.type].kind !== 'crafter') return MANUAL_ACTION_CLICKS;
   return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0));
 }

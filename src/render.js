@@ -56,7 +56,7 @@ function recipeControlHtml(view, building) {
 
 function actionControlHtml(view, building) {
   const labels = {
-    producer: 'Mine',
+    producer: view.recipeLabel,
     crafter: 'Work',
     seller: 'Sell'
   };
@@ -246,9 +246,10 @@ export function renderSidebar(context) {
   cards.innerHTML = '';
   for (const [type, definition] of Object.entries(BUILDINGS)) {
     const unlocked = isBuildingUnlocked(state, type);
+    if (!unlocked) continue;
     const card = document.createElement('div');
-    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''} ${unlocked ? '' : 'unavailable'}`;
-    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${unlocked ? `${definition.cost}g` : 'Locked'}</span></div><div class="bcard-d">${unlocked ? definition.desc : 'Unlock through the tech tree.'}</div>`;
+    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''}`;
+    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${definition.cost}g</span></div><div class="bcard-d">${definition.desc}</div>`;
     card.addEventListener('click', () => actions.selectBuildingType(type, card));
     card.addEventListener('pointerdown', (event) => actions.startPlacementDrag(event, type));
     cards.appendChild(card);
@@ -259,17 +260,25 @@ export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
   cards.innerHTML = '';
-  for (const [key, tech] of Object.entries(state.techs)) {
-    if (!isTechVisible(state, tech)) continue;
-    const card = document.createElement('div');
-    card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
-    const canBuy = canPayCost(state, tech.cost) && !tech.bought;
-    card.innerHTML = `
-      <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : formatCost(tech.cost)}</span></div>
-      <div class="tech-desc">${tech.desc}</div>
-      <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
-    card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
-    cards.appendChild(card);
+  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechVisible(state, tech));
+  for (const tree of ['technology', 'science']) {
+    const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
+    if (!entries.length) continue;
+    const header = document.createElement('div');
+    header.className = 'tech-group';
+    header.textContent = tree === 'science' ? 'Science' : 'Technology';
+    cards.appendChild(header);
+    for (const [key, tech] of entries) {
+      const card = document.createElement('div');
+      card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
+      const canBuy = canPayCost(state, tech.cost) && !tech.bought;
+      card.innerHTML = `
+        <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : formatCost(tech.cost)}</span></div>
+        <div class="tech-desc">${tech.desc}</div>
+        <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
+      card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
+      cards.appendChild(card);
+    }
   }
 }
 

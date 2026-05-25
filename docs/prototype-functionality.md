@@ -80,9 +80,10 @@ Current building types:
 - Forge: crafts iron bars or steel bars.
 - Sawmill: crafts planks.
 - Blacksmith: crafts swords.
+- School: produces Knowledge.
 - Market: sells goods for gold.
 
-Only Lumber Camp is unlocked at the start of a new game. Other building cards are shown as locked until unlocked by tech.
+Only Lumber Camp is unlocked at the start of a new game. The left building menu only shows currently unlocked building types.
 
 Each building has:
 
@@ -104,6 +105,7 @@ Current placement costs:
 - Forge: 12 gold.
 - Sawmill: 10 gold.
 - Blacksmith: 18 gold.
+- School: 25 gold.
 - Market: 5 gold.
 
 Unaffordable building cards are dimmed. They can still be selected or dragged, but placement fails until the player has enough gold.
@@ -144,7 +146,7 @@ The active recipe determines:
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts sellable goods through one universal input and sells stocked goods for gold when worked.
+Markets do not use recipes. A Market accepts any resource through one universal input and sells stocked goods for gold when worked.
 
 Changing a crafter recipe:
 
@@ -165,7 +167,7 @@ Input ports:
 - are resource-specific for recipe buildings
 - accept at most one incoming connection
 
-The Market exposes one universal input port that accepts every current sellable resource, but it still accepts only one incoming connection.
+The Market exposes one universal input port that accepts every current resource, but it still accepts only one incoming connection.
 
 Output ports:
 
@@ -236,6 +238,8 @@ Each tech can currently be bought once. Buying a tech spends its resource cost, 
 
 Techs may have visibility thresholds and prerequisite techs. A hidden tech appears once its threshold is met and its prerequisites are purchased. Visibility thresholds are separate from purchase costs.
 
+Visible techs are grouped under Technology or Science headings. Science currently begins with Knowledge Production and Basic Accounting.
+
 Current techs:
 
 - Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.
@@ -244,6 +248,8 @@ Current techs:
 - Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 12 gold, 6 Iron Ore, and 4 Wood, and unlocks Forge buildings.
 - Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 15 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
 - Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 25 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
+- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 75 lifetime gold earned, costs 40 gold, 4 Planks, and 1 Sword, and unlocks School buildings.
+- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Markets need 2 fewer work clicks per sale.
 - Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 20 gold and 10 Wood, and adds 5 storage capacity to every resource slot.
 - Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 60 gold, and makes crafters need 2 fewer work clicks per action.
@@ -353,6 +359,10 @@ Each recipe action normally requires 10 work clicks before it completes.
 - Sword: consumes 2 Iron Bars and 1 Plank, produces 1 Sword.
 - Steel Sword: consumes 2 Steel Bars and 1 Plank, produces 2 Swords.
 
+### School
+
+- Study: produces 1 Knowledge.
+
 ### Market
 
 The Market has no recipes. It accepts all current resources through one universal input and sells one stocked good when its manual work action completes.
@@ -366,6 +376,7 @@ Current sell prices:
 - Plank: 3 gold.
 - Steel Bar: 12 gold.
 - Sword: 25 gold.
+- Knowledge: 8 gold.
 
 ## Current Limitations
 

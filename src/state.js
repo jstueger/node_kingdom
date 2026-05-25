@@ -59,6 +59,26 @@ export function createTechs() {
       unlocks: { buildings: ['blacksmith'] },
       bought: false
     },
+    knowledge_production: {
+      tree: 'science',
+      label: 'Knowledge Production',
+      desc: 'Unlocks Schools so the kingdom can turn wealth into knowledge.',
+      visibleWhen: { lifetimeProduced: { sword: 1 }, lifetimeEarned: { gold: 75 } },
+      requires: ['blacksmithing'],
+      cost: { gold: 40, plank: 4, sword: 1 },
+      unlocks: { buildings: ['school'] },
+      bought: false
+    },
+    basic_accounting: {
+      tree: 'science',
+      label: 'Basic Accounting',
+      desc: 'Markets need 2 fewer work clicks to complete a sale.',
+      visibleWhen: { lifetimeProduced: { knowledge: 5 } },
+      requires: ['knowledge_production'],
+      cost: { knowledge: 5 },
+      unlocks: {},
+      bought: false
+    },
     grid_expansion: {
       label: 'Grid Expansion',
       desc: 'Adds 16 columns and 8 rows to the build grid.',
