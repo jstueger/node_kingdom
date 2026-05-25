@@ -1,6 +1,6 @@
 # Design Notes
 
-This document records product and design intent. It is not the current behavior spec; use `prototype-functionality.md` for exact implemented behavior.
+This document records product and design intent. It is not the current behavior spec; use `prototype-functionality.md` for exact implemented behavior. For the agreed implementation roadmap, use `phase-plan.md`.
 
 ## Core Shape
 
@@ -64,6 +64,8 @@ Node information should live on the node whenever it helps direct manipulation:
 The inspector should support inspection and secondary detail. It should not become the primary control surface for common node actions.
 
 ## Near-Term Product Direction
+
+The current implementation roadmap lives in `phase-plan.md`.
 
 The next useful product layer is goals:
 

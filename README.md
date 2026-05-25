@@ -14,6 +14,7 @@ This README is the project entry point. It explains how to run the prototype, wh
 
 - `docs/prototype-functionality.md`: current behavior spec for the playable prototype.
 - `docs/design-notes.md`: design intent, constraints, and near-term product direction.
+- `docs/phase-plan.md`: agreed phase roadmap for upcoming work.
 
 ## How To Run
 
@@ -56,6 +57,7 @@ node_kingdom/
 ├── README.md
 ├── docs/
 │   ├── design-notes.md
+│   ├── phase-plan.md
 │   └── prototype-functionality.md
 └── src/
     ├── data.js
