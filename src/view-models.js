@@ -65,9 +65,9 @@ function totalInventory(building) {
 }
 
 function nodeStatus(definition, recipe, inputs, outputView, building) {
-  if (definition.kind === 'seller') return totalInventory(building) > 0 ? 'working' : 'idle';
+  if (definition.kind === 'seller') return totalInventory(building) > 0 ? 'ready' : 'idle';
   if (outputView && outputView.have >= outputView.cap) return 'blocked';
-  if (inputs.some(input => input.need !== null && input.have < input.need)) return 'starved';
+  if (inputs.some(input => input.need !== null && input.have < input.need)) return 'waiting';
   if (!recipe) return 'idle';
-  return 'working';
+  return 'ready';
 }

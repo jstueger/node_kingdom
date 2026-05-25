@@ -120,7 +120,7 @@ All nodes show:
 - current status
 - manual work progress at the bottom, when applicable
 - a node-local work button
-- border/status styling for working, waiting, blocked, or idle state
+- border/status styling for ready, waiting, blocked, or idle state
 
 Crafter nodes show:
 
@@ -243,6 +243,22 @@ Current goals:
 - Written Records: produce 5 lifetime Knowledge, rewards 10 gold.
 
 The sidebar shows up to three visible unclaimed goals. Completed goals show a claim button. Claimed goals are hidden.
+
+## Progression Model
+
+The current progression model is deliberately simple and bootstrap-focused:
+
+- Only Lumber Camps start unlocked.
+- Manual work on nodes creates the first resources and sales.
+- Markets convert stocked trade goods into gold.
+- Lifetime thresholds reveal techs; current resources and gold pay for techs.
+- Technology techs unlock early buildings, grid space, storage, crafting, and trade improvements.
+- Science techs use Knowledge and unlock later systems such as Manager slots.
+- Manager slots allow specific placed nodes to hire Managers.
+- Managers automate work after their node type has an unlocked Manager slot.
+- Addons improve node types through storage, work speed, manager pace, input efficiency, output bonuses, or sale value.
+
+The intended early loop is: produce Wood, unlock Market Access, place a Market, connect Lumber to Market, sell Wood for gold, then unlock Mining and Woodworking.
 
 ## Tech Tree
 

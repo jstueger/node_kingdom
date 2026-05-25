@@ -60,7 +60,7 @@ function actionControlHtml(view, building) {
     crafter: 'Work',
     seller: 'Sell'
   };
-  const disabled = view.status !== 'working';
+  const disabled = view.status !== 'ready';
   return `
     <div class="node-action-control">
       <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${labels[view.definition.kind]}</button>
@@ -92,8 +92,8 @@ function nodeBodyHtml(view) {
 
 function statusLabel(status) {
   return {
-    working: 'READY',
-    starved: 'WAITING',
+    ready: 'READY',
+    waiting: 'WAITING',
     blocked: 'BLOCKED',
     idle: 'IDLE'
   }[status] || status.toUpperCase();
