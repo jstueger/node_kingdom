@@ -24,30 +24,32 @@ export function createInteractionState() {
   };
 }
 
-export const state = {
-  nextId: 1,
-  gold: STARTING_GOLD,
-  ticks: 0,
-  selectedId: null,
-  mode: 'idle',
-  placeType: null,
-  connFrom: null,
-  connections: [],
-  stats: createStats(),
-  goals: createGoals(),
-  addons: createAddons(),
-  managerSlots: createManagerSlots(),
-  unlockedBuildings: createUnlockedBuildings(),
-  world: { cols: COLS, rows: ROWS },
-  camera: {
-    zoom: 1,
-    panOffset: { x: 0, y: 0 }
-  },
-  clock: {
-    lastTickAt: 0
-  },
-  interaction: createInteractionState(),
-  buildings: new Map(),
-  grid: createGrid(COLS, ROWS),
-  techs: createTechs()
-};
+export function createState() {
+  return {
+    nextId: 1,
+    gold: STARTING_GOLD,
+    ticks: 0,
+    selectedId: null,
+    mode: 'idle',
+    placeType: null,
+    connFrom: null,
+    connections: [],
+    stats: createStats(),
+    goals: createGoals(),
+    addons: createAddons(),
+    managerSlots: createManagerSlots(),
+    unlockedBuildings: createUnlockedBuildings(),
+    world: { cols: COLS, rows: ROWS },
+    camera: {
+      zoom: 1,
+      panOffset: { x: 0, y: 0 }
+    },
+    clock: {
+      lastTickAt: 0
+    },
+    interaction: createInteractionState(),
+    buildings: new Map(),
+    grid: createGrid(COLS, ROWS),
+    techs: createTechs()
+  };
+}

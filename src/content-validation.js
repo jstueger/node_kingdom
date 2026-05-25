@@ -17,6 +17,7 @@ export function validateContent(content) {
   validateAddons(content.addons || {}, itemIds, buildingIds, techIds, errors);
   validateManagers(content.managers || {}, itemIds, buildingIds, errors);
   validateStartState(content.startState || {}, buildingIds, errors);
+  validateReachability(content, buildingIds, warnings);
 
   return { valid: errors.length === 0, errors, warnings };
 }
@@ -122,6 +123,19 @@ function validateStartState(startState, buildingIds, errors) {
   validateNonNegativeNumber(startState.startingGold, 'Start state startingGold', errors);
   for (const type of Object.keys(startState.unlockedBuildings || {})) {
     if (!buildingIds.has(type)) errors.push(`Start state unlocks unknown building "${type}"`);
+  }
+}
+
+function validateReachability(content, buildingIds, warnings) {
+  const startBuildings = new Set(Object.keys(content.startState?.unlockedBuildings || {}));
+  const techUnlockedBuildings = new Set();
+  for (const tech of Object.values(content.techs || {})) {
+    for (const type of tech.unlocks?.buildings || []) techUnlockedBuildings.add(type);
+  }
+  for (const type of buildingIds) {
+    if (!startBuildings.has(type) && !techUnlockedBuildings.has(type)) {
+      warnings.push(`Building "${type}" is not in start-state and is not unlocked by any tech`);
+    }
   }
 }
 

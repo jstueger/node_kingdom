@@ -7,8 +7,10 @@ const { setupInput } = await import('./input.js');
 const { renderAll, renderBuildings, renderConnections, renderGoals, renderPanels, renderTechTree, renderTopbar, renderWorld, updateProgressBars } = await import('./render.js');
 const { loadGame, resetWorld, saveGame } = await import('./save.js');
 const { tickGame } = await import('./simulation.js');
-const { state } = await import('./state.js');
+const { createState } = await import('./state.js');
 const { applyWorldSize, bez, drawBg, gridFree, gridSet, clampGridPos, portPx } = await import('./world.js');
+
+const state = createState();
 
 const ui = {
   bg: document.getElementById('bg'),

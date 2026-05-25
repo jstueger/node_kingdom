@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
@@ -55,13 +55,13 @@ export function setupInput(context) {
       context.setHint('❌ Space occupied — try another cell');
       return false;
     }
-    if (state.gold < definition.cost) {
-      context.setHint(`❌ Need ${definition.cost} gold to build ${definition.label}`);
-      context.toast('Not enough gold');
+    if (!canPayCost(state, definition.costResources)) {
+      context.setHint(`❌ Need ${formatCost(definition.costResources)} to build ${definition.label}`);
+      context.toast('Not enough resources');
       return false;
     }
     const id = state.nextId++;
-    state.gold -= definition.cost;
+    spendCost(state, definition.costResources);
     state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0, managers: 0 });
     context.gridSet(gx, gy, definition.w, definition.h, id);
     state.selectedId = id;
@@ -326,7 +326,7 @@ export function setupInput(context) {
     drag.overGrid = point.x >= 0 && point.y >= 0 && point.x < state.world.cols * CELL && point.y < state.world.rows * CELL;
     drag.gx = Math.floor(point.x / CELL);
     drag.gy = Math.floor(point.y / CELL);
-    drag.valid = drag.overGrid && isBuildingUnlocked(state, drag.type) && state.gold >= definition.cost && context.gridFree(drag.gx, drag.gy, definition.w, definition.h);
+    drag.valid = drag.overGrid && isBuildingUnlocked(state, drag.type) && canPayCost(state, definition.costResources) && context.gridFree(drag.gx, drag.gy, definition.w, definition.h);
     context.renderBuildings();
   }
 

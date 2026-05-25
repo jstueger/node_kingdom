@@ -69,11 +69,25 @@ export function loadGame(context) {
   context.applyWorldSize();
   context.drawBg();
   for (const building of payload.buildings || []) {
+    const definition = BUILDINGS[building.type];
+    if (!definition) {
+      console.warn(`Skipping saved building with unknown type: ${building.type}`);
+      continue;
+    }
     building.managers = building.managers || 0;
     state.buildings.set(building.id, building);
     state.unlockedBuildings[building.type] = true;
-    context.gridSet(building.gx, building.gy, BUILDINGS[building.type].w, BUILDINGS[building.type].h, building.id);
+    context.gridSet(building.gx, building.gy, definition.w, definition.h, building.id);
   }
+  state.connections = state.connections.filter(connection => {
+    const fromBuilding = state.buildings.get(connection.fb);
+    const toBuilding = state.buildings.get(connection.tb);
+    if (!fromBuilding || !toBuilding) return false;
+    const inputCount = BUILDINGS[toBuilding.type]?.kind === 'seller'
+      ? 1
+      : Object.keys(BUILDINGS[toBuilding.type]?.recipes?.[toBuilding.recipe]?.inputs || {}).length;
+    return connection.tpi >= 0 && connection.tpi < inputCount;
+  });
   context.renderAll();
   toast('Loaded');
 }

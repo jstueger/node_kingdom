@@ -365,8 +365,8 @@ export function renderSidebar(context) {
     const unlocked = isBuildingUnlocked(state, type);
     if (!unlocked) continue;
     const card = document.createElement('div');
-    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${state.gold < definition.cost ? 'locked' : ''}`;
-    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${definition.cost}g</span></div><div class="bcard-d">${definition.desc}</div>`;
+    card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${!canPayCost(state, definition.costResources) ? 'locked' : ''}`;
+    card.innerHTML = `<div class="bcard-n"><span>${definition.icon} ${definition.label}</span><span>${formatCost(definition.costResources)}</span></div><div class="bcard-d">${definition.desc}</div>`;
     card.addEventListener('click', () => actions.selectBuildingType(type, card));
     card.addEventListener('pointerdown', (event) => actions.startPlacementDrag(event, type));
     cards.appendChild(card);

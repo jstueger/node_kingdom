@@ -186,6 +186,26 @@ Exit criteria:
 - The game starts from validated JSON content.
 - Content validation can be run directly with `node scripts/validate-content.mjs`.
 
+## Phase 7.6: Content Layer Hardening
+
+Goal: remove fragile edges from the new JSON content pipeline.
+
+Status: complete.
+
+Scope:
+
+- Replace singleton state initialization with a `createState()` factory.
+- Document authoring JSON fields and normalized runtime fields.
+- Route building placement through generalized resource costs.
+- Add defensive save/load handling for content ids that no longer exist.
+- Add validation warnings for buildings that are not reachable from start state or tech unlocks.
+
+Exit criteria:
+
+- Runtime state is created only after content loading.
+- Building placement can use non-gold costs from content.
+- Validation and save/load are more tolerant of content evolution.
+
 ## Phase 8: Contracts And Reputation
 
 Goal: add external demand and a longer-term progression pressure.

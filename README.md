@@ -70,6 +70,7 @@ node_kingdom/
 ├── docs/
 │   ├── design-notes.md
 │   ├── content-driven-editing.md
+│   ├── content-format.md
 │   ├── phase-plan.md
 │   └── prototype-functionality.md
 ├── scripts/
