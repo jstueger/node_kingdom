@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { canPayCost, connectionStatus, formatCost, isBuildingUnlocked, isTechVisible, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, isBuildingUnlocked, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -125,16 +125,18 @@ function techMetaHtml(state, tech) {
   const visibleWhen = tech.visibleWhen || {};
   const milestones = [];
   for (const [resource, amount] of Object.entries(visibleWhen.lifetimeProduced || {})) {
-    milestones.push(`${itemIcon(resource)} ${state.stats.lifetimeProduced[resource] || 0}/${amount} ${itemLabel(resource)} produced`);
+    const current = state.stats.lifetimeProduced[resource] || 0;
+    milestones.push(`${current >= amount ? '✓' : '·'} ${itemIcon(resource)} ${current}/${amount} ${itemLabel(resource)} produced`);
   }
   for (const [resource, amount] of Object.entries(visibleWhen.lifetimeEarned || {})) {
-    milestones.push(`${state.stats.lifetimeEarned[resource] || 0}/${amount} ${resource} earned`);
+    const current = state.stats.lifetimeEarned[resource] || 0;
+    milestones.push(`${current >= amount ? '✓' : '·'} ${current}/${amount} ${resource} earned`);
   }
   for (const type of visibleWhen.unlockedBuildings || []) {
-    milestones.push(`${BUILDINGS[type].label} unlocked`);
+    milestones.push(`${isBuildingUnlocked(state, type) ? '✓' : '·'} ${BUILDINGS[type].label} unlocked`);
   }
 
-  const prerequisites = (tech.requires || []).map(key => state.techs[key]?.label || key);
+  const prerequisites = (tech.requires || []).map(key => `${state.techs[key]?.bought ? '✓' : '·'} ${state.techs[key]?.label || key}`);
   const unlocks = (tech.unlocks?.buildings || []).map(type => BUILDINGS[type]?.label || type);
   const rows = [];
   if (prerequisites.length) rows.push(`<div><span>Requires</span><b>${prerequisites.join(', ')}</b></div>`);
@@ -142,6 +144,14 @@ function techMetaHtml(state, tech) {
   if (unlocks.length) rows.push(`<div><span>Unlocks</span><b>${unlocks.join(', ')}</b></div>`);
   if (Object.keys(tech.cost || {}).length) rows.push(`<div><span>Cost</span><b>${Object.entries(tech.cost).map(([resource, amount]) => amountLabel(resource, amount)).join(', ')}</b></div>`);
   return rows.length ? `<div class="tech-meta">${rows.join('')}</div>` : '';
+}
+
+function techStatus(state, tech) {
+  if (tech.bought) return { key: 'bought', label: 'Purchased', button: 'Purchased', disabled: true };
+  if (!areTechPrerequisitesMet(state, tech)) return { key: 'gated', label: 'Requires tech', button: 'Locked', disabled: true };
+  if (!areTechMilestonesMet(state, tech)) return { key: 'gated', label: 'Needs milestone', button: 'Locked', disabled: true };
+  if (!canPayCost(state, tech.cost)) return { key: 'unaffordable', label: 'Need resources', button: 'Need resources', disabled: true };
+  return { key: 'available', label: 'Available', button: 'Buy', disabled: false };
 }
 
 function renderPlacementGhost(context) {
@@ -305,7 +315,7 @@ export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
   cards.innerHTML = lifetimeSummaryHtml(state);
-  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechVisible(state, tech));
+  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
   for (const tree of ['technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
     if (!entries.length) continue;
@@ -315,13 +325,13 @@ export function renderTechTree(context) {
     cards.appendChild(header);
     for (const [key, tech] of entries) {
       const card = document.createElement('div');
-      card.className = `tech-card ${tech.bought ? 'bought' : ''}`;
-      const canBuy = canPayCost(state, tech.cost) && !tech.bought;
+      const status = techStatus(state, tech);
+      card.className = `tech-card ${status.key}`;
       card.innerHTML = `
-        <div class="tech-head"><span>${tech.label}</span><span>${tech.bought ? 'Bought' : formatCost(tech.cost)}</span></div>
+        <div class="tech-head"><span>${tech.label}</span><span>${status.label}</span></div>
         <div class="tech-desc">${tech.desc}</div>
         ${techMetaHtml(state, tech)}
-        <button class="tech-buy" ${canBuy ? '' : 'disabled'}>${tech.bought ? 'Purchased' : 'Buy'}</button>`;
+        <button class="tech-buy" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
       card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
       cards.appendChild(card);
     }

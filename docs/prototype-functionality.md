@@ -240,6 +240,15 @@ Techs may have visibility thresholds and prerequisite techs. A hidden tech appea
 
 Visible techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned gold.
 
+Tech cards can be:
+
+- Available: all prerequisites and milestones are met, and the player can pay the cost.
+- Need resources: all prerequisites and milestones are met, but the player cannot currently pay the cost.
+- Requires tech or Needs milestone: the tech is discovered, but not yet buyable.
+- Purchased: the tech was already bought.
+
+Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
+
 Current techs:
 
 - Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.

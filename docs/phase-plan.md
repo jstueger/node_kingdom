@@ -15,6 +15,7 @@ The prototype already includes parts of the earlier progression direction:
 - Hidden locked buildings in the left building menu.
 - A first Knowledge resource, School building, Science heading, and Knowledge-paid upgrade.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
+- Tech tree presentation states for available, unaffordable, gated, and purchased techs.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -41,6 +42,8 @@ Exit criteria:
 ## Phase 2: Tech Tree Presentation
 
 Goal: make the tech tree feel like a progression interface rather than a flat card list.
+
+Status: complete.
 
 Scope:
 
@@ -145,4 +148,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 2: Tech Tree Presentation.
+The next phase to implement is Phase 3: Early Goals And Guidance.

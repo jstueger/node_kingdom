@@ -46,8 +46,21 @@ export function formatCost(cost = {}) {
 }
 
 export function isTechVisible(state, tech) {
+  return areTechPrerequisitesMet(state, tech) && areTechMilestonesMet(state, tech);
+}
+
+export function isTechDiscovered(state, tech) {
+  if (tech.bought || isTechVisible(state, tech)) return true;
+  if (tech.requires?.some(key => state.techs[key]?.bought)) return true;
+  return false;
+}
+
+export function areTechPrerequisitesMet(state, tech) {
+  return !(tech.requires?.some(key => !state.techs[key]?.bought));
+}
+
+export function areTechMilestonesMet(state, tech) {
   const visibleWhen = tech.visibleWhen || {};
-  if (tech.requires?.some(key => !state.techs[key]?.bought)) return false;
   if (visibleWhen.unlockedBuildings?.some(type => !isBuildingUnlocked(state, type))) return false;
   for (const [resource, amount] of Object.entries(visibleWhen.lifetimeProduced || {})) {
     if ((state.stats.lifetimeProduced[resource] || 0) < amount) return false;
