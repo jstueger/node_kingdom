@@ -98,6 +98,9 @@ export function spendCost(state, cost = {}) {
 
 export function applyTechUnlocks(state, tech) {
   for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
+  for (const [type, amount] of Object.entries(tech.unlocks?.managerSlots || {})) {
+    state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
+  }
 }
 
 export function isGoalVisible(state, goal) {
@@ -118,6 +121,10 @@ export function isAddonVisible(state, addon) {
 
 export function activeAddonsFor(addons = {}, type) {
   return Object.values(addons).filter(addon => addon.node === type && addon.bought);
+}
+
+export function managerSlotsFor(state, type) {
+  return state.managerSlots[type] || 0;
 }
 
 function addonStorageBonus(addons, type, resource) {

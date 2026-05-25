@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerSlotsFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -138,10 +138,12 @@ function techMetaHtml(state, tech) {
 
   const prerequisites = (tech.requires || []).map(key => `${state.techs[key]?.bought ? '✓' : '·'} ${state.techs[key]?.label || key}`);
   const unlocks = (tech.unlocks?.buildings || []).map(type => BUILDINGS[type]?.label || type);
+  const managerUnlocks = Object.entries(tech.unlocks?.managerSlots || {}).map(([type, amount]) => `${amount} ${BUILDINGS[type]?.label || type} Manager slot`);
   const rows = [];
   if (prerequisites.length) rows.push(`<div><span>Requires</span><b>${prerequisites.join(', ')}</b></div>`);
   if (milestones.length) rows.push(`<div><span>Milestone</span><b>${milestones.join(', ')}</b></div>`);
   if (unlocks.length) rows.push(`<div><span>Unlocks</span><b>${unlocks.join(', ')}</b></div>`);
+  if (managerUnlocks.length) rows.push(`<div><span>Unlocks</span><b>${managerUnlocks.join(', ')}</b></div>`);
   if (Object.keys(tech.cost || {}).length) rows.push(`<div><span>Cost</span><b>${Object.entries(tech.cost).map(([resource, amount]) => amountLabel(resource, amount)).join(', ')}</b></div>`);
   return rows.length ? `<div class="tech-meta">${rows.join('')}</div>` : '';
 }
@@ -173,6 +175,16 @@ function addonHtml(state, building) {
         <button class="addon-buy" data-addon="${key}" ${addon.bought || !affordable ? 'disabled' : ''}>${addon.bought ? 'Purchased' : 'Buy'}</button>
       </div>`;
   }).join('');
+}
+
+function managerSlotsHtml(state, building) {
+  const slots = managerSlotsFor(state, building.type);
+  if (!slots) return '<div class="field-sub">No Manager slot unlocked for this node type.</div>';
+  return Array.from({ length: slots }, (_, index) => `
+    <div class="manager-slot">
+      <span>Manager Slot ${index + 1}</span>
+      <span>Empty</span>
+    </div>`).join('');
 }
 
 function renderPlacementGhost(context) {
@@ -314,6 +326,7 @@ export function renderInspector(context) {
     <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
     <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
     <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>
+    <div class="field"><div class="field-title">Managers</div>${managerSlotsHtml(state, building)}</div>
     <div class="field"><div class="field-title">Addons</div>${addonHtml(state, building)}</div>`;
   ui.inspectContent.querySelectorAll('.addon-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));

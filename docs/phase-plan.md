@@ -19,6 +19,7 @@ The prototype already includes parts of the earlier progression direction:
 - Early milestone goals with claimable gold rewards.
 - Node-type addons for Lumber Camp and Market, bought from the inspector.
 - Progression definitions split into `progression-data.js`; Knowledge reserved for Science.
+- Science techs can unlock empty Manager slots for specific node types.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -117,6 +118,8 @@ Exit criteria:
 
 Goal: unlock manager slots through Science, but do not automate everything by default.
 
+Status: complete.
+
 Scope:
 
 - Add manager slot capability per node type.
@@ -174,4 +177,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 5: Manager Slot Unlocks.
+The next phase to implement is Phase 6: Buyable Managers And Automation.

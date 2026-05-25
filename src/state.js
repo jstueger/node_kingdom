@@ -1,5 +1,5 @@
 import { COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createTechs, createUnlockedBuildings } from './progression-data.js';
+import { createAddons, createGoals, createManagerSlots, createTechs, createUnlockedBuildings } from './progression-data.js';
 
 export function createGrid(cols, rows) {
   return Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -36,6 +36,7 @@ export const state = {
   stats: createStats(),
   goals: createGoals(),
   addons: createAddons(),
+  managerSlots: createManagerSlots(),
   unlockedBuildings: createUnlockedBuildings(),
   world: { cols: COLS, rows: ROWS },
   camera: {

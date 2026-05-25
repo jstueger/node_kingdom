@@ -47,6 +47,7 @@ VS Code Live Server also works.
 - Resource storage, manual node work, and work progress meters.
 - Early milestone goals with small gold rewards.
 - Node-type addons bought from the selected building inspector.
+- Science-unlocked empty Manager slots for later automation.
 - Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 

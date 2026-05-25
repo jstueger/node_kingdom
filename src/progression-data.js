@@ -73,6 +73,26 @@ export function createTechs() {
       unlocks: {},
       bought: false
     },
+    lumber_management: {
+      tree: 'science',
+      label: 'Lumber Management',
+      desc: 'Unlocks one Manager slot for Lumber Camps.',
+      visibleWhen: { lifetimeProduced: { knowledge: 8 } },
+      requires: ['knowledge_production'],
+      cost: { knowledge: 8, wood: 12 },
+      unlocks: { managerSlots: { lumber: 1 } },
+      bought: false
+    },
+    market_management: {
+      tree: 'science',
+      label: 'Market Management',
+      desc: 'Unlocks one Manager slot for Markets.',
+      visibleWhen: { lifetimeProduced: { knowledge: 10 }, lifetimeEarned: { gold: 80 } },
+      requires: ['basic_accounting'],
+      cost: { knowledge: 10, gold: 25 },
+      unlocks: { managerSlots: { market: 1 } },
+      bought: false
+    },
     grid_expansion: {
       label: 'Grid Expansion',
       desc: 'Adds 16 columns and 8 rows to the build grid.',
@@ -220,4 +240,8 @@ export function createAddons() {
 
 export function createUnlockedBuildings() {
   return { lumber: true };
+}
+
+export function createManagerSlots() {
+  return {};
 }

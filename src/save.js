@@ -1,5 +1,5 @@
 import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createTechs, createUnlockedBuildings } from './progression-data.js';
+import { createAddons, createGoals, createManagerSlots, createTechs, createUnlockedBuildings } from './progression-data.js';
 import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
@@ -14,6 +14,7 @@ export function saveGame({ state, toast }) {
     stats: state.stats,
     goals: state.goals,
     addons: state.addons,
+    managerSlots: state.managerSlots,
     unlockedBuildings: state.unlockedBuildings,
     techs: state.techs,
     buildings: [...state.buildings.values()],
@@ -49,6 +50,7 @@ export function loadGame(context) {
   for (const [key, saved] of Object.entries(payload.addons || {})) {
     if (state.addons[key]) state.addons[key].bought = Boolean(saved.bought);
   }
+  state.managerSlots = { ...createManagerSlots(), ...(payload.managerSlots || {}) };
   state.unlockedBuildings = { ...createUnlockedBuildings(), ...(payload.unlockedBuildings || {}) };
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
   state.world.rows = Math.max(payload.worldRows || ROWS, ROWS);
@@ -57,7 +59,12 @@ export function loadGame(context) {
     if (state.techs[key]) state.techs[key].bought = Boolean(saved.bought);
   }
   for (const [key, tech] of Object.entries(state.techs)) {
-    if (tech.bought) for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
+    if (tech.bought) {
+      for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
+      for (const [type, amount] of Object.entries(tech.unlocks?.managerSlots || {})) {
+        state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
+      }
+    }
   }
   context.applyWorldSize();
   context.drawBg();
@@ -84,6 +91,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.stats = createStats();
   state.goals = createGoals();
   state.addons = createAddons();
+  state.managerSlots = createManagerSlots();
   state.unlockedBuildings = createUnlockedBuildings();
   state.buildings.clear();
   state.world.cols = COLS;
