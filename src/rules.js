@@ -27,11 +27,12 @@ export function isBuildingUnlocked(state, type) {
 
 export function actionClicksFor(building, techs, addons = {}) {
   const addonBonus = addonActionClickBonus(addons, building.type);
+  const base = BUILDINGS[building.type].actionClicks || MANUAL_ACTION_CLICKS;
   if (BUILDINGS[building.type].kind === 'seller') {
-    return Math.max(1, MANUAL_ACTION_CLICKS - (techs.basic_accounting?.bought ? 2 : 0) + addonBonus);
+    return Math.max(1, base - (techs.basic_accounting?.bought ? 2 : 0) + addonBonus);
   }
-  if (BUILDINGS[building.type].kind !== 'crafter') return Math.max(1, MANUAL_ACTION_CLICKS + addonBonus);
-  return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0) + addonBonus);
+  if (BUILDINGS[building.type].kind !== 'crafter') return Math.max(1, base + addonBonus);
+  return Math.max(1, base - (techs.workshop_tuning.bought ? 2 : 0) + addonBonus);
 }
 
 export function managerWorkFor(building, addons = {}) {

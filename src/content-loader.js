@@ -54,6 +54,7 @@ function normalizeBuildings(buildings) {
       h: building.size.h,
       desc: building.description,
       kind: building.kind,
+      actionClicks: building.actionClicks,
       cost: building.cost.gold || 0,
       costResources: structuredClone(building.cost || {}),
       capacity: structuredClone(building.capacity || {}),

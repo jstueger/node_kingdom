@@ -1,6 +1,6 @@
 {
   "grid": { "cols": 40, "rows": 40 },
-  "startingGold": 25,
+  "startingGold": 15,
   "unlockedBuildings": {
     "lumber": true
   }

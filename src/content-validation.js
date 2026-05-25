@@ -38,6 +38,7 @@ function validateBuildings(buildings, itemIds, errors) {
     if (!['producer', 'crafter', 'seller'].includes(building.kind)) errors.push(`Building "${id}" has unknown kind "${building.kind}"`);
     validatePositiveNumber(building.size?.w, `Building "${id}" size.w`, errors);
     validatePositiveNumber(building.size?.h, `Building "${id}" size.h`, errors);
+    if (building.actionClicks !== undefined) validatePositiveNumber(building.actionClicks, `Building "${id}" actionClicks`, errors);
     validateCost(building.cost, itemIds, `Building "${id}" cost`, errors);
     validateResourceMap(building.capacity || {}, itemIds, `Building "${id}" capacity`, errors);
 

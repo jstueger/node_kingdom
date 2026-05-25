@@ -1,10 +1,10 @@
 {
-  "iron_ore": { "label": "Iron Ore", "icon": "🪨" },
-  "iron_bar": { "label": "Iron Bar", "icon": "⬛" },
-  "wood": { "label": "Wood", "icon": "🌿" },
-  "plank": { "label": "Plank", "icon": "🟫" },
-  "coal": { "label": "Coal", "icon": "⚫" },
-  "steel_bar": { "label": "Steel Bar", "icon": "🔩" },
-  "sword": { "label": "Sword", "icon": "🗡️" },
-  "knowledge": { "label": "Knowledge", "icon": "📜" }
+  "iron_ore": { "label": "Iron Ore", "icon": "🪨", "tags": ["trade_good", "ore"] },
+  "iron_bar": { "label": "Iron Bar", "icon": "⬛", "tags": ["trade_good", "metal"] },
+  "wood": { "label": "Wood", "icon": "🌿", "tags": ["trade_good", "raw_material"] },
+  "plank": { "label": "Plank", "icon": "🟫", "tags": ["trade_good", "processed_material"] },
+  "coal": { "label": "Coal", "icon": "⚫", "tags": ["trade_good", "fuel"] },
+  "steel_bar": { "label": "Steel Bar", "icon": "🔩", "tags": ["trade_good", "metal"] },
+  "sword": { "label": "Sword", "icon": "🗡️", "tags": ["trade_good", "weapon", "military"] },
+  "knowledge": { "label": "Knowledge", "icon": "📜", "tags": ["science", "currency"] }
 }

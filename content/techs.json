@@ -72,12 +72,12 @@
     "unlocks": {}
   },
   "lumber_management": {
-    "tree": "science",
+    "tree": "technology",
     "label": "Lumber Management",
     "description": "Unlocks one Manager slot for Lumber Camps.",
-    "visibleWhen": { "lifetimeProduced": { "knowledge": 8 } },
-    "requires": ["knowledge_production"],
-    "cost": { "knowledge": 8, "wood": 12 },
+    "visibleWhen": { "lifetimeProduced": { "wood": 20 }, "lifetimeEarned": { "gold": 15 } },
+    "requires": ["market_access"],
+    "cost": { "gold": 20, "wood": 20 },
     "unlocks": { "managerSlots": { "lumber": 1 } }
   },
   "market_management": {

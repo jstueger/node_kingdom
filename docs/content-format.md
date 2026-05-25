@@ -20,7 +20,8 @@ Validation runs before normalization. Invalid content should fail before state i
 
 Authoring fields are meant to be readable and stable for editing:
 
-- Buildings use `description`, `size`, `cost`, `capacity`, `recipes`, and optional `sellPrices`.
+- Items use `label`, `icon`, and optional `tags`.
+- Buildings use `description`, `size`, `cost`, `capacity`, optional `actionClicks`, `recipes`, and optional `sellPrices`.
 - Building `cost` is always an object, even when it is only `{ "gold": 5 }`.
 - Recipes use `inputs` and `output`.
 - Recipe outputs use `resource` and `amount`.
@@ -50,6 +51,7 @@ Important mappings:
 ```text
 description       -> desc
 size.w / size.h   -> w / h
+actionClicks      -> actionClicks
 cost.gold         -> cost
 cost              -> costResources
 output.resource   -> output.res
@@ -74,7 +76,7 @@ npm run validate:content
 Validation checks:
 
 - item labels and icons
-- building labels, descriptions, kind, size, costs, capacities, and recipes
+- building labels, descriptions, kind, size, work-click overrides, costs, capacities, and recipes
 - recipe input/output resources
 - seller prices
 - tech prerequisites, visibility conditions, unlock targets, and cycles

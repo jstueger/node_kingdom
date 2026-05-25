@@ -40,7 +40,7 @@ Placement controls:
 
 Placement rules:
 
-- The player starts with 25 gold.
+- The player starts with 15 gold.
 - Placement costs gold.
 - Buildings cannot overlap.
 - Buildings cannot be placed outside the grid.
@@ -239,6 +239,7 @@ Current goals:
 - Strike Ore: produce 6 lifetime Iron Ore, rewards 5 gold.
 - Cut Planks: produce 3 lifetime Planks, rewards 6 gold.
 - First Bars: produce 2 lifetime Iron Bars, rewards 8 gold.
+- First Outpost: appears after Mining and Woodworking are researched; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50 lifetime gold earned; rewards 20 gold.
 - Armed Trade: produce 1 lifetime Sword, rewards 10 gold.
 - Written Records: produce 5 lifetime Knowledge, rewards 10 gold.
 
@@ -312,7 +313,7 @@ Current techs:
 - Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 15 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
 - Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60 lifetime gold earned, costs 25 gold, 3 Planks, and 1 Sword, and unlocks School buildings.
 - Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Markets need 2 fewer work clicks per sale.
-- Lumber Management: requires Knowledge Production, appears after 8 lifetime Knowledge produced, costs 8 Knowledge and 12 Wood, and unlocks one Lumber Camp Manager slot.
+- Lumber Management: requires Market Access, appears after 20 lifetime Wood produced and 15 lifetime gold earned, costs 20 gold and 20 Wood, and unlocks one Lumber Camp Manager slot.
 - Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80 lifetime gold earned, costs 10 Knowledge and 25 gold, and unlocks one Market Manager slot.
 - Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12 gold and 8 Wood, and adds 5 storage capacity to every resource slot.
@@ -328,7 +329,7 @@ Nodes do not initially produce, craft, or sell automatically.
 Manual work:
 
 - Producer, crafter, and Market nodes have a work button inside the node.
-- One completed action normally requires 10 work clicks.
+- One completed action normally requires 10 work clicks, but building content may override this. Lumber Camps currently require 5 clicks.
 - Each valid click advances the node work meter.
 - When the meter fills, the node performs one action: mining, crafting, or selling.
 - If the node is missing inputs, has full output storage, or has nothing to sell, work does not advance.
@@ -377,11 +378,11 @@ Recipe changes are made directly on crafter nodes, not in the inspector.
 
 ## Manager Slots
 
-Manager slots are node-type capabilities unlocked through Science techs. They are shown in the inspector for matching selected buildings.
+Manager slots are node-type capabilities unlocked through techs. They are shown in the inspector for matching selected buildings.
 
 Current Manager slot techs:
 
-- Lumber Management unlocks one Manager slot for Lumber Camps.
+- Lumber Management is an early Technology tech that unlocks one Manager slot for Lumber Camps.
 - Market Management unlocks one Manager slot for Markets.
 
 Managers are bought per placed node from the inspector after the matching node type has an unlocked Manager slot. A hired Manager occupies one slot on that node and advances that node's normal work action once per game tick. This means managed Producers produce, managed Crafters craft, and managed Markets sell without manual clicks when their normal inputs, inventory, and output constraints allow it.

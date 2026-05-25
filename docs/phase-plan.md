@@ -206,6 +206,26 @@ Exit criteria:
 - Building placement can use non-gold costs from content.
 - Validation and save/load are more tolerant of content evolution.
 
+## Phase 7.7: First 25-Minute Progression Retune
+
+Goal: make the opening arc move from manual wood production to trade, branching production, and first controlled automation.
+
+Status: complete.
+
+Scope:
+
+- Lower starting gold so early placement choices matter.
+- Add item tags for future goods, science, and military vocabulary.
+- Add per-building work-click overrides and make Lumber Camps faster than the global default.
+- Move Lumber Management into early Technology so first automation can arrive before Knowledge.
+- Add First Outpost as the first medium-term kingdom-development objective.
+
+Exit criteria:
+
+- The first 10 minutes reach Market Access and Market selling with less click fatigue.
+- First automation is visible after demonstrated wood production and Market sales.
+- The player can see a larger First Outpost goal before combat systems exist.
+
 ## Phase 8: Contracts And Reputation
 
 Goal: add external demand and a longer-term progression pressure.
@@ -223,4 +243,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 8: Contracts And Reputation.
+The next phase to implement is Phase 8: Contracts And Reputation, unless playtesting the 25-minute arc shows another pacing issue first.

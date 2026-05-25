@@ -40,6 +40,16 @@
     "completeWhen": { "lifetimeProduced": { "iron_bar": 2 } },
     "reward": { "gold": 8 }
   },
+  "first_outpost": {
+    "label": "First Outpost",
+    "description": "Prove the kingdom can support a frontier foothold.",
+    "visibleWhen": { "techs": ["woodworking", "mining"] },
+    "completeWhen": {
+      "lifetimeProduced": { "wood": 30, "plank": 10, "iron_ore": 10, "iron_bar": 3 },
+      "lifetimeEarned": { "gold": 50 }
+    },
+    "reward": { "gold": 20 }
+  },
   "first_sword": {
     "label": "Armed Trade",
     "description": "Produce 1 Sword.",
