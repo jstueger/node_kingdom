@@ -1,5 +1,5 @@
 import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createGoals, createGrid, createInteractionState, createStats, createTechs, createUnlockedBuildings } from './state.js';
+import { createAddons, createGoals, createGrid, createInteractionState, createStats, createTechs, createUnlockedBuildings } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
 
@@ -12,6 +12,7 @@ export function saveGame({ state, toast }) {
     worldRows: state.world.rows,
     stats: state.stats,
     goals: state.goals,
+    addons: state.addons,
     unlockedBuildings: state.unlockedBuildings,
     techs: state.techs,
     buildings: [...state.buildings.values()],
@@ -42,6 +43,10 @@ export function loadGame(context) {
   state.goals = createGoals();
   for (const [key, saved] of Object.entries(payload.goals || {})) {
     if (state.goals[key]) state.goals[key].claimed = Boolean(saved.claimed);
+  }
+  state.addons = createAddons();
+  for (const [key, saved] of Object.entries(payload.addons || {})) {
+    if (state.addons[key]) state.addons[key].bought = Boolean(saved.bought);
   }
   state.unlockedBuildings = { ...createUnlockedBuildings(), ...(payload.unlockedBuildings || {}) };
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
@@ -77,6 +82,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.connections = [];
   state.stats = createStats();
   state.goals = createGoals();
+  state.addons = createAddons();
   state.unlockedBuildings = createUnlockedBuildings();
   state.buildings.clear();
   state.world.cols = COLS;

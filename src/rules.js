@@ -12,25 +12,28 @@ export function inputAlreadyConnected(connections, buildingId, portIndex) {
   return connections.some(connection => connection.tb === buildingId && connection.tpi === portIndex);
 }
 
-export function storageCapFor(building, resource, techs) {
-  return capFor(building, resource) + (techs.storage_bins.bought ? 5 : 0);
+export function storageCapFor(building, resource, techs, addons = {}) {
+  return capFor(building, resource)
+    + (techs.storage_bins.bought ? 5 : 0)
+    + addonStorageBonus(addons, building.type, resource);
 }
 
 export function isBuildingUnlocked(state, type) {
   return Boolean(state.unlockedBuildings[type]);
 }
 
-export function actionClicksFor(building, techs) {
+export function actionClicksFor(building, techs, addons = {}) {
+  const addonBonus = addonActionClickBonus(addons, building.type);
   if (BUILDINGS[building.type].kind === 'seller') {
-    return Math.max(1, MANUAL_ACTION_CLICKS - (techs.basic_accounting?.bought ? 2 : 0));
+    return Math.max(1, MANUAL_ACTION_CLICKS - (techs.basic_accounting?.bought ? 2 : 0) + addonBonus);
   }
-  if (BUILDINGS[building.type].kind !== 'crafter') return MANUAL_ACTION_CLICKS;
-  return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0));
+  if (BUILDINGS[building.type].kind !== 'crafter') return Math.max(1, MANUAL_ACTION_CLICKS + addonBonus);
+  return Math.max(1, MANUAL_ACTION_CLICKS - (techs.workshop_tuning.bought ? 2 : 0) + addonBonus);
 }
 
-export function salePriceFor(type, resource, techs) {
+export function salePriceFor(type, resource, techs, addons = {}) {
   const base = BUILDINGS[type].sellPrices?.[resource] || 0;
-  return Math.floor(base * (techs.market_bargaining.bought ? 1.25 : 1));
+  return Math.floor(base * ((techs.market_bargaining.bought ? 1.25 : 1) + addonSaleMultiplier(addons, type)));
 }
 
 export function totalStoredResource(state, resource) {
@@ -107,6 +110,28 @@ export function applyGoalReward(state, goal) {
   if (goal.reward?.gold) state.gold += goal.reward.gold;
 }
 
+export function isAddonVisible(state, addon) {
+  return isBuildingUnlocked(state, addon.node) && isConditionMet(state, addon.visibleWhen || {});
+}
+
+export function activeAddonsFor(addons = {}, type) {
+  return Object.values(addons).filter(addon => addon.node === type && addon.bought);
+}
+
+function addonStorageBonus(addons, type, resource) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => {
+    return total + (addon.effects?.storage?.[resource] || 0) + (addon.effects?.storageAll || 0);
+  }, 0);
+}
+
+function addonActionClickBonus(addons, type) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.actionClicks || 0), 0);
+}
+
+function addonSaleMultiplier(addons, type) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.saleMultiplier || 0), 0);
+}
+
 function isConditionMet(state, condition) {
   for (const key of condition.techs || []) {
     if (!state.techs[key]?.bought) return false;
@@ -135,7 +160,7 @@ function spendStoredResource(state, resource, amount) {
   }
 }
 
-export function connectionStatus(connection, buildings, techs) {
+export function connectionStatus(connection, buildings, techs, addons = {}) {
   const fromBuilding = buildings.get(connection.fb);
   const toBuilding = buildings.get(connection.tb);
   if (!fromBuilding || !toBuilding) return 'blocked';
@@ -145,7 +170,7 @@ export function connectionStatus(connection, buildings, techs) {
   if (!out || !inputAccepts(input, out.res)) return 'blocked';
 
   const targetResource = inputResourceForStorage(input, out.res);
-  if ((toBuilding.inv[targetResource] || 0) >= storageCapFor(toBuilding, targetResource, techs)) return 'blocked';
+  if ((toBuilding.inv[targetResource] || 0) >= storageCapFor(toBuilding, targetResource, techs, addons)) return 'blocked';
   if ((fromBuilding.inv[out.res] || 0) <= 0) return 'starved';
 
   return 'flowing';

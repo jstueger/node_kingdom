@@ -46,6 +46,7 @@ VS Code Live Server also works.
 - Lifetime production thresholds that reveal new tech.
 - Resource storage, manual node work, and work progress meters.
 - Early milestone goals with small gold rewards.
+- Node-type addons bought from the selected building inspector.
 - Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 

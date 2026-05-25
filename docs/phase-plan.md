@@ -17,6 +17,7 @@ The prototype already includes parts of the earlier progression direction:
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
 - Early milestone goals with claimable gold rewards.
+- Node-type addons for Lumber Camp and Market, bought from the inspector.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -78,6 +79,8 @@ Exit criteria:
 ## Phase 4: Node Addon Framework
 
 Goal: introduce per-node upgrade slots as data and UI, without automation yet.
+
+Status: complete.
 
 Scope:
 
@@ -151,4 +154,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 4: Node Addon Framework.
+The next phase to implement is Phase 5: Manager Slot Unlocks.

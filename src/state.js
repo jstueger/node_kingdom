@@ -194,6 +194,44 @@ export function createGoals() {
   };
 }
 
+export function createAddons() {
+  return {
+    lumber_sharper_axes: {
+      node: 'lumber',
+      label: 'Sharper Axes',
+      desc: 'Lumber Camps need 2 fewer work clicks.',
+      cost: { gold: 10, wood: 8 },
+      effects: { actionClicks: -2 },
+      bought: false
+    },
+    lumber_wood_yard: {
+      node: 'lumber',
+      label: 'Wood Yard',
+      desc: 'Lumber Camps store 8 more Wood.',
+      cost: { gold: 8, wood: 10 },
+      effects: { storage: { wood: 8 } },
+      bought: false
+    },
+    market_larger_stall: {
+      node: 'market',
+      label: 'Larger Stall',
+      desc: 'Markets store 5 more of every good.',
+      cost: { gold: 15, wood: 10 },
+      effects: { storageAll: 5 },
+      bought: false
+    },
+    market_better_rates: {
+      node: 'market',
+      label: 'Better Rates',
+      desc: 'Markets earn 15% more gold from sales.',
+      cost: { gold: 25, plank: 2 },
+      visibleWhen: { techs: ['woodworking'] },
+      effects: { saleMultiplier: 0.15 },
+      bought: false
+    }
+  };
+}
+
 export function createUnlockedBuildings() {
   return { lumber: true };
 }
@@ -220,6 +258,7 @@ export const state = {
   connections: [],
   stats: createStats(),
   goals: createGoals(),
+  addons: createAddons(),
   unlockedBuildings: createUnlockedBuildings(),
   world: { cols: COLS, rows: ROWS },
   camera: {

@@ -333,8 +333,22 @@ The inspector shows:
 - current recipe inputs or accepted Market goods
 - current recipe output or Market sale behavior
 - current inventory and capacity for known resources
+- node-type addons available for the selected building type
 
 Recipe changes are made directly on crafter nodes, not in the inspector.
+
+## Node Addons
+
+Addons are node-type upgrades bought from the inspector of a selected building. They are separate from the main tech tree and apply to every building of that node type.
+
+Current addons:
+
+- Lumber Camp, Sharper Axes: costs 10 gold and 8 Wood; Lumber Camps need 2 fewer work clicks.
+- Lumber Camp, Wood Yard: costs 8 gold and 10 Wood; Lumber Camps store 8 more Wood.
+- Market, Larger Stall: costs 15 gold and 10 Wood; Markets store 5 more of every good.
+- Market, Better Rates: requires Woodworking, costs 25 gold and 2 Planks; Markets earn 15% more gold from sales.
+
+Addon effects stack with tech effects where both apply.
 
 ## Save, Load, And Reset
 
@@ -348,6 +362,7 @@ The saved payload includes:
 - current grid size
 - lifetime production/sale stats
 - claimed goal state
+- purchased addon state
 - unlocked building types
 - purchased tech state
 - buildings

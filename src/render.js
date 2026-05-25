@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, activeRecipe, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 function inventoryText(view) {
@@ -160,6 +160,21 @@ function rewardText(reward = {}) {
   return parts.join(', ');
 }
 
+function addonHtml(state, building) {
+  const addons = Object.entries(state.addons).filter(([, addon]) => addon.node === building.type && isAddonVisible(state, addon));
+  if (!addons.length) return '<div class="field-sub">No addons available for this node type.</div>';
+  return addons.map(([key, addon]) => {
+    const affordable = canPayCost(state, addon.cost);
+    const status = addon.bought ? 'Purchased' : affordable ? formatCost(addon.cost) : `Need ${formatCost(addon.cost)}`;
+    return `
+      <div class="addon-card ${addon.bought ? 'bought' : ''}">
+        <div class="addon-head"><span>${addon.label}</span><span>${status}</span></div>
+        <div class="addon-desc">${addon.desc}</div>
+        <button class="addon-buy" data-addon="${key}" ${addon.bought || !affordable ? 'disabled' : ''}>${addon.bought ? 'Purchased' : 'Buy'}</button>
+      </div>`;
+  }).join('');
+}
+
 function renderPlacementGhost(context) {
   const { state, ui } = context;
   const drag = state.interaction.placementDrag;
@@ -176,7 +191,7 @@ export function renderBuildings(context) {
   const { state, ui, geometry, actions } = context;
   ui.bl.innerHTML = '';
   for (const [id, building] of state.buildings) {
-    const view = nodeViewState(building, state.connections, state.techs);
+    const view = nodeViewState(building, state.connections, state.techs, state.addons);
     const definition = view.definition;
     const el = document.createElement('div');
     el.className = `bld node--${definition.kind} ${id === state.selectedId ? 'sel' : ''} ${state.interaction.moving?.id === id ? 'moving' : ''} ${state.interaction.moving?.id === id && state.interaction.movingInvalid ? 'invalid' : ''} ${view.status}`;
@@ -263,7 +278,7 @@ export function renderConnections(context) {
     const p2 = geometry.portPx(toBuilding, inputPorts(toBuilding)[connection.tpi]);
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', geometry.bez(p1, p2));
-    path.setAttribute('class', `cpath ${connectionStatus(connection, state.buildings, state.techs)}`);
+    path.setAttribute('class', `cpath ${connectionStatus(connection, state.buildings, state.techs, state.addons)}`);
     path.addEventListener('contextmenu', (event) => {
       event.preventDefault();
       state.connections = state.connections.filter(item => item.id !== connection.id);
@@ -275,7 +290,7 @@ export function renderConnections(context) {
 }
 
 export function renderInspector(context) {
-  const { state, ui } = context;
+  const { state, ui, actions } = context;
   const building = state.buildings.get(state.selectedId);
   if (!building) {
     ui.inspectEmpty.classList.remove('hidden');
@@ -289,16 +304,20 @@ export function renderInspector(context) {
   ui.inspectContent.classList.remove('hidden');
   const isSeller = definition.kind === 'seller';
   const inputPills = isSeller
-    ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(building.type, res, state.techs)} gold</span>`).join('')
+    ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(building.type, res, state.techs, state.addons)} gold</span>`).join('')
     : Object.entries(recipe.inputs).map(([res, amount]) => `<span class="pill">${itemIcon(res)} ${amount} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
   const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(recipe.output.res)} ${recipe.output.amount} ${itemLabel(recipe.output.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
-  const invRows = Object.keys({ ...definition.capacity, ...building.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${building.inv[res] || 0}/${storageCapFor(building, res, state.techs)}</span></div>`).join('');
+  const invRows = Object.keys({ ...definition.capacity, ...building.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${building.inv[res] || 0}/${storageCapFor(building, res, state.techs, state.addons)}</span></div>`).join('');
   ui.inspectContent.innerHTML = `
     <div class="field"><div class="field-title">${definition.icon} ${definition.label}</div><div class="field-sub">${definition.desc}</div></div>
     <div class="field"><div class="field-title">${isSeller ? 'Accepted Goods' : 'Inputs'}</div><div>${inputPills}</div></div>
     <div class="field"><div class="field-title">${outputTitle}</div><div class="field-sub">${outputText}</div></div>
-    <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>`;
+    <div class="field"><div class="field-title">Inventory</div>${invRows || '<div class="field-sub">Empty</div>'}</div>
+    <div class="field"><div class="field-title">Addons</div>${addonHtml(state, building)}</div>`;
+  ui.inspectContent.querySelectorAll('.addon-buy').forEach(button => {
+    button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));
+  });
 }
 
 export function renderSidebar(context) {
@@ -395,7 +414,7 @@ export function updateProgressBars(context) {
   ui.bl.querySelectorAll('.prog > span[data-bid]').forEach(bar => {
     const building = state.buildings.get(Number(bar.dataset.bid));
     if (!building) return;
-    const view = nodeViewState(building, state.connections, state.techs);
+    const view = nodeViewState(building, state.connections, state.techs, state.addons);
     bar.style.width = `${view.progressPct}%`;
   });
 }

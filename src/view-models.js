@@ -1,11 +1,11 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
 import { actionClicksFor, inputAlreadyConnected, salePriceFor, storageCapFor } from './rules.js';
 
-export function nodeViewState(building, connections, techs) {
+export function nodeViewState(building, connections, techs, addons = {}) {
   const definition = BUILDINGS[building.type];
   const recipe = activeRecipe(building);
   const output = outputPort(building);
-  const actionClicks = definition.kind === 'seller' || recipe ? actionClicksFor(building, techs) : 0;
+  const actionClicks = definition.kind === 'seller' || recipe ? actionClicksFor(building, techs, addons) : 0;
   const progress = actionClicks ? Math.min(1, (building.ptimer || 0) / actionClicks) : 0;
 
   const inputs = inputPorts(building).map((port, index) => {
@@ -22,7 +22,7 @@ export function nodeViewState(building, connections, techs) {
   const outputView = output ? {
     res: output.res,
     have: building.inv[output.res] || 0,
-    cap: storageCapFor(building, output.res, techs),
+    cap: storageCapFor(building, output.res, techs, addons),
     connected: connections.some(connection => connection.fb === building.id)
   } : null;
 
@@ -48,8 +48,8 @@ export function nodeViewState(building, connections, techs) {
       .map(([res, amount]) => ({
         res,
         amount,
-        cap: storageCapFor(building, res, techs),
-        salePrice: salePriceFor(building.type, res, techs)
+        cap: storageCapFor(building, res, techs, addons),
+        salePrice: salePriceFor(building.type, res, techs, addons)
       }))
   };
 }
