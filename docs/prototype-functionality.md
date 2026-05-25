@@ -260,6 +260,24 @@ The current progression model is deliberately simple and bootstrap-focused:
 
 The intended early loop is: produce Wood, unlock Market Access, place a Market, connect Lumber to Market, sell Wood for gold, then unlock Mining and Woodworking.
 
+## Content Model
+
+Game content is authored in JSON files under `content/`.
+
+Current content files:
+
+- `items.json`: item labels and icons.
+- `buildings.json`: building definitions, sizes, costs, capacities, recipes, and Market sale prices.
+- `techs.json`: Technology and Science tech definitions.
+- `goals.json`: early milestone goals and rewards.
+- `addons.json`: node-type addon definitions and effects.
+- `managers.json`: Manager slot defaults and Manager purchase costs.
+- `start-state.json`: starting grid size, starting gold, and initially unlocked buildings.
+
+Authoring fields use stable content names such as `description`, `size`, and recipe output `resource`. The content loader normalizes those fields into the current runtime shape before state creation.
+
+Content validation runs before the game starts. It checks building, recipe, tech, goal, addon, manager, and start-state references so content edits fail clearly instead of silently breaking the prototype.
+
 ## Tech Tree
 
 The prototype has a toggleable tech tree window.

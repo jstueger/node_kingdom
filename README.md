@@ -58,12 +58,26 @@ node_kingdom/
 ├── index.html
 ├── styles.css
 ├── README.md
+├── package.json
+├── content/
+│   ├── items.json
+│   ├── buildings.json
+│   ├── techs.json
+│   ├── goals.json
+│   ├── addons.json
+│   ├── managers.json
+│   └── start-state.json
 ├── docs/
 │   ├── design-notes.md
+│   ├── content-driven-editing.md
 │   ├── phase-plan.md
 │   └── prototype-functionality.md
+├── scripts/
+│   └── validate-content.mjs
 └── src/
     ├── data.js
+    ├── content-loader.js
+    ├── content-validation.js
     ├── progression-data.js
     ├── state.js
     ├── rules.js
@@ -79,7 +93,17 @@ node_kingdom/
 
 ## Development Notes
 
-The project intentionally stays dependency-free for now. The browser is the runtime, and the source files are loaded directly as ES modules.
+The project intentionally stays dependency-free for now. The browser is the runtime, content is loaded from JSON, and source files are loaded directly as ES modules.
+
+The `content/` JSON files are now the source of truth for items, buildings, recipes, techs, goals, addons, manager definitions, and start state. `src/content-loader.js` normalizes those authoring-friendly fields into the runtime shape, and `src/content-validation.js` checks references before the game starts.
+
+Run content validation with:
+
+```bash
+node scripts/validate-content.mjs
+```
+
+The same check is also available as `npm run validate:content`.
 
 Production, crafting, and selling begin as manual work. That is intentional early-game bootstrap friction; researched Manager slots and hired Managers now create the first automation layer for individual nodes. Addons can then improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
 

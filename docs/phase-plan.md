@@ -22,6 +22,7 @@ The prototype already includes parts of the earlier progression direction:
 - Science techs can unlock Manager slots for specific node types.
 - Managers can be hired per placed node and automate that node's work action once per tick.
 - Node addons can improve existing production lines through work-click reduction, faster manager progress, input efficiency, extra output, storage, or sale value.
+- Content is authored in JSON and validated before runtime state is created.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
 
@@ -165,6 +166,25 @@ Scope:
 Exit criteria:
 
 - A player can meaningfully improve an existing production line without only adding more nodes.
+
+## Phase 7.5: Content Model Preparation
+
+Goal: make future content expansion safer and more data-driven.
+
+Status: complete.
+
+Scope:
+
+- Move items, buildings, techs, goals, addons, manager definitions, and start state into `content/*.json`.
+- Use stable authoring field names such as `description`, `size`, and recipe output `resource`.
+- Add a content loader that normalizes JSON into the current runtime shape.
+- Add content validation before runtime state creation.
+- Validate building, recipe, tech, goal, addon, manager, and start-state references.
+
+Exit criteria:
+
+- The game starts from validated JSON content.
+- Content validation can be run directly with `node scripts/validate-content.mjs`.
 
 ## Phase 8: Contracts And Reputation
 

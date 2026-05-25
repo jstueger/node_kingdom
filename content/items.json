@@ -1,0 +1,10 @@
+{
+  "iron_ore": { "label": "Iron Ore", "icon": "🪨" },
+  "iron_bar": { "label": "Iron Bar", "icon": "⬛" },
+  "wood": { "label": "Wood", "icon": "🌿" },
+  "plank": { "label": "Plank", "icon": "🟫" },
+  "coal": { "label": "Coal", "icon": "⚫" },
+  "steel_bar": { "label": "Steel Bar", "icon": "🔩" },
+  "sword": { "label": "Sword", "icon": "🗡️" },
+  "knowledge": { "label": "Knowledge", "icon": "📜" }
+}

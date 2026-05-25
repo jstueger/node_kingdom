@@ -1,10 +1,14 @@
-import { applyPan, applyZoom, localPoint, setZoom } from './camera.js';
-import { setupInput } from './input.js';
-import { renderAll, renderBuildings, renderConnections, renderGoals, renderPanels, renderTechTree, renderTopbar, renderWorld, updateProgressBars } from './render.js';
-import { loadGame, resetWorld, saveGame } from './save.js';
-import { tickGame } from './simulation.js';
-import { state } from './state.js';
-import { applyWorldSize, bez, drawBg, gridFree, gridSet, clampGridPos, portPx } from './world.js';
+import { loadContent } from './content-loader.js';
+
+await loadContent();
+
+const { applyPan, applyZoom, localPoint, setZoom } = await import('./camera.js');
+const { setupInput } = await import('./input.js');
+const { renderAll, renderBuildings, renderConnections, renderGoals, renderPanels, renderTechTree, renderTopbar, renderWorld, updateProgressBars } = await import('./render.js');
+const { loadGame, resetWorld, saveGame } = await import('./save.js');
+const { tickGame } = await import('./simulation.js');
+const { state } = await import('./state.js');
+const { applyWorldSize, bez, drawBg, gridFree, gridSet, clampGridPos, portPx } = await import('./world.js');
 
 const ui = {
   bg: document.getElementById('bg'),

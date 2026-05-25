@@ -1,0 +1,57 @@
+{
+  "first_wood": {
+    "label": "First Timber",
+    "description": "Produce enough wood to discover trade.",
+    "completeWhen": { "lifetimeProduced": { "wood": 5 } },
+    "reward": { "gold": 3 }
+  },
+  "first_trade": {
+    "label": "Open Trade",
+    "description": "Research Market Access.",
+    "visibleWhen": { "lifetimeProduced": { "wood": 5 } },
+    "completeWhen": { "techs": ["market_access"] },
+    "reward": { "gold": 5 }
+  },
+  "first_sales": {
+    "label": "First Sales",
+    "description": "Earn 10 lifetime gold from Markets.",
+    "visibleWhen": { "techs": ["market_access"] },
+    "completeWhen": { "lifetimeEarned": { "gold": 10 } },
+    "reward": { "gold": 5 }
+  },
+  "first_ore": {
+    "label": "Strike Ore",
+    "description": "Produce 6 Iron Ore.",
+    "visibleWhen": { "techs": ["mining"] },
+    "completeWhen": { "lifetimeProduced": { "iron_ore": 6 } },
+    "reward": { "gold": 5 }
+  },
+  "first_planks": {
+    "label": "Cut Planks",
+    "description": "Produce 3 Planks.",
+    "visibleWhen": { "techs": ["woodworking"] },
+    "completeWhen": { "lifetimeProduced": { "plank": 3 } },
+    "reward": { "gold": 6 }
+  },
+  "first_bars": {
+    "label": "First Bars",
+    "description": "Produce 2 Iron Bars.",
+    "visibleWhen": { "techs": ["smelting"] },
+    "completeWhen": { "lifetimeProduced": { "iron_bar": 2 } },
+    "reward": { "gold": 8 }
+  },
+  "first_sword": {
+    "label": "Armed Trade",
+    "description": "Produce 1 Sword.",
+    "visibleWhen": { "techs": ["blacksmithing"] },
+    "completeWhen": { "lifetimeProduced": { "sword": 1 } },
+    "reward": { "gold": 10 }
+  },
+  "first_knowledge": {
+    "label": "Written Records",
+    "description": "Produce 5 Knowledge.",
+    "visibleWhen": { "techs": ["knowledge_production"] },
+    "completeWhen": { "lifetimeProduced": { "knowledge": 5 } },
+    "reward": { "gold": 10 }
+  }
+}

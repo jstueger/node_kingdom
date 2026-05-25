@@ -1,0 +1,63 @@
+{
+  "lumber_sharper_axes": {
+    "node": "lumber",
+    "label": "Sharper Axes",
+    "description": "Lumber Camps need 2 fewer work clicks.",
+    "cost": { "gold": 10, "wood": 8 },
+    "effects": { "actionClicks": -2 }
+  },
+  "lumber_wood_yard": {
+    "node": "lumber",
+    "label": "Wood Yard",
+    "description": "Lumber Camps store 8 more Wood.",
+    "cost": { "gold": 8, "wood": 10 },
+    "effects": { "storage": { "wood": 8 } }
+  },
+  "lumber_foreman": {
+    "node": "lumber",
+    "label": "Foreman Routine",
+    "description": "Managed Lumber Camps gain 1 extra work progress per tick.",
+    "visibleWhen": { "techs": ["lumber_management"] },
+    "cost": { "gold": 45, "knowledge": 4, "wood": 20 },
+    "effects": { "managerWork": 1 }
+  },
+  "sawmill_thin_kerf": {
+    "node": "sawmill",
+    "label": "Thin Kerf Blades",
+    "description": "Sawmills need 1 less Wood when making Planks.",
+    "visibleWhen": { "techs": ["woodworking"] },
+    "cost": { "gold": 30, "plank": 4 },
+    "effects": { "inputEfficiency": { "wood": 1 } }
+  },
+  "forge_paired_molds": {
+    "node": "forge",
+    "label": "Paired Molds",
+    "description": "Forges produce 1 extra Iron Bar per Iron Bar craft.",
+    "visibleWhen": { "techs": ["smelting", "knowledge_production"] },
+    "cost": { "gold": 55, "iron_bar": 4, "knowledge": 3 },
+    "effects": { "outputBonus": { "iron_bar": 1 } }
+  },
+  "market_larger_stall": {
+    "node": "market",
+    "label": "Larger Stall",
+    "description": "Markets store 5 more of every good.",
+    "cost": { "gold": 15, "wood": 10 },
+    "effects": { "storageAll": 5 }
+  },
+  "market_better_rates": {
+    "node": "market",
+    "label": "Better Rates",
+    "description": "Markets earn 15% more gold from sales.",
+    "visibleWhen": { "techs": ["woodworking"] },
+    "cost": { "gold": 25, "plank": 2 },
+    "effects": { "saleMultiplier": 0.15 }
+  },
+  "market_shift_lead": {
+    "node": "market",
+    "label": "Shift Lead",
+    "description": "Managed Markets gain 1 extra work progress per tick.",
+    "visibleWhen": { "techs": ["market_management"] },
+    "cost": { "gold": 50, "knowledge": 4 },
+    "effects": { "managerWork": 1 }
+  }
+}
