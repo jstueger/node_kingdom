@@ -75,6 +75,7 @@ export function loadGame(context) {
       continue;
     }
     building.managers = building.managers || 0;
+    building.active = Boolean(building.active);
     state.buildings.set(building.id, building);
     state.unlockedBuildings[building.type] = true;
     context.gridSet(building.gx, building.gy, definition.w, definition.h, building.id);

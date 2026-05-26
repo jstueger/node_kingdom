@@ -25,6 +25,7 @@ export function setupInput(context) {
     if (!building) return;
     building.recipe = recipe;
     building.ptimer = 0;
+    building.active = false;
     state.connections = state.connections.filter(connection => connection.fb !== id && connection.tb !== id);
     context.renderAll();
     context.toast('Recipe changed; links reset');
@@ -40,7 +41,7 @@ export function setupInput(context) {
       context.renderAll();
       return;
     }
-    context.setHint(result.completed ? 'Action complete' : 'Manual work progress');
+    context.setHint(result.reason === 'active' ? 'Already working' : 'Work started');
     context.renderAll();
   }
 
@@ -62,7 +63,7 @@ export function setupInput(context) {
     }
     const id = state.nextId++;
     spendCost(state, definition.costResources);
-    state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0, managers: 0 });
+    state.buildings.set(id, { id, type, gx, gy, recipe: firstRecipe(type), inv: {}, ptimer: 0, managers: 0, active: false });
     context.gridSet(gx, gy, definition.w, definition.h, id);
     state.selectedId = id;
     context.setHint('Building placed');

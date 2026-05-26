@@ -40,19 +40,31 @@ export function sellGoods(state, building) {
 }
 
 export function workBuilding(state, building) {
-  return advanceBuildingWork(state, building, 1);
+  if (!building) return { worked: false, completed: false, reason: 'missing' };
+  if (building.active) return { worked: true, completed: false, reason: 'active' };
+  if (!canProduce(state, building)) {
+    building.ptimer = 0;
+    building.active = false;
+    return { worked: false, completed: false, reason: 'blocked' };
+  }
+  building.ptimer = 0;
+  building.active = true;
+  return { worked: true, completed: false, reason: 'started' };
 }
 
 export function advanceBuildingWork(state, building, amount) {
   if (!building) return { worked: false, completed: false, reason: 'missing' };
+  if (!building.active) return { worked: false, completed: false, reason: 'idle' };
   if (!canProduce(state, building)) {
     building.ptimer = 0;
+    building.active = false;
     return { worked: false, completed: false, reason: 'blocked' };
   }
   building.ptimer = (building.ptimer || 0) + amount;
   if (building.ptimer < actionClicksFor(building, state.techs, state.addons)) return { worked: true, completed: false };
   produce(state, building);
   building.ptimer = 0;
+  building.active = false;
   return { worked: true, completed: true };
 }
 
@@ -76,6 +88,7 @@ export function transferResources(state) {
 export function automateManagedBuildings(state) {
   for (const building of state.buildings.values()) {
     if (managerCountFor(building) <= 0) continue;
+    if (!building.active && canProduce(state, building)) building.active = true;
     advanceBuildingWork(state, building, managerWorkFor(building, state.addons));
   }
 }
@@ -83,5 +96,13 @@ export function automateManagedBuildings(state) {
 export function tickGame(state) {
   state.ticks++;
   transferResources(state);
+  advanceManualBuildings(state);
   automateManagedBuildings(state);
+}
+
+export function advanceManualBuildings(state) {
+  for (const building of state.buildings.values()) {
+    if (managerCountFor(building) > 0 || !building.active) continue;
+    advanceBuildingWork(state, building, 1);
+  }
 }

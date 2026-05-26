@@ -61,10 +61,11 @@ function actionControlHtml(view, building) {
     seller: 'Sell'
   };
   const disabled = view.status !== 'ready';
+  const buttonLabel = view.active ? 'Working' : labels[view.definition.kind];
   return `
     <div class="node-action-control">
-      <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${labels[view.definition.kind]}</button>
-      <span title="${view.managers ? 'Managed automation active' : 'Manual work progress'}">${view.progressClicks}/${view.actionClicks}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}</span>
+      <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${buttonLabel}</button>
+      <span title="${view.managers ? 'Managed automation active' : 'Timed work progress'}">${view.progressClicks}/${view.actionClicks}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}</span>
     </div>`;
 }
 
@@ -92,6 +93,7 @@ function nodeBodyHtml(view) {
 
 function statusLabel(status) {
   return {
+    working: 'WORKING',
     ready: 'READY',
     waiting: 'WAITING',
     blocked: 'BLOCKED',
@@ -194,7 +196,7 @@ function managerSlotsHtml(state, building) {
 
 function efficiencyHtml(state, building) {
   const view = nodeViewState(building, state.connections, state.techs, state.addons);
-  const rows = [`<div class="inv-row"><span>Work Required</span><span>${view.actionClicks} clicks</span></div>`];
+  const rows = [`<div class="inv-row"><span>Work Time</span><span>${view.actionClicks} ticks</span></div>`];
   if (view.managers) rows.push(`<div class="inv-row"><span>Manager Pace</span><span>${view.managerWork}/tick</span></div>`);
   if (view.definition.kind !== 'seller' && view.effectiveOutput) {
     const inputText = Object.entries(view.effectiveInputs)

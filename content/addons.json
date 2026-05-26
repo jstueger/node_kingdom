@@ -2,7 +2,7 @@
   "lumber_sharper_axes": {
     "node": "lumber",
     "label": "Sharper Axes",
-    "description": "Lumber Camps need 2 fewer work clicks.",
+    "description": "Lumber Camp action timers are 2 ticks shorter.",
     "cost": { "gold": 10, "wood": 8 },
     "effects": { "actionClicks": -2 }
   },

@@ -41,6 +41,7 @@ export function nodeViewState(building, connections, techs, addons = {}) {
     actionClicks,
     managers: managerCountFor(building),
     managerWork: managerWorkFor(building, addons),
+    active: Boolean(building.active),
     progressClicks: building.ptimer || 0,
     progress,
     progressPct: Math.floor(progress * 100),
@@ -65,6 +66,7 @@ function totalInventory(building) {
 }
 
 function nodeStatus(definition, recipe, inputs, outputView, building) {
+  if (building.active) return 'working';
   if (definition.kind === 'seller') return totalInventory(building) > 0 ? 'ready' : 'idle';
   if (outputView && outputView.have >= outputView.cap) return 'blocked';
   if (inputs.some(input => input.need !== null && input.have < input.need)) return 'waiting';

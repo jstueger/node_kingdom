@@ -45,7 +45,7 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 - Building types can be locked until researched.
 - Placed buildings can be moved without cost.
 - Nodes start as manual workstations and do not produce automatically.
-- Mining, crafting, and selling advance by clicking the node's work control.
+- Mining, crafting, and selling are started by clicking the node's work control, then complete after a short timer.
 - Resources move through direct output-to-input connectors.
 - A connector transports one unit per tick.
 - Inventories have simple capacity limits.

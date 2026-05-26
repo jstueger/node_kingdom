@@ -17,11 +17,12 @@ The prototype already includes parts of the earlier progression direction:
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
 - Early milestone goals with claimable gold rewards.
+- Manual actions are started with one click and complete after a visible timer.
 - Node-type addons for Lumber Camp and Market, bought from the inspector.
 - Progression definitions split into `progression-data.js`; Knowledge reserved for Science.
 - Science techs can unlock Manager slots for specific node types.
 - Managers can be hired per placed node and automate that node's work action once per tick.
-- Node addons can improve existing production lines through work-click reduction, faster manager progress, input efficiency, extra output, storage, or sale value.
+- Node addons can improve existing production lines through work-time reduction, faster manager progress, input efficiency, extra output, storage, or sale value.
 - Content is authored in JSON and validated before runtime state is created.
 
 This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
@@ -145,11 +146,11 @@ Scope:
 - Add manager purchase costs.
 - Allow assigning a manager to an unlocked manager slot.
 - Automate only the assigned node's manual work action.
-- Keep manager speed modest so manual clicking still matters early.
+- Keep manager speed modest so manually started timers still matter early.
 
 Exit criteria:
 
-- A node with an assigned manager can produce, craft, or sell without clicks.
+- A node with an assigned manager can produce, craft, or sell without manual starts.
 
 ## Phase 7: Production Speed And Efficiency Upgrades
 
@@ -159,7 +160,7 @@ Status: complete.
 
 Scope:
 
-- Add upgrades that reduce required work clicks or manager cycle time.
+- Add upgrades that reduce required work time or manager cycle time.
 - Add input efficiency or output amount upgrades where they are readable.
 - Keep effects visible on the node or in a focused detail panel.
 
@@ -216,13 +217,13 @@ Scope:
 
 - Lower starting gold so early placement choices matter.
 - Add item tags for future goods, science, and military vocabulary.
-- Add per-building work-click overrides and make Lumber Camps faster than the global default.
+- Add per-building work-time overrides and make Lumber Camps faster than the global default.
 - Move Lumber Management into early Technology so first automation can arrive before Knowledge.
 - Add First Outpost as the first medium-term kingdom-development objective.
 
 Exit criteria:
 
-- The first 10 minutes reach Market Access and Market selling with less click fatigue.
+- The first 10 minutes reach Market Access and Market selling with less manual-work fatigue.
 - First automation is visible after demonstrated wood production and Market sales.
 - The player can see a larger First Outpost goal before combat systems exist.
 

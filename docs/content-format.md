@@ -51,7 +51,7 @@ Important mappings:
 ```text
 description       -> desc
 size.w / size.h   -> w / h
-actionClicks      -> actionClicks
+actionClicks      -> actionClicks, interpreted as action duration in ticks
 cost.gold         -> cost
 cost              -> costResources
 output.resource   -> output.res
@@ -76,7 +76,7 @@ npm run validate:content
 Validation checks:
 
 - item labels and icons
-- building labels, descriptions, kind, size, work-click overrides, costs, capacities, and recipes
+- building labels, descriptions, kind, size, work-time overrides, costs, capacities, and recipes
 - recipe input/output resources
 - seller prices
 - tech prerequisites, visibility conditions, unlock targets, and cycles
