@@ -1,4 +1,4 @@
-import { BUILDINGS, MANUAL_ACTION_CLICKS, activeRecipe, capFor, inputPorts, itemLabel, outputPort } from './data.js';
+import { BUILDINGS, DEFAULT_ACTION_TICKS, activeRecipe, capFor, inputPorts, itemLabel, outputPort } from './data.js';
 import { createManagerCosts } from './progression-data.js';
 
 export function inputAccepts(inputPort, resource) {
@@ -25,9 +25,9 @@ export function isBuildingUnlocked(state, type) {
   return Boolean(state.unlockedBuildings[type]);
 }
 
-export function actionClicksFor(building, techs, addons = {}) {
-  const addonBonus = addonActionClickBonus(addons, building.type);
-  const base = BUILDINGS[building.type].actionClicks || MANUAL_ACTION_CLICKS;
+export function actionTicksFor(building, techs, addons = {}) {
+  const addonBonus = addonActionTickBonus(addons, building.type);
+  const base = BUILDINGS[building.type].actionTicks || DEFAULT_ACTION_TICKS;
   if (BUILDINGS[building.type].kind === 'seller') {
     return Math.max(1, base - (techs.basic_accounting?.bought ? 2 : 0) + addonBonus);
   }
@@ -183,8 +183,8 @@ function addonStorageBonus(addons, type, resource) {
   }, 0);
 }
 
-function addonActionClickBonus(addons, type) {
-  return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.actionClicks || 0), 0);
+function addonActionTickBonus(addons, type) {
+  return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.actionTicks || 0), 0);
 }
 
 function addonManagerWorkBonus(addons, type) {

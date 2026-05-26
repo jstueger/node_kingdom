@@ -176,7 +176,7 @@ A science tech could use the same format:
   "basic_accounting": {
     "tree": "science",
     "label": "Basic Accounting",
-    "description": "Markets need fewer work clicks to complete a sale.",
+    "description": "Market sale timers are shorter.",
     "visibleWhen": {
       "lifetimeProduced": {
         "knowledge": 5
@@ -204,13 +204,13 @@ Node-specific addons could also be data-driven:
   "lumber_sharper_axes": {
     "node": "lumber",
     "label": "Sharper Axes",
-    "description": "Lumber Camps need 2 fewer work clicks.",
+    "description": "Lumber Camp action timers are 2 ticks shorter.",
     "cost": {
       "gold": 10,
       "wood": 8
     },
     "effects": {
-      "actionClicks": -2
+      "actionTicks": -2
     }
   }
 }

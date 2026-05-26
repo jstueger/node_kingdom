@@ -1,5 +1,5 @@
 export const CELL = 18;
-export const MANUAL_ACTION_CLICKS = 10;
+export const DEFAULT_ACTION_TICKS = 10;
 
 export let COLS = 40;
 export let ROWS = 40;

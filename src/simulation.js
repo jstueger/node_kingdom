@@ -1,5 +1,5 @@
 import { BUILDINGS, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAccepts, inputResourceForStorage, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { actionTicksFor, inputAccepts, inputResourceForStorage, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function canProduce(state, building) {
   if (BUILDINGS[building.type].kind === 'seller') return canSell(building);
@@ -63,7 +63,7 @@ export function advanceBuildingWork(state, building, amount) {
     return { worked: false, completed: false, reason: 'blocked' };
   }
   building.ptimer = (building.ptimer || 0) + amount;
-  if (building.ptimer < actionClicksFor(building, state.techs, state.addons)) return { worked: true, completed: false };
+  if (building.ptimer < actionTicksFor(building, state.techs, state.addons)) return { worked: true, completed: false };
   produce(state, building);
   building.ptimer = 0;
   building.active = false;

@@ -1,5 +1,5 @@
 import { BUILDINGS, activeRecipe, inputPorts, outputPort } from './data.js';
-import { actionClicksFor, inputAlreadyConnected, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { actionTicksFor, inputAlreadyConnected, managerCountFor, managerWorkFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 
 export function nodeViewState(building, connections, techs, addons = {}) {
   const definition = BUILDINGS[building.type];
@@ -7,8 +7,8 @@ export function nodeViewState(building, connections, techs, addons = {}) {
   const output = outputPort(building);
   const effectiveInputs = recipeInputsFor(building, addons);
   const effectiveOutput = recipeOutputFor(building, addons);
-  const actionClicks = definition.kind === 'seller' || recipe ? actionClicksFor(building, techs, addons) : 0;
-  const progress = actionClicks ? Math.min(1, (building.ptimer || 0) / actionClicks) : 0;
+  const actionTicks = definition.kind === 'seller' || recipe ? actionTicksFor(building, techs, addons) : 0;
+  const progress = actionTicks ? Math.min(1, (building.ptimer || 0) / actionTicks) : 0;
 
   const inputs = inputPorts(building).map((port, index) => {
     const need = effectiveInputs[port.res] || null;
@@ -38,11 +38,11 @@ export function nodeViewState(building, connections, techs, addons = {}) {
     color: definition.color,
     size: { w: definition.w, h: definition.h },
     recipeLabel: recipe ? recipe.label : 'Manual Sell',
-    actionClicks,
+    actionTicks,
     managers: managerCountFor(building),
     managerWork: managerWorkFor(building, addons),
     active: Boolean(building.active),
-    progressClicks: building.ptimer || 0,
+    progressTicks: building.ptimer || 0,
     progress,
     progressPct: Math.floor(progress * 100),
     status: nodeStatus(definition, recipe, inputs, outputView, building),

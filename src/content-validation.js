@@ -1,7 +1,7 @@
 const RESOURCE_CONDITION_KEYS = ['lifetimeProduced', 'lifetimeSold'];
 const GOLD_CONDITION_KEYS = ['lifetimeEarned'];
 const ADDON_EFFECT_RESOURCE_KEYS = ['storage', 'inputEfficiency', 'outputBonus'];
-const ADDON_EFFECT_KEYS = ['actionClicks', 'storage', 'storageAll', 'saleMultiplier', 'managerWork', 'inputEfficiency', 'outputBonus'];
+const ADDON_EFFECT_KEYS = ['actionTicks', 'storage', 'storageAll', 'saleMultiplier', 'managerWork', 'inputEfficiency', 'outputBonus'];
 
 export function validateContent(content) {
   const errors = [];
@@ -38,7 +38,8 @@ function validateBuildings(buildings, itemIds, errors) {
     if (!['producer', 'crafter', 'seller'].includes(building.kind)) errors.push(`Building "${id}" has unknown kind "${building.kind}"`);
     validatePositiveNumber(building.size?.w, `Building "${id}" size.w`, errors);
     validatePositiveNumber(building.size?.h, `Building "${id}" size.h`, errors);
-    if (building.actionClicks !== undefined) validatePositiveNumber(building.actionClicks, `Building "${id}" actionClicks`, errors);
+    if (building.actionClicks !== undefined) errors.push(`Building "${id}" uses legacy actionClicks; use actionTicks`);
+    if (building.actionTicks !== undefined) validatePositiveNumber(building.actionTicks, `Building "${id}" actionTicks`, errors);
     validateCost(building.cost, itemIds, `Building "${id}" cost`, errors);
     validateResourceMap(building.capacity || {}, itemIds, `Building "${id}" capacity`, errors);
 

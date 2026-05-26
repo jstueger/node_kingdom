@@ -4,7 +4,7 @@
     "label": "Sharper Axes",
     "description": "Lumber Camp action timers are 2 ticks shorter.",
     "cost": { "gold": 10, "wood": 8 },
-    "effects": { "actionClicks": -2 }
+    "effects": { "actionTicks": -2 }
   },
   "lumber_wood_yard": {
     "node": "lumber",

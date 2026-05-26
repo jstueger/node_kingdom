@@ -41,7 +41,7 @@
     "size": { "w": 8, "h": 8 },
     "cost": { "gold": 5 },
     "description": "Produces wood.",
-    "actionClicks": 5,
+    "actionTicks": 5,
     "capacity": { "wood": 12 },
     "recipes": {
       "wood": {
