@@ -2,6 +2,35 @@ import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './
 import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
+const TICK_SECONDS = 1;
+
+function formatSeconds(seconds) {
+  const clamped = Math.max(0, seconds);
+  if (clamped >= 10 || Number.isInteger(clamped)) return `${Math.ceil(clamped)}s`;
+  return `${Math.ceil(clamped * 10) / 10}s`;
+}
+
+function progressTicksForDisplay(state, view, building) {
+  if (!view.active || !view.actionTicks) return view.progressTicks;
+  const baseline = view.progressTicks === 0 && building.displayProgressStartedAt
+    ? building.displayProgressStartedAt
+    : state.clock.lastTickAt;
+  const elapsedSeconds = Math.min(TICK_SECONDS, (performance.now() - baseline) / 1000);
+  const progressPerSecond = view.managers ? view.managerWork : 1;
+  return Math.min(view.actionTicks, view.progressTicks + elapsedSeconds * progressPerSecond);
+}
+
+function progressPctForDisplay(state, view, building) {
+  if (!view.actionTicks) return 0;
+  return (progressTicksForDisplay(state, view, building) / view.actionTicks) * 100;
+}
+
+function workTimeLabel(view, displayProgressTicks = view.progressTicks) {
+  if (!view.actionTicks) return '';
+  const seconds = view.active ? view.actionTicks - displayProgressTicks : view.actionTicks;
+  return formatSeconds(seconds);
+}
+
 function inventoryText(view) {
   return view.inventory.map(item => `${itemIcon(item.res)}${item.amount}`).join(' ');
 }
@@ -54,7 +83,7 @@ function recipeControlHtml(view, building) {
     </div>`;
 }
 
-function actionControlHtml(view, building) {
+function actionControlHtml(state, view, building) {
   const labels = {
     producer: view.recipeLabel,
     crafter: 'Work',
@@ -65,7 +94,7 @@ function actionControlHtml(view, building) {
   return `
     <div class="node-action-control">
       <button class="node-work" data-bid="${building.id}" title="${labels[view.definition.kind]} this node" ${disabled ? 'disabled' : ''}>${buttonLabel}</button>
-      <span title="${view.managers ? 'Managed automation active' : 'Timed work progress'}">${view.progressTicks}/${view.actionTicks}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}</span>
+      <span class="node-time" data-time-bid="${building.id}" title="${view.managers ? 'Managed automation active' : 'Timed work progress'}">${workTimeLabel(view, progressTicksForDisplay(state, view, building))}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}</span>
     </div>`;
 }
 
@@ -196,8 +225,8 @@ function managerSlotsHtml(state, building) {
 
 function efficiencyHtml(state, building) {
   const view = nodeViewState(building, state.connections, state.techs, state.addons);
-  const rows = [`<div class="inv-row"><span>Work Time</span><span>${view.actionTicks} ticks</span></div>`];
-  if (view.managers) rows.push(`<div class="inv-row"><span>Manager Pace</span><span>${view.managerWork}/tick</span></div>`);
+  const rows = [`<div class="inv-row"><span>Work Time</span><span>${formatSeconds(view.actionTicks)}</span></div>`];
+  if (view.managers) rows.push(`<div class="inv-row"><span>Manager Pace</span><span>x${view.managerWork}</span></div>`);
   if (view.definition.kind !== 'seller' && view.effectiveOutput) {
     const inputText = Object.entries(view.effectiveInputs)
       .map(([res, amount]) => `${itemIcon(res)} ${amount}`)
@@ -233,8 +262,8 @@ export function renderBuildings(context) {
       <div class="node-header"><span class="node-title">${view.icon} ${view.label}</span><span class="node-status">${statusLabel(view.status)}</span></div>
       ${recipeControlHtml(view, building)}
       ${nodeBodyHtml(view)}
-      ${actionControlHtml(view, building)}
-      <div class="prog"><span data-bid="${id}" style="width:${view.progressPct}%"></span></div>`;
+      ${actionControlHtml(state, view, building)}
+      <div class="prog"><span data-bid="${id}" style="width:${progressPctForDisplay(state, view, building)}%"></span></div>`;
     el.querySelectorAll('.node-work').forEach(button => {
       button.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -439,7 +468,7 @@ export function renderPanels(context) {
 export function renderTopbar(context) {
   const { state, ui } = context;
   ui.goldEl.textContent = `💰 ${state.gold} gold`;
-  ui.tstat.textContent = `t=${state.ticks}`;
+  ui.tstat.textContent = `⏱ ${state.ticks}s`;
 }
 
 export function renderAll(context) {
@@ -454,6 +483,9 @@ export function updateProgressBars(context) {
     const building = state.buildings.get(Number(bar.dataset.bid));
     if (!building) return;
     const view = nodeViewState(building, state.connections, state.techs, state.addons);
-    bar.style.width = `${view.progressPct}%`;
+    const displayProgressTicks = progressTicksForDisplay(state, view, building);
+    bar.style.width = `${progressPctForDisplay(state, view, building)}%`;
+    const time = ui.bl.querySelector(`.node-time[data-time-bid="${building.id}"]`);
+    if (time) time.textContent = `${workTimeLabel(view, displayProgressTicks)}${view.managerWork > 1 ? ` x${view.managerWork}` : view.managers ? ' A' : ''}`;
   });
 }

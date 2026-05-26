@@ -41,6 +41,7 @@ export function setupInput(context) {
       context.renderAll();
       return;
     }
+    if (result.reason === 'started') building.displayProgressStartedAt = performance.now();
     context.setHint(result.reason === 'active' ? 'Already working' : 'Work started');
     context.renderAll();
   }

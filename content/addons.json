@@ -2,7 +2,7 @@
   "lumber_sharper_axes": {
     "node": "lumber",
     "label": "Sharper Axes",
-    "description": "Lumber Camp action timers are 2 ticks shorter.",
+    "description": "Lumber Camp action timers are 2 seconds shorter.",
     "cost": { "gold": 10, "wood": 8 },
     "effects": { "actionTicks": -2 }
   },
@@ -16,7 +16,7 @@
   "lumber_foreman": {
     "node": "lumber",
     "label": "Foreman Routine",
-    "description": "Managed Lumber Camps gain 1 extra work progress per tick.",
+    "description": "Managed Lumber Camps work twice as fast.",
     "visibleWhen": { "techs": ["lumber_management"] },
     "cost": { "gold": 45, "knowledge": 4, "wood": 20 },
     "effects": { "managerWork": 1 }
@@ -55,7 +55,7 @@
   "market_shift_lead": {
     "node": "market",
     "label": "Shift Lead",
-    "description": "Managed Markets gain 1 extra work progress per tick.",
+    "description": "Managed Markets work twice as fast.",
     "visibleWhen": { "techs": ["market_management"] },
     "cost": { "gold": 50, "knowledge": 4 },
     "effects": { "managerWork": 1 }

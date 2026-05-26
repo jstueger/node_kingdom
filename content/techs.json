@@ -65,7 +65,7 @@
   "basic_accounting": {
     "tree": "science",
     "label": "Basic Accounting",
-    "description": "Market sale timers are 2 ticks shorter.",
+    "description": "Market sale timers are 2 seconds shorter.",
     "visibleWhen": { "lifetimeProduced": { "knowledge": 5 } },
     "requires": ["knowledge_production"],
     "cost": { "knowledge": 5 },
@@ -110,7 +110,7 @@
   "workshop_tuning": {
     "tree": "technology",
     "label": "Workshop Tuning",
-    "description": "Crafter action timers are 2 ticks shorter.",
+    "description": "Crafter action timers are 2 seconds shorter.",
     "visibleWhen": { "unlockedBuildings": ["sawmill"] },
     "requires": ["woodworking"],
     "cost": { "gold": 35 },

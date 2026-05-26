@@ -204,7 +204,7 @@ Node-specific addons could also be data-driven:
   "lumber_sharper_axes": {
     "node": "lumber",
     "label": "Sharper Axes",
-    "description": "Lumber Camp action timers are 2 ticks shorter.",
+    "description": "Lumber Camp action timers are 2 seconds shorter.",
     "cost": {
       "gold": 10,
       "wood": 8
@@ -223,7 +223,7 @@ For manager-based automation:
   "lumber_foreman": {
     "node": "lumber",
     "label": "Foreman Routine",
-    "description": "Managed Lumber Camps gain 1 extra work progress per tick.",
+    "description": "Managed Lumber Camps work twice as fast.",
     "visibleWhen": {
       "techs": ["lumber_management"]
     },

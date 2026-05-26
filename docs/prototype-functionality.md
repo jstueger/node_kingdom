@@ -20,7 +20,7 @@ Market buildings are sink nodes. They do not use recipes and instead sell all st
 
 The interface has five main areas:
 
-- Top bar: gold, simulation tick, zoom controls, Tech button, save/load/reset buttons, and current hint.
+- Top bar: gold, elapsed seconds, zoom controls, Tech button, save/load/reset buttons, and current hint.
 - Left sidebar: placeable building cards with gold costs, active goals, and port legend.
 - Center game area: centered grid, buildings, ports, placement preview, and connector paths.
 - Right inspector: selected-building details.
@@ -312,12 +312,12 @@ Current techs:
 - Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 10 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
 - Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 15 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
 - Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60 lifetime gold earned, costs 25 gold, 3 Planks, and 1 Sword, and unlocks School buildings.
-- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Market sale timers 2 ticks shorter.
+- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Market sale timers 2 seconds shorter.
 - Lumber Management: requires Market Access, appears after 20 lifetime Wood produced and 15 lifetime gold earned, costs 20 gold and 20 Wood, and unlocks one Lumber Camp Manager slot.
 - Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80 lifetime gold earned, costs 10 Knowledge and 25 gold, and unlocks one Market Manager slot.
 - Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12 gold and 8 Wood, and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 35 gold, and makes crafter action timers 2 ticks shorter.
+- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 35 gold, and makes crafter action timers 2 seconds shorter.
 - Market Bargaining: requires Market Access and Woodworking, appears after 40 lifetime gold earned, costs 35 gold and 2 Planks, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
@@ -330,12 +330,12 @@ Manual work:
 
 - Producer, crafter, and Market nodes have a work button inside the node.
 - One click starts a timed action on that node.
-- One completed action normally takes 10 ticks, but building content may override this. Lumber Camps currently take 5 ticks.
+- One completed action normally takes 10 seconds, but building content may override this. Lumber Camps currently take 5 seconds.
 - The progress bar fills as the timer advances.
 - When the timer fills, the node performs one action: mining, crafting, or selling.
 - If the node is missing inputs, has full output storage, or has nothing to sell, work cannot start.
-- Workshop Tuning reduces crafter action timers to 8 ticks.
-- Basic Accounting reduces Market sale timers to 8 ticks.
+- Workshop Tuning reduces crafter action timers to 8 seconds.
+- Basic Accounting reduces Market sale timers to 8 seconds.
 
 Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current stored resources and gold are used to pay tech costs.
 
@@ -348,7 +348,7 @@ On each tick:
 3. Active manual work and managed work advance.
 4. The world and topbar re-render.
 
-Work progress bars animate between timed progress states for readability. The animation does not change simulation timing.
+Work progress bars animate smoothly between timed progress states for readability. The animation does not change simulation timing.
 
 ## Inventory And Capacity
 
@@ -387,7 +387,7 @@ Current Manager slot techs:
 - Lumber Management is an early Technology tech that unlocks one Manager slot for Lumber Camps.
 - Market Management unlocks one Manager slot for Markets.
 
-Managers are bought per placed node from the inspector after the matching node type has an unlocked Manager slot. A hired Manager occupies one slot on that node, starts work when possible, and advances that node's normal work action once per game tick. This means managed Producers produce, managed Crafters craft, and managed Markets sell without manual starts when their normal inputs, inventory, and output constraints allow it.
+Managers are bought per placed node from the inspector after the matching node type has an unlocked Manager slot. A hired Manager occupies one slot on that node, starts work when possible, and advances that node's normal work action automatically. This means managed Producers produce, managed Crafters craft, and managed Markets sell without manual starts when their normal inputs, inventory, and output constraints allow it.
 
 Current Manager costs:
 
@@ -401,14 +401,14 @@ Addons are node-type upgrades bought from the inspector of a selected building. 
 
 Current addons:
 
-- Lumber Camp, Sharper Axes: costs 10 gold and 8 Wood; Lumber Camp action timers are 2 ticks shorter.
+- Lumber Camp, Sharper Axes: costs 10 gold and 8 Wood; Lumber Camp action timers are 2 seconds shorter.
 - Lumber Camp, Wood Yard: costs 8 gold and 10 Wood; Lumber Camps store 8 more Wood.
-- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45 gold, 4 Knowledge, and 20 Wood; managed Lumber Camps gain 1 extra work progress per tick.
+- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45 gold, 4 Knowledge, and 20 Wood; managed Lumber Camps work twice as fast.
 - Sawmill, Thin Kerf Blades: requires Woodworking, costs 30 gold and 4 Planks; Sawmills need 1 less Wood when making Planks.
 - Forge, Paired Molds: requires Smelting and Knowledge Production, costs 55 gold, 4 Iron Bars, and 3 Knowledge; Forges produce 1 extra Iron Bar per Iron Bar craft.
 - Market, Larger Stall: costs 15 gold and 10 Wood; Markets store 5 more of every good.
 - Market, Better Rates: requires Woodworking, costs 25 gold and 2 Planks; Markets earn 15% more gold from sales.
-- Market, Shift Lead: requires Market Management, costs 50 gold and 4 Knowledge; managed Markets gain 1 extra work progress per tick.
+- Market, Shift Lead: requires Market Management, costs 50 gold and 4 Knowledge; managed Markets work twice as fast.
 
 Addon effects stack with tech effects where both apply. Efficiency addons change the effective recipe shown in the inspector and the actual simulation result.
 
@@ -420,7 +420,7 @@ The saved payload includes:
 
 - next building/connection id
 - gold
-- tick count
+- elapsed seconds
 - current grid size
 - lifetime production/sale stats
 - claimed goal state
@@ -439,7 +439,7 @@ The Reset button clears the current world after confirmation. Reset also clears 
 
 ## Current Building Recipes
 
-Each recipe action normally takes 10 ticks after it is started. Techs and addons can reduce action time, reduce input requirements, increase output amounts, or improve manager work progress.
+Each recipe action normally takes 10 seconds after it is started. Techs and addons can reduce action time, reduce input requirements, increase output amounts, or improve manager work speed.
 
 ### Iron Mine
 
