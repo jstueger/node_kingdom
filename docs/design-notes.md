@@ -24,7 +24,7 @@ A crafter may have multiple possible recipes, but only one recipe is active. The
 
 This keeps each node readable while still allowing deeper production chains.
 
-Markets are sink nodes. They do not use recipes, expose one universal input, and convert stocked goods into gold when worked.
+Markets are sink nodes. They do not use recipes, expose one universal input, and convert all stocked sellable goods into gold when worked.
 
 ## Connection Rule
 

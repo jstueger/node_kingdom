@@ -14,7 +14,7 @@ The main rule is:
 
 > Each recipe-based building has one active output at a time. Crafters may have multiple possible recipes, but only one recipe is active.
 
-Market buildings are sink nodes. They do not use recipes and instead sell supported goods when manually worked.
+Market buildings are sink nodes. They do not use recipes and instead sell all stocked supported goods when manually worked.
 
 ## Interface Layout
 
@@ -146,7 +146,7 @@ The active recipe determines:
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts supported trade goods through one universal input and sells stocked goods for gold when worked. Knowledge is reserved for Science and is not accepted by Markets.
+Markets do not use recipes. A Market accepts supported trade goods through one universal input and sells all stocked goods for gold when worked. Knowledge is reserved for Science and is not accepted by Markets.
 
 Changing a crafter recipe:
 
@@ -473,7 +473,7 @@ Each recipe action normally takes 10 ticks after it is started. Techs and addons
 
 ### Market
 
-The Market has no recipes. It accepts all current sellable trade goods through one universal input and sells one stocked good when its manual work action completes. Knowledge is not sellable.
+The Market has no recipes. It accepts all current sellable trade goods through one universal input and sells all stocked sellable goods when its manual work action completes. Knowledge is not sellable.
 
 Current sell prices:
 

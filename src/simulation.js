@@ -30,13 +30,15 @@ export function canSell(building) {
 
 export function sellGoods(state, building) {
   const prices = BUILDINGS[building.type].sellPrices || {};
-  const res = Object.keys(prices).find(key => (building.inv[key] || 0) > 0);
-  if (!res) return;
-  const price = salePriceFor(building.type, res, state.techs, state.addons);
-  building.inv[res]--;
-  state.gold += price;
-  state.stats.lifetimeSold[res] = (state.stats.lifetimeSold[res] || 0) + 1;
-  state.stats.lifetimeEarned.gold = (state.stats.lifetimeEarned.gold || 0) + price;
+  for (const res of Object.keys(prices)) {
+    const amount = building.inv[res] || 0;
+    if (amount <= 0) continue;
+    const earned = salePriceFor(building.type, res, state.techs, state.addons) * amount;
+    building.inv[res] = 0;
+    state.gold += earned;
+    state.stats.lifetimeSold[res] = (state.stats.lifetimeSold[res] || 0) + amount;
+    state.stats.lifetimeEarned.gold = (state.stats.lifetimeEarned.gold || 0) + earned;
+  }
 }
 
 export function workBuilding(state, building) {
