@@ -40,7 +40,7 @@ Placement controls:
 
 Placement rules:
 
-- The player starts with 15 gold.
+- The player starts with 10 gold.
 - Placement costs gold.
 - Buildings cannot overlap.
 - Buildings cannot be placed outside the grid.
@@ -83,7 +83,7 @@ Current building types:
 - School: produces Knowledge.
 - Market: sells goods for gold.
 
-Only Lumber Camp is unlocked at the start of a new game. The left building menu only shows currently unlocked building types.
+The game starts with one Sawmill already placed and stocked with enough Wood for the first Plank. No building cards are unlocked until the first Plank reveals Market Access. The left building menu only shows currently unlocked building types.
 
 Each building has:
 
@@ -233,11 +233,12 @@ Goals are not contracts. They do not require delivery, consume resources, or cre
 
 Current goals:
 
-- First Timber: produce 5 lifetime Wood, rewards 3 gold.
+- First Plank: produce 1 lifetime Plank, rewards 3 gold.
 - Open Trade: research Market Access, rewards 5 gold.
-- First Sales: earn 10 lifetime gold from Markets, rewards 5 gold.
+- Sustain The Mill: produce 3 lifetime Wood, rewards 3 gold.
+- First Sales: earn 6 lifetime gold from Markets, rewards 5 gold.
 - Strike Ore: produce 6 lifetime Iron Ore, rewards 5 gold.
-- Cut Planks: produce 3 lifetime Planks, rewards 6 gold.
+- Plank Supply: produce 3 lifetime Planks, rewards 6 gold.
 - First Bars: produce 2 lifetime Iron Bars, rewards 8 gold.
 - First Outpost: appears after Mining and Woodworking are researched; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50 lifetime gold earned; rewards 20 gold.
 - Armed Trade: produce 1 lifetime Sword, rewards 10 gold.
@@ -249,8 +250,8 @@ The sidebar shows up to three visible unclaimed goals. Completed goals show a cl
 
 The current progression model is deliberately simple and bootstrap-focused:
 
-- Only Lumber Camps start unlocked.
-- Manual work on nodes creates the first resources and sales.
+- A stocked Sawmill starts placed on the grid.
+- The first manual action creates a Plank before the player builds the supply chain.
 - Markets convert stocked trade goods into gold.
 - Lifetime thresholds reveal techs; current resources and gold pay for techs.
 - Technology techs unlock early buildings, grid space, storage, crafting, and trade improvements.
@@ -259,7 +260,7 @@ The current progression model is deliberately simple and bootstrap-focused:
 - Managers automate work after their node type has an unlocked Manager slot.
 - Addons improve node types through storage, work speed, manager pace, input efficiency, output bonuses, or sale value.
 
-The intended early loop is: produce Wood, unlock Market Access, place a Market, connect Lumber to Market, sell Wood for gold, then unlock Mining and Woodworking.
+The intended early loop is: start the Sawmill, produce the first Plank, unlock Market Access for free, place a Lumber Camp and Market, connect Lumber to Sawmill and Sawmill to Market, then sell Planks for gold.
 
 ## Content Model
 
@@ -273,7 +274,7 @@ Current content files:
 - `goals.json`: early milestone goals and rewards.
 - `addons.json`: node-type addon definitions and effects.
 - `managers.json`: Manager slot defaults and Manager purchase costs.
-- `start-state.json`: starting grid size, starting gold, and initially unlocked buildings.
+- `start-state.json`: starting grid size, starting gold, start hint, initially unlocked buildings, and pre-placed starting buildings.
 
 Authoring fields use stable content names such as `description`, `size`, and recipe output `resource`. The content loader normalizes those fields into the current runtime shape before state creation.
 
@@ -305,9 +306,9 @@ Discovered techs may be shown before they are buyable when doing so clarifies a 
 
 Current techs:
 
-- Market Access: appears after 5 lifetime Wood produced, costs 5 Wood, and unlocks Market buildings.
-- Mining: requires Market Access, appears after 8 lifetime gold earned, costs 5 gold and 5 Wood, and unlocks Iron Mine buildings.
-- Woodworking: requires Market Access, appears after 10 lifetime gold earned and 12 lifetime Wood produced, costs 6 gold and 8 Wood, and unlocks Sawmill buildings.
+- Market Access: appears after 1 lifetime Plank produced, is free, and unlocks Lumber Camp and Market buildings.
+- Mining: requires Market Access, appears after 6 lifetime gold earned, costs 8 gold and 1 Plank, and unlocks Iron Mine buildings.
+- Woodworking: requires Market Access, appears after 6 lifetime gold earned and 2 lifetime Planks produced, costs 6 gold and 2 Planks, and unlocks additional Sawmill buildings.
 - Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 8 gold, 6 Iron Ore, and 3 Wood, and unlocks Forge buildings.
 - Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 10 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
 - Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 15 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.

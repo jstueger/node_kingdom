@@ -1,22 +1,29 @@
 {
-  "first_wood": {
-    "label": "First Timber",
-    "description": "Produce enough wood to discover trade.",
-    "completeWhen": { "lifetimeProduced": { "wood": 5 } },
+  "first_plank": {
+    "label": "First Plank",
+    "description": "Start the Sawmill and produce a Plank.",
+    "completeWhen": { "lifetimeProduced": { "plank": 1 } },
     "reward": { "gold": 3 }
   },
   "first_trade": {
     "label": "Open Trade",
     "description": "Research Market Access.",
-    "visibleWhen": { "lifetimeProduced": { "wood": 5 } },
+    "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
     "completeWhen": { "techs": ["market_access"] },
     "reward": { "gold": 5 }
   },
+  "first_wood": {
+    "label": "Sustain The Mill",
+    "description": "Produce Wood with a Lumber Camp.",
+    "visibleWhen": { "techs": ["market_access"] },
+    "completeWhen": { "lifetimeProduced": { "wood": 3 } },
+    "reward": { "gold": 3 }
+  },
   "first_sales": {
     "label": "First Sales",
-    "description": "Earn 10 lifetime gold from Markets.",
+    "description": "Earn 6 lifetime gold from Markets.",
     "visibleWhen": { "techs": ["market_access"] },
-    "completeWhen": { "lifetimeEarned": { "gold": 10 } },
+    "completeWhen": { "lifetimeEarned": { "gold": 6 } },
     "reward": { "gold": 5 }
   },
   "first_ore": {
@@ -27,9 +34,9 @@
     "reward": { "gold": 5 }
   },
   "first_planks": {
-    "label": "Cut Planks",
+    "label": "Plank Supply",
     "description": "Produce 3 Planks.",
-    "visibleWhen": { "techs": ["woodworking"] },
+    "visibleWhen": { "techs": ["market_access"] },
     "completeWhen": { "lifetimeProduced": { "plank": 3 } },
     "reward": { "gold": 6 }
   },

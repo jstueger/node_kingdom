@@ -227,6 +227,26 @@ Exit criteria:
 - First automation is visible after demonstrated wood production and Market sales.
 - The player can see a larger First Outpost goal before combat systems exist.
 
+## Phase 7.9: Sawmill-First Opening
+
+Goal: end Phase 7 with a sharper first-five-minute hook.
+
+Status: complete.
+
+Scope:
+
+- Start new games with a placed Sawmill stocked with Wood.
+- Make the first action produce a Plank before the player builds support infrastructure.
+- Reveal free Market Access from the first Plank.
+- Unlock Lumber Camp and Market together through Market Access.
+- Shift early goals and tech thresholds toward Plank sales.
+
+Exit criteria:
+
+- A new player sees transformation before raw gathering.
+- The first complete chain is Wood to Plank to Gold.
+- Automation and Mining remain near-term aspirations after the first sale loop.
+
 ## Phase 8: Contracts And Reputation
 
 Goal: add external demand and a longer-term progression pressure.
@@ -244,4 +264,4 @@ Exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 8: Contracts And Reputation, unless playtesting the 25-minute arc shows another pacing issue first.
+The next phase to implement is Phase 8: Contracts And Reputation, unless playtesting the sawmill-first opening shows another pacing issue first.

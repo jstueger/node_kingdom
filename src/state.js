@@ -1,5 +1,5 @@
 import { COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createManagerSlots, createTechs, createUnlockedBuildings } from './progression-data.js';
+import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, occupyStartingBuildings } from './progression-data.js';
 
 export function createGrid(cols, rows) {
   return Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -25,11 +25,14 @@ export function createInteractionState() {
 }
 
 export function createState() {
+  const starting = createStartingBuildings();
+  const grid = createGrid(COLS, ROWS);
+  occupyStartingBuildings(grid, starting.buildings);
   return {
-    nextId: 1,
+    nextId: starting.nextId,
     gold: STARTING_GOLD,
     ticks: 0,
-    selectedId: null,
+    selectedId: createStartingSelection(starting.buildings),
     mode: 'idle',
     placeType: null,
     connFrom: null,
@@ -48,8 +51,8 @@ export function createState() {
       lastTickAt: 0
     },
     interaction: createInteractionState(),
-    buildings: new Map(),
-    grid: createGrid(COLS, ROWS),
+    buildings: starting.buildings,
+    grid,
     techs: createTechs()
   };
 }

@@ -1,5 +1,5 @@
-import { BUILDINGS, COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createManagerSlots, createTechs, createUnlockedBuildings } from './progression-data.js';
+import { BUILDINGS, COLS, CONTENT, ROWS, STARTING_GOLD } from './data.js';
+import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, occupyStartingBuildings } from './progression-data.js';
 import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
@@ -55,6 +55,7 @@ export function loadGame(context) {
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
   state.world.rows = Math.max(payload.worldRows || ROWS, ROWS);
   state.grid = createGrid(state.world.cols, state.world.rows);
+  state.buildings = new Map();
   for (const [key, saved] of Object.entries(payload.techs || {})) {
     if (state.techs[key]) state.techs[key].bought = Boolean(saved.bought);
   }
@@ -96,10 +97,11 @@ export function loadGame(context) {
 export function resetWorld(context, confirmFirst = true) {
   const { state, setHint } = context;
   if (confirmFirst && !confirm('Reset the prototype?')) return;
-  state.nextId = 1;
+  const starting = createStartingBuildings();
+  state.nextId = starting.nextId;
   state.gold = STARTING_GOLD;
   state.ticks = 0;
-  state.selectedId = null;
+  state.selectedId = createStartingSelection(starting.buildings);
   state.mode = 'idle';
   state.placeType = null;
   state.connFrom = null;
@@ -109,7 +111,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.addons = createAddons();
   state.managerSlots = createManagerSlots();
   state.unlockedBuildings = createUnlockedBuildings();
-  state.buildings.clear();
+  state.buildings = starting.buildings;
   state.world.cols = COLS;
   state.world.rows = ROWS;
   state.camera.panOffset = { x: 0, y: 0 };
@@ -117,12 +119,13 @@ export function resetWorld(context, confirmFirst = true) {
   state.clock.lastTickAt = performance.now();
   state.interaction = createInteractionState();
   state.grid = createGrid(state.world.cols, state.world.rows);
+  occupyStartingBuildings(state.grid, state.buildings);
   state.techs = createTechs();
   context.applyWorldSize();
   context.applyZoom();
   context.applyPan();
   context.drawBg();
   document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
-  setHint('Select a building from the sidebar to place it');
+  setHint(CONTENT.startState.hint || 'Select a building from the sidebar to place it');
   context.renderAll();
 }

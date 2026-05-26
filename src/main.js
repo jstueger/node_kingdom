@@ -2,6 +2,7 @@ import { loadContent } from './content-loader.js';
 
 await loadContent();
 
+const { CONTENT } = await import('./data.js');
 const { applyPan, applyZoom, localPoint, setZoom } = await import('./camera.js');
 const { setupInput } = await import('./input.js');
 const { renderAll, renderBuildings, renderConnections, renderGoals, renderPanels, renderTechTree, renderTopbar, renderWorld, updateProgressBars } = await import('./render.js');
@@ -93,6 +94,7 @@ context.applyZoom();
 context.applyPan();
 context.drawBg();
 state.clock.lastTickAt = performance.now();
+context.setHint(CONTENT.startState.hint || 'Select a building from the sidebar to place it');
 context.renderAll();
 requestAnimationFrame(animate);
 setInterval(tick, 1000);

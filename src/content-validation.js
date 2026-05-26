@@ -16,7 +16,7 @@ export function validateContent(content) {
   validateGoals(content.goals || {}, itemIds, techIds, errors);
   validateAddons(content.addons || {}, itemIds, buildingIds, techIds, errors);
   validateManagers(content.managers || {}, itemIds, buildingIds, errors);
-  validateStartState(content.startState || {}, buildingIds, errors);
+  validateStartState(content.startState || {}, content.buildings || {}, itemIds, buildingIds, errors);
   validateReachability(content, buildingIds, warnings);
 
   return { valid: errors.length === 0, errors, warnings };
@@ -119,12 +119,40 @@ function validateManagers(managers, itemIds, buildingIds, errors) {
   }
 }
 
-function validateStartState(startState, buildingIds, errors) {
+function validateStartState(startState, buildings, itemIds, buildingIds, errors) {
   validatePositiveNumber(startState.grid?.cols, 'Start state grid.cols', errors);
   validatePositiveNumber(startState.grid?.rows, 'Start state grid.rows', errors);
   validateNonNegativeNumber(startState.startingGold, 'Start state startingGold', errors);
+  if (startState.hint !== undefined) requireString(startState.hint, 'Start state hint must be a string', errors);
   for (const type of Object.keys(startState.unlockedBuildings || {})) {
     if (!buildingIds.has(type)) errors.push(`Start state unlocks unknown building "${type}"`);
+  }
+  const occupied = new Set();
+  for (const [index, building] of (startState.buildings || []).entries()) {
+    const label = `Start building ${index + 1}`;
+    if (!buildingIds.has(building.type)) {
+      errors.push(`${label} references unknown building "${building.type}"`);
+      continue;
+    }
+    const definition = buildings[building.type];
+    validateNonNegativeNumber(building.gx, `${label} gx`, errors);
+    validateNonNegativeNumber(building.gy, `${label} gy`, errors);
+    validateResourceMap(building.inventory || {}, itemIds, `${label} inventory`, errors);
+    if (building.recipe !== undefined && typeof building.recipe !== 'string') errors.push(`${label} recipe must be a string`);
+    if (!definition) continue;
+    if (building.recipe && definition.recipes && !definition.recipes[building.recipe]) {
+      errors.push(`${label} references unknown recipe "${building.recipe}" for "${building.type}"`);
+    }
+    if (building.gx + definition.size.w > startState.grid.cols || building.gy + definition.size.h > startState.grid.rows) {
+      errors.push(`${label} is outside the starting grid`);
+    }
+    for (let y = 0; y < definition.size.h; y++) {
+      for (let x = 0; x < definition.size.w; x++) {
+        const key = `${building.gx + x},${building.gy + y}`;
+        if (occupied.has(key)) errors.push(`${label} overlaps another start building`);
+        occupied.add(key);
+      }
+    }
   }
 }
 

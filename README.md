@@ -39,7 +39,8 @@ VS Code Live Server also works.
 
 - Grid placement by click or drag-and-drop from the building menu.
 - Movable placed buildings.
-- Lumber Camp starts unlocked; additional buildings unlock through an early resource-and-gold tech spine.
+- A stocked Sawmill starts on the grid so the first action creates a Plank before the support chain is built.
+- Lumber Camp and Market unlock through free early Market Access after the first Plank.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.
 - Universal single-input Market that sells stocked goods when worked.
@@ -106,6 +107,6 @@ node scripts/validate-content.mjs
 
 The same check is also available as `npm run validate:content`.
 
-Production, crafting, and selling begin as manual work. That is intentional early-game bootstrap friction; researched Manager slots and hired Managers now create the first automation layer for individual nodes. Addons can then improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
+Production, crafting, and selling begin as manual work. The current opening starts from a pre-placed Sawmill with stored Wood so the player sees transformation before building the supply chain. Researched Manager slots and hired Managers then create the first automation layer for individual nodes. Addons can improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
 
 Good next engineering steps are adding tests for `rules.js`, `simulation.js`, and `world.js`, then continuing to split `input.js` only when interaction complexity makes that worthwhile.

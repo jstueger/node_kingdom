@@ -76,11 +76,12 @@ The next useful product layer is external demand:
 
 The current progression spine is deliberately modest:
 
-1. Wood production reveals Market Access.
-2. Selling goods creates enough gold pressure to reveal Mining and Woodworking.
-3. Ore, planks, and bars then become explicit tech costs for later buildings.
-4. Sword production and earned gold reveal the first Knowledge-producing building.
-5. Knowledge pays for early science upgrades, including the first Manager slot unlocks.
+1. A stocked starting Sawmill creates the first Plank.
+2. Plank production reveals free Market Access, which unlocks Lumber Camps and Markets.
+3. Selling Planks creates enough gold pressure to reveal Mining and Woodworking.
+4. Ore, planks, and bars then become explicit tech costs for later buildings.
+5. Sword production and earned gold reveal the first Knowledge-producing building.
+6. Knowledge pays for early science upgrades, including later science upgrades.
 
 Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots and hired Managers form the first move from direct labor toward production planning, and efficiency addons let players improve an existing line before they simply copy more nodes.
 

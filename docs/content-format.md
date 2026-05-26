@@ -29,7 +29,7 @@ Authoring fields are meant to be readable and stable for editing:
 - Goals use `description`, `visibleWhen`, `completeWhen`, and `reward`.
 - Addons use `description`, `visibleWhen`, `cost`, and `effects`.
 - Managers use `slots` and `costs`.
-- Start state uses `grid`, `startingGold`, and `unlockedBuildings`.
+- Start state uses `grid`, `startingGold`, optional `hint`, `unlockedBuildings`, and optional starting `buildings`.
 
 Example recipe output:
 
@@ -83,7 +83,7 @@ Validation checks:
 - goal visibility/completion references
 - addon targets and effect references
 - manager slot/cost targets
-- start-state grid, gold, and unlocked building ids
+- start-state grid, gold, hint, unlocked building ids, starting building placement, starting recipes, and starting inventory
 - buildings that are neither in start state nor unlocked by any tech
 
 Some checks are errors and stop startup. Reachability checks are warnings unless they would break references.

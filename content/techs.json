@@ -2,28 +2,28 @@
   "market_access": {
     "tree": "technology",
     "label": "Market Access",
-    "description": "Unlocks Markets so stocked goods can be sold for gold.",
-    "visibleWhen": { "lifetimeProduced": { "wood": 5 } },
+    "description": "Unlocks Lumber Camps and Markets so Planks can become gold.",
+    "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
     "requires": [],
-    "cost": { "wood": 5 },
-    "unlocks": { "buildings": ["market"] }
+    "cost": {},
+    "unlocks": { "buildings": ["lumber", "market"] }
   },
   "mining": {
     "tree": "technology",
     "label": "Mining",
     "description": "Unlocks Iron Mines for the first ore production chain.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 8 } },
+    "visibleWhen": { "lifetimeEarned": { "gold": 6 } },
     "requires": ["market_access"],
-    "cost": { "gold": 5, "wood": 5 },
+    "cost": { "gold": 8, "plank": 1 },
     "unlocks": { "buildings": ["iron_mine"] }
   },
   "woodworking": {
     "tree": "technology",
     "label": "Woodworking",
-    "description": "Unlocks Sawmills so wood can be processed into planks.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 10 }, "lifetimeProduced": { "wood": 12 } },
+    "description": "Unlocks more Sawmills so wood can be processed into planks at scale.",
+    "visibleWhen": { "lifetimeEarned": { "gold": 6 }, "lifetimeProduced": { "plank": 2 } },
     "requires": ["market_access"],
-    "cost": { "gold": 6, "wood": 8 },
+    "cost": { "gold": 6, "plank": 2 },
     "unlocks": { "buildings": ["sawmill"] }
   },
   "smelting": {
