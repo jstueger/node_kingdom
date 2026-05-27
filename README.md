@@ -49,7 +49,7 @@ VS Code Live Server also works.
 - Resource storage, manual node work, and work progress meters.
 - Money-only opening costs with compact Gold/Silver/Copper display.
 - Early milestone goals with small money rewards.
-- Node-type addons bought from the selected building inspector, including storage, speed, manager pace, input efficiency, output, and market value upgrades.
+- Node-type upgrades bought from building subviews in the tech tree, including storage, speed, manager pace, input efficiency, output, and market value upgrades.
 - Science-unlocked Manager slots with buyable Managers that automate assigned nodes.
 - Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.

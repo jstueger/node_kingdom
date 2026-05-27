@@ -323,6 +323,8 @@ Discovered techs may be shown before they are buyable when doing so clarifies a 
 
 The opening tech tree includes a Building Chain section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. Market is activated for free from this chain. After the first Market sale, the hidden branch is revealed as Mining.
 
+Building entries can include permanent upgrade subviews. These subviews show bought, locked, affordable, and unaffordable node-type upgrades next to the building they improve. Later unlocked buildings that are not part of the opening chain appear in a separate Building Upgrades section when they have available upgrade content.
+
 Current techs:
 
 - Market Access: appears after 1 lifetime Plank produced, is free, and unlocks Lumber Camp and Market buildings.
@@ -394,7 +396,6 @@ The inspector shows:
 - current inventory and capacity for known resources
 - current efficiency summary, including work time, manager pace, effective inputs, and effective output
 - Manager slots and Manager hire controls for the selected building
-- node-type addons available for the selected building type
 
 Recipe changes are made directly on crafter nodes, not in the inspector.
 
@@ -417,7 +418,7 @@ Current Manager costs:
 
 ## Node Addons
 
-Addons are node-type upgrades bought from the inspector of a selected building. They are separate from the main tech tree and apply to every building of that node type.
+Addons are permanent node-type upgrades bought from building subviews in the tech tree. They apply to every building of that node type.
 
 Current addons:
 

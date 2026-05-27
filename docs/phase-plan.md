@@ -9,16 +9,16 @@ For exact implemented behavior, use `prototype-functionality.md`. For broader de
 The prototype already includes parts of the earlier progression direction:
 
 - Manual node work instead of automatic production.
-- Lifetime stats for production, sales, and gold earned.
+- Lifetime stats for production, sales, and money earned.
 - Building unlocks through tech.
-- Multi-resource tech costs.
+- Money-only opening tech costs, with resource costs still supported by the content model.
 - Hidden locked buildings in the progression-gated Buildings window.
-- A first Knowledge resource, School building, Science heading, and Knowledge-paid upgrade.
+- A first Knowledge resource, School building, and Science heading.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
-- Early milestone goals with claimable gold rewards.
+- Early milestone goals with claimable money rewards.
 - Manual actions are started with one click and complete after a visible timer.
-- Node-type addons for Lumber Camp and Market, bought from the inspector.
+- Node-type addons bought from building subviews in the tech tree.
 - Progression definitions split into `progression-data.js`; Knowledge reserved for Science.
 - Science techs can unlock Manager slots for specific node types.
 - Managers can be hired per placed node and automate that node's work action once per tick.
@@ -333,6 +333,12 @@ Exit criteria:
 - Building upgrades are purchased from the tech tree view.
 - The inspector returns to inspection and per-node operational details rather than permanent upgrade shopping.
 - The player can see upgrade prerequisites as chains inside building sub-views.
+
+Implemented notes:
+
+- Opening-chain building entries now show upgrade subviews for their node-type addons.
+- Later unlocked buildings with addon content appear in a generated Building Upgrades section.
+- The inspector no longer renders permanent addon purchase controls.
 
 ## Phase 12: Opening Balance Pass
 
