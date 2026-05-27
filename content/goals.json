@@ -3,49 +3,49 @@
     "label": "First Plank",
     "description": "Start the Sawmill and produce a Plank.",
     "completeWhen": { "lifetimeProduced": { "plank": 1 } },
-    "reward": { "gold": 3 }
+    "reward": { "gold": 30 }
   },
   "first_trade": {
     "label": "Open Trade",
     "description": "Research Market Access.",
     "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
     "completeWhen": { "techs": ["market_access"] },
-    "reward": { "gold": 5 }
+    "reward": { "gold": 50 }
   },
   "first_wood": {
     "label": "Sustain The Mill",
     "description": "Produce Wood with a Lumber Camp.",
     "visibleWhen": { "techs": ["market_access"] },
     "completeWhen": { "lifetimeProduced": { "wood": 3 } },
-    "reward": { "gold": 3 }
+    "reward": { "gold": 30 }
   },
   "first_sales": {
     "label": "First Sales",
-    "description": "Earn 6 lifetime gold from Markets.",
+    "description": "Earn 6 Silver from Markets.",
     "visibleWhen": { "techs": ["market_access"] },
-    "completeWhen": { "lifetimeEarned": { "gold": 6 } },
-    "reward": { "gold": 5 }
+    "completeWhen": { "lifetimeEarned": { "gold": 60 } },
+    "reward": { "gold": 50 }
   },
   "first_ore": {
     "label": "Strike Ore",
     "description": "Produce 6 Iron Ore.",
     "visibleWhen": { "techs": ["mining"] },
     "completeWhen": { "lifetimeProduced": { "iron_ore": 6 } },
-    "reward": { "gold": 5 }
+    "reward": { "gold": 50 }
   },
   "first_planks": {
     "label": "Plank Supply",
     "description": "Produce 3 Planks.",
     "visibleWhen": { "techs": ["market_access"] },
     "completeWhen": { "lifetimeProduced": { "plank": 3 } },
-    "reward": { "gold": 6 }
+    "reward": { "gold": 60 }
   },
   "first_bars": {
     "label": "First Bars",
     "description": "Produce 2 Iron Bars.",
     "visibleWhen": { "techs": ["smelting"] },
     "completeWhen": { "lifetimeProduced": { "iron_bar": 2 } },
-    "reward": { "gold": 8 }
+    "reward": { "gold": 80 }
   },
   "first_outpost": {
     "label": "First Outpost",
@@ -53,22 +53,22 @@
     "visibleWhen": { "techs": ["woodworking", "mining"] },
     "completeWhen": {
       "lifetimeProduced": { "wood": 30, "plank": 10, "iron_ore": 10, "iron_bar": 3 },
-      "lifetimeEarned": { "gold": 50 }
+      "lifetimeEarned": { "gold": 500 }
     },
-    "reward": { "gold": 20 }
+    "reward": { "gold": 200 }
   },
   "first_sword": {
     "label": "Armed Trade",
     "description": "Produce 1 Sword.",
     "visibleWhen": { "techs": ["blacksmithing"] },
     "completeWhen": { "lifetimeProduced": { "sword": 1 } },
-    "reward": { "gold": 10 }
+    "reward": { "gold": 100 }
   },
   "first_knowledge": {
     "label": "Written Records",
     "description": "Produce 5 Knowledge.",
     "visibleWhen": { "techs": ["knowledge_production"] },
     "completeWhen": { "lifetimeProduced": { "knowledge": 5 } },
-    "reward": { "gold": 10 }
+    "reward": { "gold": 100 }
   }
 }

@@ -2,7 +2,7 @@
   "market_access": {
     "tree": "technology",
     "label": "Market Access",
-    "description": "Unlocks Lumber Camps and Markets so Planks can become gold.",
+    "description": "Unlocks Lumber Camps and Markets so Planks can become money.",
     "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
     "requires": [],
     "cost": {},
@@ -12,18 +12,18 @@
     "tree": "technology",
     "label": "Mining",
     "description": "Unlocks Iron Mines for the first ore production chain.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 6 } },
+    "visibleWhen": { "lifetimeEarned": { "gold": 60 } },
     "requires": ["market_access"],
-    "cost": { "gold": 8, "plank": 1 },
+    "cost": { "gold": 80 },
     "unlocks": { "buildings": ["iron_mine"] }
   },
   "woodworking": {
     "tree": "technology",
     "label": "Woodworking",
     "description": "Unlocks more Sawmills so wood can be processed into planks at scale.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 6 }, "lifetimeProduced": { "plank": 2 } },
+    "visibleWhen": { "lifetimeEarned": { "gold": 60 }, "lifetimeProduced": { "plank": 2 } },
     "requires": ["market_access"],
-    "cost": { "gold": 6, "plank": 2 },
+    "cost": { "gold": 60 },
     "unlocks": { "buildings": ["sawmill"] }
   },
   "smelting": {
@@ -32,7 +32,7 @@
     "description": "Unlocks Forges for turning ore and fuel into metal bars.",
     "visibleWhen": { "lifetimeProduced": { "iron_ore": 6 } },
     "requires": ["mining"],
-    "cost": { "gold": 8, "iron_ore": 6, "wood": 3 },
+    "cost": { "gold": 120 },
     "unlocks": { "buildings": ["forge"] }
   },
   "coal_processing": {
@@ -41,7 +41,7 @@
     "description": "Unlocks Coal Mines for hotter, stronger metal production.",
     "visibleWhen": { "lifetimeProduced": { "iron_bar": 1 } },
     "requires": ["smelting"],
-    "cost": { "gold": 10, "iron_bar": 1 },
+    "cost": { "gold": 140 },
     "unlocks": { "buildings": ["coal_mine"] }
   },
   "blacksmithing": {
@@ -50,16 +50,16 @@
     "description": "Unlocks Blacksmiths for finished goods and stronger trade value.",
     "visibleWhen": { "lifetimeProduced": { "plank": 3, "iron_bar": 2 } },
     "requires": ["woodworking", "smelting"],
-    "cost": { "gold": 15, "plank": 3, "iron_bar": 2 },
+    "cost": { "gold": 220 },
     "unlocks": { "buildings": ["blacksmith"] }
   },
   "knowledge_production": {
     "tree": "science",
     "label": "Knowledge Production",
     "description": "Unlocks Schools so the kingdom can turn wealth into knowledge.",
-    "visibleWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 60 } },
+    "visibleWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 600 } },
     "requires": ["blacksmithing"],
-    "cost": { "gold": 25, "plank": 3, "sword": 1 },
+    "cost": { "gold": 350 },
     "unlocks": { "buildings": ["school"] }
   },
   "basic_accounting": {
@@ -68,34 +68,34 @@
     "description": "Market sale timers are 2 seconds shorter.",
     "visibleWhen": { "lifetimeProduced": { "knowledge": 5 } },
     "requires": ["knowledge_production"],
-    "cost": { "knowledge": 5 },
+    "cost": { "gold": 100 },
     "unlocks": {}
   },
   "lumber_management": {
     "tree": "technology",
     "label": "Lumber Management",
     "description": "Unlocks one Manager slot for Lumber Camps.",
-    "visibleWhen": { "lifetimeProduced": { "wood": 20 }, "lifetimeEarned": { "gold": 15 } },
+    "visibleWhen": { "lifetimeProduced": { "wood": 20 }, "lifetimeEarned": { "gold": 150 } },
     "requires": ["market_access"],
-    "cost": { "gold": 20, "wood": 20 },
+    "cost": { "gold": 200 },
     "unlocks": { "managerSlots": { "lumber": 1 } }
   },
   "market_management": {
     "tree": "science",
     "label": "Market Management",
     "description": "Unlocks one Manager slot for Markets.",
-    "visibleWhen": { "lifetimeProduced": { "knowledge": 10 }, "lifetimeEarned": { "gold": 80 } },
+    "visibleWhen": { "lifetimeProduced": { "knowledge": 10 }, "lifetimeEarned": { "gold": 800 } },
     "requires": ["basic_accounting"],
-    "cost": { "knowledge": 10, "gold": 25 },
+    "cost": { "gold": 350 },
     "unlocks": { "managerSlots": { "market": 1 } }
   },
   "grid_expansion": {
     "tree": "technology",
     "label": "Grid Expansion",
     "description": "Adds 16 columns and 8 rows to the build grid.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 25 } },
+    "visibleWhen": { "lifetimeEarned": { "gold": 250 } },
     "requires": ["market_access"],
-    "cost": { "gold": 50 },
+    "cost": { "gold": 500 },
     "unlocks": {}
   },
   "storage_bins": {
@@ -104,7 +104,7 @@
     "description": "Adds 5 storage capacity to every resource slot.",
     "visibleWhen": { "lifetimeProduced": { "wood": 12 } },
     "requires": ["market_access"],
-    "cost": { "gold": 12, "wood": 8 },
+    "cost": { "gold": 120 },
     "unlocks": {}
   },
   "workshop_tuning": {
@@ -113,16 +113,16 @@
     "description": "Crafter action timers are 2 seconds shorter.",
     "visibleWhen": { "unlockedBuildings": ["sawmill"] },
     "requires": ["woodworking"],
-    "cost": { "gold": 35 },
+    "cost": { "gold": 350 },
     "unlocks": {}
   },
   "market_bargaining": {
     "tree": "technology",
     "label": "Market Bargaining",
-    "description": "Markets earn 25% more gold from every sale.",
-    "visibleWhen": { "lifetimeEarned": { "gold": 40 }, "unlockedBuildings": ["market"] },
+    "description": "Markets earn 25% more money from every sale.",
+    "visibleWhen": { "lifetimeEarned": { "gold": 400 }, "unlockedBuildings": ["market"] },
     "requires": ["market_access", "woodworking"],
-    "cost": { "gold": 35, "plank": 2 },
+    "cost": { "gold": 350 },
     "unlocks": {}
   }
 }

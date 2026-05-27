@@ -24,7 +24,7 @@ A crafter may have multiple possible recipes, but only one recipe is active. The
 
 This keeps each node readable while still allowing deeper production chains.
 
-Markets are sink nodes. They do not use recipes, expose one universal input, and convert all stocked sellable goods into gold when worked.
+Markets are sink nodes. They do not use recipes, expose one universal input, and convert all stocked sellable goods into money when worked.
 
 ## Connection Rule
 
@@ -40,7 +40,7 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 ## Current Intentional Constraints
 
 - Buildings are freely placed on a grid.
-- Buildings cost gold to place.
+- Buildings cost money to place.
 - Buildings cannot overlap.
 - Building types can be locked until researched.
 - Placed buildings can be moved without cost.
@@ -49,7 +49,7 @@ This avoids hidden many-to-many routing behavior and makes graph state easier to
 - Resources move through direct output-to-input connectors.
 - A connector transports one unit per tick.
 - Inventories have simple capacity limits.
-- Gold is an abstract currency sink, not a physical transported item.
+- Money is stored internally as Copper and displayed as Gold, Silver, and Copper; it is an abstract currency sink, not a physical transported item.
 - Techs are simple one-time upgrades.
 
 ## UI Direction
@@ -78,14 +78,14 @@ The current progression spine is deliberately modest:
 
 1. A stocked starting Sawmill creates the first Plank.
 2. Plank production reveals free Market Access, which unlocks Lumber Camps and Markets.
-3. Selling Planks creates enough gold pressure to reveal Mining and Woodworking.
-4. Ore, planks, and bars then become explicit tech costs for later buildings.
-5. Sword production and earned gold reveal the first Knowledge-producing building.
-6. Knowledge pays for early science upgrades, including later science upgrades.
+3. Selling Planks creates enough money pressure to reveal Mining and Woodworking.
+4. Resource production milestones reveal later buildings, while current opening purchases stay money-only.
+5. Sword production and earned money reveal the first Knowledge-producing building.
+6. Knowledge is currently a production milestone for science progression, not a purchase currency.
 
 Manual work is intended as early-game bootstrap friction, not the permanent shape of mature production. Manager slots and hired Managers form the first move from direct labor toward production planning, and efficiency addons let players improve an existing line before they simply copy more nodes.
 
-Knowledge is reserved for science progression for now. Markets sell trade goods, but Knowledge should not be converted back into gold until knowledge trading becomes a deliberate advanced mechanic.
+Knowledge is reserved for science progression for now. Markets sell trade goods, but Knowledge should not be converted back into money until knowledge trading becomes a deliberate advanced mechanic.
 
 The next useful engineering layer is confidence:
 

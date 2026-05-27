@@ -78,8 +78,20 @@ export function totalStoredResource(state, resource) {
 
 export function formatCost(cost = {}) {
   return Object.entries(cost)
-    .map(([resource, amount]) => `${amount} ${resource === 'gold' ? 'gold' : itemLabel(resource)}`)
+    .map(([resource, amount]) => resource === 'gold' ? formatMoney(amount) : `${amount} ${itemLabel(resource)}`)
     .join(', ') || 'Free';
+}
+
+export function formatMoney(amount = 0) {
+  const value = Math.max(0, Math.floor(amount));
+  const gold = Math.floor(value / 1000);
+  const silver = Math.floor((value % 1000) / 10);
+  const copper = value % 10;
+  const parts = [];
+  if (gold) parts.push(`${gold}G`);
+  if (silver) parts.push(`${silver}S`);
+  if (copper || !parts.length) parts.push(`${copper}C`);
+  return parts.join(' ');
 }
 
 export function isTechVisible(state, tech) {

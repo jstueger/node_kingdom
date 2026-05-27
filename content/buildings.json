@@ -5,7 +5,7 @@
     "color": "#141c30",
     "kind": "producer",
     "size": { "w": 8, "h": 8 },
-    "cost": { "gold": 5 },
+    "cost": { "gold": 50 },
     "description": "Produces iron ore.",
     "capacity": { "iron_ore": 12 },
     "recipes": {
@@ -22,7 +22,7 @@
     "color": "#171717",
     "kind": "producer",
     "size": { "w": 8, "h": 8 },
-    "cost": { "gold": 5 },
+    "cost": { "gold": 50 },
     "description": "Produces coal.",
     "capacity": { "coal": 12 },
     "recipes": {
@@ -39,7 +39,7 @@
     "color": "#0c1c08",
     "kind": "producer",
     "size": { "w": 8, "h": 8 },
-    "cost": { "gold": 5 },
+    "cost": { "gold": 50 },
     "description": "Produces wood.",
     "actionTicks": 5,
     "capacity": { "wood": 12 },
@@ -57,7 +57,7 @@
     "color": "#281208",
     "kind": "crafter",
     "size": { "w": 16, "h": 8 },
-    "cost": { "gold": 12 },
+    "cost": { "gold": 120 },
     "description": "Configurable crafter with one active output.",
     "capacity": { "iron_ore": 9, "coal": 8, "wood": 6, "iron_bar": 8, "steel_bar": 6 },
     "recipes": {
@@ -79,7 +79,7 @@
     "color": "#1c1008",
     "kind": "crafter",
     "size": { "w": 16, "h": 8 },
-    "cost": { "gold": 10 },
+    "cost": { "gold": 100 },
     "description": "Turns wood into planks.",
     "capacity": { "wood": 8, "plank": 8 },
     "recipes": {
@@ -96,7 +96,7 @@
     "color": "#201018",
     "kind": "crafter",
     "size": { "w": 16, "h": 8 },
-    "cost": { "gold": 18 },
+    "cost": { "gold": 180 },
     "description": "Crafts finished goods from bars and planks.",
     "capacity": { "iron_bar": 6, "steel_bar": 5, "plank": 6, "sword": 4 },
     "recipes": {
@@ -118,7 +118,7 @@
     "color": "#10201c",
     "kind": "producer",
     "size": { "w": 16, "h": 8 },
-    "cost": { "gold": 25 },
+    "cost": { "gold": 250 },
     "description": "Produces knowledge for science upgrades.",
     "capacity": { "knowledge": 10 },
     "recipes": {
@@ -135,17 +135,17 @@
     "color": "#081c0c",
     "kind": "seller",
     "size": { "w": 8, "h": 8 },
-    "cost": { "gold": 5 },
+    "cost": { "gold": 50 },
     "description": "Sells any trade goods it receives.",
     "capacity": { "iron_ore": 10, "wood": 10, "coal": 10, "iron_bar": 10, "plank": 10, "steel_bar": 8, "sword": 8 },
     "sellPrices": {
-      "iron_ore": 1,
-      "wood": 1,
-      "coal": 2,
-      "iron_bar": 5,
-      "plank": 3,
-      "steel_bar": 12,
-      "sword": 25
+      "iron_ore": 10,
+      "wood": 10,
+      "coal": 20,
+      "iron_bar": 50,
+      "plank": 30,
+      "steel_bar": 120,
+      "sword": 250
     }
   }
 }

@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, formatMoney, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
@@ -65,7 +65,7 @@ function producerOutputHtml(view) {
 function marketQueueHtml(view) {
   if (view.inventory.length) {
     const rows = view.inventory.slice(0, 2).map(item => `<div class="qrow connected"><span>${itemIcon(item.res)}</span><span>${item.amount}/${item.cap}</span></div>`).join('');
-    return `<div class="market-queue"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div>${rows}<div class="market-sale">+${view.inventory[0].salePrice}g each</div></div>`;
+    return `<div class="market-queue"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div>${rows}<div class="market-sale">+${formatMoney(view.inventory[0].salePrice)} each</div></div>`;
   }
   const input = view.inputs[0];
   return `<div class="market-queue empty"><div class="market-flow"><span>Sells</span><span>→</span><span>💰</span></div><div class="qrow ${input?.connected ? 'connected' : 'open'}"><span>${input?.connected ? 'Ready' : 'No link'}</span><span>0</span></div><div class="market-sale">${input?.connected ? 'Waiting' : 'Connect goods'}</div></div>`;
@@ -131,7 +131,7 @@ function statusLabel(status) {
 }
 
 function amountLabel(resource, amount) {
-  return resource === 'gold' ? `${amount} gold` : `${itemIcon(resource)} ${amount} ${itemLabel(resource)}`;
+  return resource === 'gold' ? formatMoney(amount) : `${itemIcon(resource)} ${amount} ${itemLabel(resource)}`;
 }
 
 function lifetimeSummaryHtml(state) {
@@ -148,7 +148,7 @@ function lifetimeSummaryHtml(state) {
   ];
   return `
     <div class="tech-summary">
-      ${rows.map(([resource, amount, mode]) => `<span>${resource === 'gold' ? '💰' : itemIcon(resource)} ${amount} ${mode}</span>`).join('')}
+      ${rows.map(([resource, amount, mode]) => `<span>${resource === 'gold' ? '💰' : itemIcon(resource)} ${resource === 'gold' ? formatMoney(amount) : amount} ${mode}</span>`).join('')}
     </div>`;
 }
 
@@ -161,7 +161,7 @@ function techMetaHtml(state, tech) {
   }
   for (const [resource, amount] of Object.entries(visibleWhen.lifetimeEarned || {})) {
     const current = state.stats.lifetimeEarned[resource] || 0;
-    milestones.push(`${current >= amount ? '✓' : '·'} ${current}/${amount} ${resource} earned`);
+    milestones.push(`${current >= amount ? '✓' : '·'} ${formatMoney(current)}/${formatMoney(amount)} earned`);
   }
   for (const type of visibleWhen.unlockedBuildings || []) {
     milestones.push(`${isBuildingUnlocked(state, type) ? '✓' : '·'} ${BUILDINGS[type].label} unlocked`);
@@ -183,7 +183,11 @@ function techStatus(state, tech) {
   if (tech.bought) return { key: 'bought', label: 'Purchased', button: 'Purchased', disabled: true };
   if (!areTechPrerequisitesMet(state, tech)) return { key: 'gated', label: 'Requires tech', button: 'Locked', disabled: true };
   if (!areTechMilestonesMet(state, tech)) return { key: 'gated', label: 'Needs milestone', button: 'Locked', disabled: true };
-  if (!canPayCost(state, tech.cost)) return { key: 'unaffordable', label: 'Need resources', button: 'Need resources', disabled: true };
+  if (!canPayCost(state, tech.cost)) {
+    const onlyMoney = Object.keys(tech.cost || {}).every(resource => resource === 'gold');
+    const label = onlyMoney ? 'Need money' : 'Need resources';
+    return { key: 'unaffordable', label, button: label, disabled: true };
+  }
   return { key: 'available', label: 'Available', button: Object.keys(tech.cost || {}).length ? 'Buy' : 'Activate', disabled: false };
 }
 
@@ -220,7 +224,7 @@ function buildingTechHtml(state) {
     {
       type: 'market',
       title: 'Market',
-      desc: 'Activates Markets so Planks can become gold.',
+      desc: 'Activates Markets so Planks can become money.',
       techKey: 'market_access'
     },
     {
@@ -261,7 +265,7 @@ function buildingTechHtml(state) {
 
 function rewardText(reward = {}) {
   const parts = [];
-  if (reward.gold) parts.push(`+${reward.gold} gold`);
+  if (reward.gold) parts.push(`+${formatMoney(reward.gold)}`);
   return parts.join(', ');
 }
 
@@ -452,9 +456,9 @@ export function renderInspector(context) {
   ui.inspectContent.classList.remove('hidden');
   const isSeller = definition.kind === 'seller';
   const inputPills = isSeller
-    ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${salePriceFor(building.type, res, state.techs, state.addons)} gold</span>`).join('')
+    ? Object.keys(definition.sellPrices).map(res => `<span class="pill">${itemIcon(res)} ${itemLabel(res)} → ${formatMoney(salePriceFor(building.type, res, state.techs, state.addons))}</span>`).join('')
     : Object.entries(effectiveInputs).map(([res, amount]) => `<span class="pill">${itemIcon(res)} ${amount} ${itemLabel(res)}</span>`).join('') || '<span class="pill">No inputs</span>';
-  const outputText = isSeller ? 'Sells stocked goods for gold' : `${itemIcon(effectiveOutput.res)} ${effectiveOutput.amount} ${itemLabel(effectiveOutput.res)}`;
+  const outputText = isSeller ? 'Sells stocked goods for money' : `${itemIcon(effectiveOutput.res)} ${effectiveOutput.amount} ${itemLabel(effectiveOutput.res)}`;
   const outputTitle = isSeller ? 'Sale Output' : 'Single Output';
   const invRows = Object.keys({ ...definition.capacity, ...building.inv }).map(res => `<div class="inv-row"><span>${itemIcon(res)} ${itemLabel(res)}</span><span>${building.inv[res] || 0}/${storageCapFor(building, res, state.techs, state.addons)}</span></div>`).join('');
   ui.inspectContent.innerHTML = `
@@ -574,7 +578,7 @@ export function renderPanels(context) {
 
 export function renderTopbar(context) {
   const { state, ui } = context;
-  ui.goldEl.textContent = `💰 ${state.gold} gold`;
+  ui.goldEl.textContent = `💰 ${formatMoney(state.gold)}`;
   ui.tstat.textContent = `⏱ ${state.ticks}s`;
   renderProgressionButtons(context);
 }

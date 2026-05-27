@@ -20,7 +20,7 @@ Market buildings are sink nodes. They do not use recipes and instead sell all st
 
 The interface has five main areas:
 
-- Top bar: gold, elapsed seconds, zoom controls, progression-gated Buildings and Tech buttons, save/load/reset buttons, and current hint.
+- Top bar: money, elapsed seconds, zoom controls, progression-gated Buildings and Tech buttons, save/load/reset buttons, and current hint.
 - Left sidebar: active goals and port legend.
 - Center game area: centered grid, buildings, ports, placement preview, and connector paths.
 - Right inspector: selected-building details.
@@ -41,15 +41,21 @@ Placement controls:
 
 Placement rules:
 
-- The player starts with 10 gold.
-- Placement costs gold.
+- The player starts with 10S.
+- Placement costs money.
 - Buildings cannot overlap.
 - Buildings cannot be placed outside the grid.
-- If placement fails, no gold is spent.
+- If placement fails, no money is spent.
 - Successful click placement automatically exits placement mode.
 - Successful drag placement immediately places the building on drop.
 
 Drag placement shows a snapped placement ghost while over the grid. Valid targets are highlighted as valid; occupied, out-of-bounds, or unaffordable targets are invalid.
+
+Money is stored internally as Copper and displayed compactly as Gold, Silver, and Copper:
+
+- 1G = 100S = 1000C.
+- 1S = 10C.
+- Early prices are intentionally tuned mostly in Silver so they stay readable in compact UI.
 
 The playable grid has a golden frame attached to the grid container, so it grows when grid expansion upgrades increase the world size.
 
@@ -82,7 +88,7 @@ Current building types:
 - Sawmill: crafts planks.
 - Blacksmith: crafts swords.
 - School: produces Knowledge.
-- Market: sells goods for gold.
+- Market: sells goods for money.
 
 The game starts with one Sawmill already placed and stocked with enough Wood for the first Plank. The Buildings and Tech buttons are hidden at new-game start.
 
@@ -101,7 +107,7 @@ Each building has:
 - label and icon
 - grid size
 - description
-- gold cost
+- money cost
 - kind: producer, crafter, or seller
 - inventory
 - storage capacities
@@ -110,16 +116,16 @@ Each building has:
 
 Current placement costs:
 
-- Iron Mine: 5 gold.
-- Coal Mine: 5 gold.
-- Lumber Camp: 5 gold.
-- Forge: 12 gold.
-- Sawmill: 10 gold.
-- Blacksmith: 18 gold.
-- School: 25 gold.
-- Market: 5 gold.
+- Iron Mine: 5S.
+- Coal Mine: 5S.
+- Lumber Camp: 5S.
+- Forge: 12S.
+- Sawmill: 10S.
+- Blacksmith: 18S.
+- School: 25S.
+- Market: 5S.
 
-Unaffordable building cards are dimmed. They can still be selected or dragged, but placement fails until the player has enough gold.
+Unaffordable building cards are dimmed. They can still be selected or dragged, but placement fails until the player has enough money.
 
 ## Node Display
 
@@ -143,7 +149,7 @@ Crafter nodes show:
 
 Producer nodes use a compact output-focused layout with produced resource, stored amount, capacity, and output meter.
 
-Market nodes use a sink-focused layout that emphasizes selling goods into gold, stocked goods, and sale value.
+Market nodes use a sink-focused layout that emphasizes selling goods into money, stocked goods, and sale value.
 
 ## Recipes
 
@@ -157,7 +163,7 @@ The active recipe determines:
 
 Producers have recipes with no inputs. Crafters consume inputs and create output resources.
 
-Markets do not use recipes. A Market accepts supported trade goods through one universal input and sells all stocked goods for gold when worked. Knowledge is reserved for Science and is not accepted by Markets.
+Markets do not use recipes. A Market accepts supported trade goods through one universal input and sells all stocked goods for money when worked. Knowledge is reserved for Science and is not accepted by Markets.
 
 Changing a crafter recipe:
 
@@ -222,7 +228,7 @@ Movement behavior:
 - Buildings snap to the grid while dragged.
 - Existing connections remain attached while a building moves.
 - If the destination is occupied or invalid, the building snaps back to its original position.
-- Moving a building does not cost gold.
+- Moving a building does not cost money.
 
 Right-click a building to sell it.
 
@@ -240,20 +246,20 @@ Right-click a connection to delete it.
 
 The prototype has a compact early-goal panel in the left sidebar.
 
-Goals are not contracts. They do not require delivery, consume resources, or create a separate reputation economy. They are simple milestones that guide the current production chain and award small amounts of gold when claimed.
+Goals are not contracts. They do not require delivery, consume resources, or create a separate reputation economy. They are simple milestones that guide the current production chain and award small amounts of money when claimed.
 
 Current goals:
 
-- First Plank: produce 1 lifetime Plank, rewards 3 gold.
-- Open Trade: research Market Access, rewards 5 gold.
-- Sustain The Mill: produce 3 lifetime Wood, rewards 3 gold.
-- First Sales: earn 6 lifetime gold from Markets, rewards 5 gold.
-- Strike Ore: produce 6 lifetime Iron Ore, rewards 5 gold.
-- Plank Supply: produce 3 lifetime Planks, rewards 6 gold.
-- First Bars: produce 2 lifetime Iron Bars, rewards 8 gold.
-- First Outpost: appears after Mining and Woodworking are researched; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50 lifetime gold earned; rewards 20 gold.
-- Armed Trade: produce 1 lifetime Sword, rewards 10 gold.
-- Written Records: produce 5 lifetime Knowledge, rewards 10 gold.
+- First Plank: produce 1 lifetime Plank, rewards 3S.
+- Open Trade: research Market Access, rewards 5S.
+- Sustain The Mill: produce 3 lifetime Wood, rewards 3S.
+- First Sales: earn 6S from Markets, rewards 5S.
+- Strike Ore: produce 6 lifetime Iron Ore, rewards 5S.
+- Plank Supply: produce 3 lifetime Planks, rewards 6S.
+- First Bars: produce 2 lifetime Iron Bars, rewards 8S.
+- First Outpost: appears after Mining and Woodworking are researched; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50S earned; rewards 20S.
+- Armed Trade: produce 1 lifetime Sword, rewards 10S.
+- Written Records: produce 5 lifetime Knowledge, rewards 10S.
 
 The sidebar shows up to three visible unclaimed goals. Completed goals show a claim button. Claimed goals are hidden.
 
@@ -263,15 +269,15 @@ The current progression model is deliberately simple and bootstrap-focused:
 
 - A stocked Sawmill starts placed on the grid.
 - The first manual action creates a Plank before the player builds the supply chain.
-- Markets convert stocked trade goods into gold.
-- Lifetime thresholds reveal interface frames and techs; current resources and gold pay for techs.
+- Markets convert stocked trade goods into money.
+- Lifetime thresholds reveal interface frames and techs; current opening purchases are paid with money.
 - Technology techs unlock early buildings, grid space, storage, crafting, and trade improvements.
-- Science techs use Knowledge and unlock later systems such as Manager slots.
+- Science techs use Knowledge milestones and unlock later systems such as Manager slots.
 - Manager slots allow specific placed nodes to hire Managers.
 - Managers automate work after their node type has an unlocked Manager slot.
 - Addons improve node types through storage, work speed, manager pace, input efficiency, output bonuses, or sale value.
 
-The intended early loop is: start the Sawmill, produce the first Plank, unlock Market Access for free, place a Lumber Camp and Market, connect Lumber to Sawmill and Sawmill to Market, then sell Planks for gold.
+The intended early loop is: start the Sawmill, produce the first Plank, unlock Market Access for free, place a Lumber Camp and Market, connect Lumber to Sawmill and Sawmill to Market, then sell Planks for money.
 
 ## Content Model
 
@@ -285,7 +291,7 @@ Current content files:
 - `goals.json`: early milestone goals and rewards.
 - `addons.json`: node-type addon definitions and effects.
 - `managers.json`: Manager slot defaults and Manager purchase costs.
-- `start-state.json`: starting grid size, starting gold, start hint, initially unlocked buildings, and pre-placed starting buildings.
+- `start-state.json`: starting grid size, starting money, start hint, initially unlocked buildings, and pre-placed starting buildings.
 
 Authoring fields use stable content names such as `description`, `size`, and recipe output `resource`. The content loader normalizes those fields into the current runtime shape before state creation.
 
@@ -300,16 +306,16 @@ Tech controls:
 - Click `Tech` in the top bar to show or hide the tech window.
 - Click `Hide` in the tech window to close it.
 
-Each tech can currently be bought once. Buying a tech spends its resource cost, marks the tech as purchased, and applies its effect.
+Each tech can currently be bought once. Buying a tech spends its cost, marks the tech as purchased, and applies its effect. Current tech costs are money-only, while the content model still supports resource costs for future phases.
 
 Techs may have visibility thresholds and prerequisite techs. A hidden tech appears once its threshold is met and its prerequisites are purchased. Visibility thresholds are separate from purchase costs.
 
-Visible techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned gold.
+Visible techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned money.
 
 Tech cards can be:
 
 - Available: all prerequisites and milestones are met, and the player can pay the cost.
-- Need resources: all prerequisites and milestones are met, but the player cannot currently pay the cost.
+- Need money: all prerequisites and milestones are met, but the player cannot currently pay the cost.
 - Requires tech or Needs milestone: the tech is discovered, but not yet buyable.
 - Purchased: the tech was already bought.
 
@@ -320,19 +326,19 @@ The opening tech tree includes a Building Chain section that shows Lumber Camp, 
 Current techs:
 
 - Market Access: appears after 1 lifetime Plank produced, is free, and unlocks Lumber Camp and Market buildings.
-- Mining: requires Market Access, appears after 6 lifetime gold earned, costs 8 gold and 1 Plank, and unlocks Iron Mine buildings.
-- Woodworking: requires Market Access, appears after 6 lifetime gold earned and 2 lifetime Planks produced, costs 6 gold and 2 Planks, and unlocks additional Sawmill buildings.
-- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 8 gold, 6 Iron Ore, and 3 Wood, and unlocks Forge buildings.
-- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 10 gold and 1 Iron Bar, and unlocks Coal Mine buildings.
-- Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 15 gold, 3 Planks, and 2 Iron Bars, and unlocks Blacksmith buildings.
-- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60 lifetime gold earned, costs 25 gold, 3 Planks, and 1 Sword, and unlocks School buildings.
-- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 5 Knowledge, and makes Market sale timers 2 seconds shorter.
-- Lumber Management: requires Market Access, appears after 20 lifetime Wood produced and 15 lifetime gold earned, costs 20 gold and 20 Wood, and unlocks one Lumber Camp Manager slot.
-- Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80 lifetime gold earned, costs 10 Knowledge and 25 gold, and unlocks one Market Manager slot.
-- Grid Expansion: requires Market Access, appears after 25 lifetime gold earned, costs 50 gold, and adds 16 columns and 8 rows to the playable grid.
-- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12 gold and 8 Wood, and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 35 gold, and makes crafter action timers 2 seconds shorter.
-- Market Bargaining: requires Market Access and Woodworking, appears after 40 lifetime gold earned, costs 35 gold and 2 Planks, and increases Market sale prices by 25%, rounded down.
+- Mining: requires Market Access, appears after 6S earned, costs 8S, and unlocks Iron Mine buildings.
+- Woodworking: requires Market Access, appears after 6S earned and 2 lifetime Planks produced, costs 6S, and unlocks additional Sawmill buildings.
+- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 12S, and unlocks Forge buildings.
+- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 14S, and unlocks Coal Mine buildings.
+- Blacksmithing: requires Woodworking and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 22S, and unlocks Blacksmith buildings.
+- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60S earned, costs 35S, and unlocks School buildings.
+- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 10S, and makes Market sale timers 2 seconds shorter.
+- Lumber Management: requires Market Access, appears after 20 lifetime Wood produced and 15S earned, costs 20S, and unlocks one Lumber Camp Manager slot.
+- Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80S earned, costs 35S, and unlocks one Market Manager slot.
+- Grid Expansion: requires Market Access, appears after 25S earned, costs 50S, and adds 16 columns and 8 rows to the playable grid.
+- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12S, and adds 5 storage capacity to every resource slot.
+- Workshop Tuning: requires Woodworking, appears once Sawmills are unlocked, costs 35S, and makes crafter action timers 2 seconds shorter.
+- Market Bargaining: requires Market Access and Woodworking, appears after 40S earned, costs 35S, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
@@ -351,7 +357,7 @@ Manual work:
 - Workshop Tuning reduces crafter action timers to 8 seconds.
 - Basic Accounting reduces Market sale timers to 8 seconds.
 
-Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current stored resources and gold are used to pay tech costs.
+Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current money pays opening tech costs.
 
 The global simulation tick still advances once per second.
 
@@ -405,9 +411,9 @@ Managers are bought per placed node from the inspector after the matching node t
 
 Current Manager costs:
 
-- Lumber Camp Manager: 30 gold.
-- Market Manager: 35 gold.
-- Other future node Managers use the default 40 gold cost unless given a specific cost.
+- Lumber Camp Manager: 30S.
+- Market Manager: 35S.
+- Other future node Managers use the default 40S cost unless given a specific cost.
 
 ## Node Addons
 
@@ -415,14 +421,14 @@ Addons are node-type upgrades bought from the inspector of a selected building. 
 
 Current addons:
 
-- Lumber Camp, Sharper Axes: costs 10 gold and 8 Wood; Lumber Camp action timers are 2 seconds shorter.
-- Lumber Camp, Wood Yard: costs 8 gold and 10 Wood; Lumber Camps store 8 more Wood.
-- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45 gold, 4 Knowledge, and 20 Wood; managed Lumber Camps work twice as fast.
-- Sawmill, Thin Kerf Blades: requires Woodworking, costs 30 gold and 4 Planks; Sawmills need 1 less Wood when making Planks.
-- Forge, Paired Molds: requires Smelting and Knowledge Production, costs 55 gold, 4 Iron Bars, and 3 Knowledge; Forges produce 1 extra Iron Bar per Iron Bar craft.
-- Market, Larger Stall: costs 15 gold and 10 Wood; Markets store 5 more of every good.
-- Market, Better Rates: requires Woodworking, costs 25 gold and 2 Planks; Markets earn 15% more gold from sales.
-- Market, Shift Lead: requires Market Management, costs 50 gold and 4 Knowledge; managed Markets work twice as fast.
+- Lumber Camp, Sharper Axes: costs 10S; Lumber Camp action timers are 2 seconds shorter.
+- Lumber Camp, Wood Yard: costs 8S; Lumber Camps store 8 more Wood.
+- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45S; managed Lumber Camps work twice as fast.
+- Sawmill, Thin Kerf Blades: requires Woodworking, costs 30S; Sawmills need 1 less Wood when making Planks.
+- Forge, Paired Molds: requires Smelting and Knowledge Production, costs 55S; Forges produce 1 extra Iron Bar per Iron Bar craft.
+- Market, Larger Stall: costs 15S; Markets store 5 more of every good.
+- Market, Better Rates: requires Woodworking, costs 25S; Markets earn 15% more money from sales.
+- Market, Shift Lead: requires Market Management, costs 50S; managed Markets work twice as fast.
 
 Addon effects stack with tech effects where both apply. Efficiency addons change the effective recipe shown in the inspector and the actual simulation result.
 
@@ -433,7 +439,7 @@ The prototype supports browser `localStorage` persistence.
 The saved payload includes:
 
 - next building/connection id
-- gold
+- money
 - elapsed seconds
 - current grid size
 - lifetime production/sale stats
@@ -491,13 +497,13 @@ The Market has no recipes. It accepts all current sellable trade goods through o
 
 Current sell prices:
 
-- Iron Ore: 1 gold.
-- Wood: 1 gold.
-- Coal: 2 gold.
-- Iron Bar: 5 gold.
-- Plank: 3 gold.
-- Steel Bar: 12 gold.
-- Sword: 25 gold.
+- Iron Ore: 1S.
+- Wood: 1S.
+- Coal: 2S.
+- Iron Bar: 5S.
+- Plank: 3S.
+- Steel Bar: 12S.
+- Sword: 25S.
 
 ## Current Limitations
 

@@ -1,8 +1,8 @@
 {
   "slots": {},
   "costs": {
-    "lumber": { "gold": 30 },
-    "market": { "gold": 35 },
-    "default": { "gold": 40 }
+    "lumber": { "gold": 300 },
+    "market": { "gold": 350 },
+    "default": { "gold": 400 }
   }
 }

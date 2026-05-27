@@ -310,6 +310,12 @@ Exit criteria:
 - Production resources matter because they create goods to sell, not because they are immediate tech payment chores.
 - Money display is understandable at a glance and does not clutter small UI surfaces.
 
+Implemented notes:
+
+- Runtime money is stored as Copper and displayed as compact `G`, `S`, and `C` units.
+- Current building, tech, addon, and manager purchases are money-only.
+- Resource costs remain supported by content validation and payment rules for later phases, but they are not used by the current opening progression.
+
 ## Phase 11: Building Upgrade Subviews
 
 Goal: move building-specific upgrade decisions into the tech tree so progression has one coherent home.

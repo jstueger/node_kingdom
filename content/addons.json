@@ -3,14 +3,14 @@
     "node": "lumber",
     "label": "Sharper Axes",
     "description": "Lumber Camp action timers are 2 seconds shorter.",
-    "cost": { "gold": 10, "wood": 8 },
+    "cost": { "gold": 100 },
     "effects": { "actionTicks": -2 }
   },
   "lumber_wood_yard": {
     "node": "lumber",
     "label": "Wood Yard",
     "description": "Lumber Camps store 8 more Wood.",
-    "cost": { "gold": 8, "wood": 10 },
+    "cost": { "gold": 80 },
     "effects": { "storage": { "wood": 8 } }
   },
   "lumber_foreman": {
@@ -18,7 +18,7 @@
     "label": "Foreman Routine",
     "description": "Managed Lumber Camps work twice as fast.",
     "visibleWhen": { "techs": ["lumber_management"] },
-    "cost": { "gold": 45, "knowledge": 4, "wood": 20 },
+    "cost": { "gold": 450 },
     "effects": { "managerWork": 1 }
   },
   "sawmill_thin_kerf": {
@@ -26,7 +26,7 @@
     "label": "Thin Kerf Blades",
     "description": "Sawmills need 1 less Wood when making Planks.",
     "visibleWhen": { "techs": ["woodworking"] },
-    "cost": { "gold": 30, "plank": 4 },
+    "cost": { "gold": 300 },
     "effects": { "inputEfficiency": { "wood": 1 } }
   },
   "forge_paired_molds": {
@@ -34,22 +34,22 @@
     "label": "Paired Molds",
     "description": "Forges produce 1 extra Iron Bar per Iron Bar craft.",
     "visibleWhen": { "techs": ["smelting", "knowledge_production"] },
-    "cost": { "gold": 55, "iron_bar": 4, "knowledge": 3 },
+    "cost": { "gold": 550 },
     "effects": { "outputBonus": { "iron_bar": 1 } }
   },
   "market_larger_stall": {
     "node": "market",
     "label": "Larger Stall",
     "description": "Markets store 5 more of every good.",
-    "cost": { "gold": 15, "wood": 10 },
+    "cost": { "gold": 150 },
     "effects": { "storageAll": 5 }
   },
   "market_better_rates": {
     "node": "market",
     "label": "Better Rates",
-    "description": "Markets earn 15% more gold from sales.",
+    "description": "Markets earn 15% more money from sales.",
     "visibleWhen": { "techs": ["woodworking"] },
-    "cost": { "gold": 25, "plank": 2 },
+    "cost": { "gold": 250 },
     "effects": { "saleMultiplier": 0.15 }
   },
   "market_shift_lead": {
@@ -57,7 +57,7 @@
     "label": "Shift Lead",
     "description": "Managed Markets work twice as fast.",
     "visibleWhen": { "techs": ["market_management"] },
-    "cost": { "gold": 50, "knowledge": 4 },
+    "cost": { "gold": 500 },
     "effects": { "managerWork": 1 }
   }
 }

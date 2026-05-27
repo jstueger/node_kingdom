@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, formatMoney, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
@@ -204,7 +204,7 @@ export function setupInput(context) {
     state.gold += refund;
     if (state.selectedId === id) state.selectedId = null;
     context.renderAll();
-    context.toast(`Building sold +${refund} gold`);
+    context.toast(`Building sold +${formatMoney(refund)}`);
   }
 
   function buyTech(key) {

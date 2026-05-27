@@ -3,9 +3,13 @@ import { createAddons, createGoals, createManagerSlots, createStartingBuildings,
 import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
+const SAVE_VERSION = 2;
+const MONEY_SCALE_VERSION = 2;
 
 export function saveGame({ state, toast }) {
   const payload = {
+    version: SAVE_VERSION,
+    moneyScaleVersion: MONEY_SCALE_VERSION,
     nextId: state.nextId,
     gold: state.gold,
     ticks: state.ticks,
@@ -37,9 +41,10 @@ export function loadGame(context) {
     return;
   }
   const payload = JSON.parse(raw);
+  const moneyScale = payload.moneyScaleVersion === MONEY_SCALE_VERSION ? 1 : 10;
   resetWorld(context, false);
   state.nextId = payload.nextId;
-  state.gold = payload.gold ?? STARTING_GOLD;
+  state.gold = scaleMoney(payload.gold ?? STARTING_GOLD, moneyScale);
   state.ticks = payload.ticks || 0;
   state.connections = payload.conns || [];
   state.interaction.revealedBuildingsButton = Boolean(payload.uiUnlocks?.revealedBuildingsButton);
@@ -48,7 +53,7 @@ export function loadGame(context) {
   state.stats = {
     lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
     lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },
-    lifetimeEarned: { gold: 0, ...(payload.stats?.lifetimeEarned || {}) }
+    lifetimeEarned: scaleMoneyMap({ gold: 0, ...(payload.stats?.lifetimeEarned || {}) }, moneyScale)
   };
   state.goals = createGoals();
   for (const [key, saved] of Object.entries(payload.goals || {})) {
@@ -100,6 +105,16 @@ export function loadGame(context) {
   });
   context.renderAll();
   toast('Loaded');
+}
+
+function scaleMoney(amount, scale) {
+  return Math.floor((amount || 0) * scale);
+}
+
+function scaleMoneyMap(values, scale) {
+  return Object.fromEntries(Object.entries(values).map(([resource, amount]) => {
+    return [resource, resource === 'gold' ? scaleMoney(amount, scale) : amount];
+  }));
 }
 
 export function resetWorld(context, confirmFirst = true) {
