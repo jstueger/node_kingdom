@@ -37,10 +37,10 @@ VS Code Live Server also works.
 
 ## Feature Snapshot
 
-- Grid placement by click or drag-and-drop from the building menu.
+- Grid placement by selecting a building from the Buildings frame, then placing it on the Main frame.
 - Movable placed buildings.
 - A stocked Sawmill starts on the grid so the first action creates a Plank before the support chain is built.
-- Buildings and Tech open from progression-gated top-bar buttons that appear during the opening.
+- Main, Buildings, and Tech Tree are exclusive top-level frames; only one is visible at a time.
 - Lumber Camp and Market unlock through free early Market Access after the first Plank.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.
@@ -51,7 +51,7 @@ VS Code Live Server also works.
 - Early milestone goals with small money rewards.
 - Node-type upgrades bought from building subviews in the tech tree, including storage, speed, manager pace, input efficiency, output, and market value upgrades.
 - Science-unlocked Manager slots with buyable Managers that automate assigned nodes.
-- Toggleable tech tree with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
+- Tech Tree frame with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
 - Save/load/reset through browser `localStorage`.
 
 ## Source Layout

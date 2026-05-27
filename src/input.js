@@ -271,10 +271,13 @@ export function setupInput(context) {
     if (state.mode === 'connecting') cancelConnection();
     state.mode = 'placing';
     state.placeType = type;
+    state.view = 'main';
     context.setHint(`Placing ${BUILDINGS[type].label} — click the grid · Esc to cancel`);
+    context.renderAll();
   }
 
   function startPlacementDrag(event, type) {
+    if (state.view !== 'main') return;
     if (event.button !== 0 || state.interaction.moving || state.interaction.pan) return;
     if (!isBuildingMenuAvailable(state, type)) return;
     if (state.mode === 'connecting') cancelConnection();
@@ -386,6 +389,11 @@ export function setupInput(context) {
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
+    if (state.view !== 'main') {
+      state.view = 'main';
+      context.renderAll();
+      return;
+    }
     if (state.mode === 'connecting') {
       cancelConnection();
       context.setHint('Cancelled');
@@ -407,21 +415,33 @@ export function setupInput(context) {
   document.getElementById('saveBtn').addEventListener('click', context.saveGame);
   document.getElementById('loadBtn').addEventListener('click', context.loadGame);
   document.getElementById('resetBtn').addEventListener('click', () => context.resetWorld(true));
+  document.getElementById('mainBtn').addEventListener('click', () => {
+    state.view = 'main';
+    context.renderAll();
+  });
   document.getElementById('buildingsBtn').addEventListener('click', () => {
     state.interaction.revealedBuildingsButton = true;
     ui.buildingsBtn.classList.remove('reveal-pulse');
-    ui.buildingWindow.classList.toggle('hidden');
+    state.view = 'buildings';
     context.renderSidebar();
+    context.renderTopbar();
   });
-  document.getElementById('buildingCloseBtn').addEventListener('click', () => ui.buildingWindow.classList.add('hidden'));
+  document.getElementById('buildingCloseBtn').addEventListener('click', () => {
+    state.view = 'main';
+    context.renderAll();
+  });
   document.getElementById('techBtn').addEventListener('click', () => {
     state.interaction.revealedTechButton = true;
     if ((state.stats.lifetimeEarned.gold || 0) > 0) state.interaction.revealedMineHint = true;
     ui.techBtn.classList.remove('reveal-pulse');
-    ui.techWindow.classList.toggle('hidden');
+    state.view = 'tech';
     context.renderTechTree();
+    context.renderTopbar();
   });
-  document.getElementById('techCloseBtn').addEventListener('click', () => ui.techWindow.classList.add('hidden'));
+  document.getElementById('techCloseBtn').addEventListener('click', () => {
+    state.view = 'main';
+    context.renderAll();
+  });
   document.getElementById('zoomOutBtn').addEventListener('click', () => context.setZoom(state.camera.zoom - 0.25));
   document.getElementById('zoomInBtn').addEventListener('click', () => context.setZoom(state.camera.zoom + 0.25));
 

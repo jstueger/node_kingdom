@@ -16,6 +16,7 @@ The prototype already includes parts of the earlier progression direction:
 - A first Knowledge resource, School building, and Science heading.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
+- Main, Buildings, and Tech Tree are exclusive top-level frames.
 - Early milestone goals with claimable money rewards.
 - Manual actions are started with one click and complete after a visible timer.
 - Node-type addons bought from building subviews in the tech tree.

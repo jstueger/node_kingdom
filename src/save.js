@@ -124,6 +124,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.nextId = starting.nextId;
   state.gold = STARTING_GOLD;
   state.ticks = 0;
+  state.view = 'main';
   state.selectedId = createStartingSelection(starting.buildings);
   state.mode = 'idle';
   state.placeType = null;
@@ -150,7 +151,5 @@ export function resetWorld(context, confirmFirst = true) {
   context.drawBg();
   document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
   setHint(CONTENT.startState.hint || 'Select a building from the sidebar to place it');
-  context.ui.buildingWindow.classList.add('hidden');
-  context.ui.techWindow.classList.add('hidden');
   context.renderAll();
 }

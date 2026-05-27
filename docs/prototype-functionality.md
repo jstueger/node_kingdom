@@ -18,14 +18,19 @@ Market buildings are sink nodes. They do not use recipes and instead sell all st
 
 ## Interface Layout
 
-The interface has five main areas:
+The interface has three exclusive top-level frames:
 
-- Top bar: money, elapsed seconds, zoom controls, progression-gated Buildings and Tech buttons, save/load/reset buttons, and current hint.
+- Main: production graph, goals, inspector, camera, and node operation.
+- Buildings: building catalog and placement selection.
+- Tech Tree: building unlocks, techs, and permanent node-type upgrades.
+
+Only one top-level frame is visible at a time. The top bar remains global for money, elapsed time, frame navigation, save/load/reset, and the current hint.
+
+The Main frame has three areas:
+
 - Left sidebar: active goals and port legend.
 - Center game area: centered grid, buildings, ports, placement preview, and connector paths.
 - Right inspector: selected-building details.
-- Buildings window: toggleable building menu after it has been revealed.
-- Tech window: toggleable upgrade window.
 
 ## Grid And Placement
 
@@ -35,8 +40,8 @@ Buildings are placed freely on this grid. Current producer and market buildings 
 
 Placement controls:
 
-- Click a building card, then click an empty valid grid location.
-- Drag a building card from the Buildings window and drop it on the grid.
+- Open the Buildings frame and click a building card to return to Main in placement mode.
+- Click an empty valid grid location to place the selected building.
 - Press `Escape` to cancel click placement.
 
 Placement rules:
@@ -47,9 +52,8 @@ Placement rules:
 - Buildings cannot be placed outside the grid.
 - If placement fails, no money is spent.
 - Successful click placement automatically exits placement mode.
-- Successful drag placement immediately places the building on drop.
 
-Drag placement shows a snapped placement ghost while over the grid. Valid targets are highlighted as valid; occupied, out-of-bounds, or unaffordable targets are invalid.
+Placement mode shows a snapped placement ghost while over the grid. Valid targets are highlighted as valid; occupied, out-of-bounds, or unaffordable targets are invalid.
 
 Money is stored internally as Copper and displayed compactly as Gold, Silver, and Copper:
 
@@ -95,12 +99,12 @@ The game starts with one Sawmill already placed and stocked with enough Wood for
 Progression UI reveals:
 
 - Producing the first Plank reveals the Buildings button with a short pulse.
-- The Buildings button opens a floating Buildings window.
-- The Buildings window initially offers Lumber Camp and Sawmill.
+- The Buildings button opens the exclusive Buildings frame.
+- The Buildings frame initially offers Lumber Camp and Sawmill.
 - Buying a Lumber Camp, connecting it to the starting Sawmill, and producing a second Plank reveals the Tech button with a short pulse.
-- The Tech button opens the floating Tech Tree window.
+- The Tech button opens the exclusive Tech Tree frame.
 
-No building cards are visible until the Buildings button is revealed. The Buildings window only shows currently unlocked building types.
+No building cards are visible until the Buildings button is revealed. The Buildings frame only shows currently unlocked building types.
 
 Each building has:
 
@@ -125,7 +129,7 @@ Current placement costs:
 - School: 25S.
 - Market: 5S.
 
-Unaffordable building cards are dimmed. They can still be selected or dragged, but placement fails until the player has enough money.
+Unaffordable building cards are dimmed. They can still be selected, but placement fails until the player has enough money.
 
 ## Node Display
 
@@ -299,12 +303,12 @@ Content validation runs before the game starts. It checks building, recipe, tech
 
 ## Tech Tree
 
-The prototype has a toggleable tech tree window.
+The prototype has an exclusive Tech Tree frame.
 
 Tech controls:
 
-- Click `Tech` in the top bar to show or hide the tech window.
-- Click `Hide` in the tech window to close it.
+- Click `Tech` in the top bar to open the Tech Tree frame.
+- Click `Main`, press `Escape`, or click `Main` inside the Tech Tree frame to return to the Main frame.
 
 Each tech can currently be bought once. Buying a tech spends its cost, marks the tech as purchased, and applies its effect. Current tech costs are money-only, while the content model still supports resource costs for future phases.
 

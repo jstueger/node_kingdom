@@ -35,6 +35,7 @@ export function createState() {
     nextId: starting.nextId,
     gold: STARTING_GOLD,
     ticks: 0,
+    view: 'main',
     selectedId: createStartingSelection(starting.buildings),
     mode: 'idle',
     placeType: null,
