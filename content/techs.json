@@ -19,12 +19,12 @@
   },
   "woodworking": {
     "tree": "technology",
-    "label": "Woodworking",
-    "description": "Unlocks more Sawmills so wood can be processed into planks at scale.",
+    "label": "Sawmill Methods",
+    "description": "Establishes repeatable plank processing methods and unlocks Sawmill-focused upgrades.",
     "visibleWhen": { "lifetimeEarned": { "gold": 60 }, "lifetimeProduced": { "plank": 2 } },
     "requires": ["market_access"],
     "cost": { "gold": 60 },
-    "unlocks": { "buildings": ["sawmill"] }
+    "unlocks": {}
   },
   "smelting": {
     "tree": "technology",

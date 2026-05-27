@@ -7,22 +7,36 @@
   },
   "first_trade": {
     "label": "Open Trade",
-    "description": "Research Market Access.",
-    "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
+    "description": "Open the Tech Tree and activate free Market Access.",
+    "visibleWhen": { "lifetimeProduced": { "plank": 2 } },
     "completeWhen": { "techs": ["market_access"] },
     "reward": { "gold": 50 }
   },
   "first_wood": {
-    "label": "Sustain The Mill",
-    "description": "Produce Wood with a Lumber Camp.",
-    "visibleWhen": { "techs": ["market_access"] },
-    "completeWhen": { "lifetimeProduced": { "wood": 3 } },
+    "label": "Place A Lumber Camp",
+    "description": "Open Buildings, place a Lumber Camp, and produce Wood for the Sawmill.",
+    "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
+    "completeWhen": { "lifetimeProduced": { "wood": 1 } },
+    "reward": { "gold": 30 }
+  },
+  "second_plank": {
+    "label": "Feed The Sawmill",
+    "description": "Connect Lumber Camp to Sawmill and produce a second Plank.",
+    "visibleWhen": { "lifetimeProduced": { "plank": 1 } },
+    "completeWhen": { "lifetimeProduced": { "plank": 2 } },
     "reward": { "gold": 30 }
   },
   "first_sales": {
-    "label": "First Sales",
-    "description": "Earn 6 Silver from Markets.",
+    "label": "First Sale",
+    "description": "Place a Market, connect goods to it, and sell your first stocked item.",
     "visibleWhen": { "techs": ["market_access"] },
+    "completeWhen": { "lifetimeEarned": { "gold": 30 } },
+    "reward": { "gold": 50 }
+  },
+  "steady_trade": {
+    "label": "Steady Trade",
+    "description": "Earn 6S total from Markets to reveal the first branch toward Mining.",
+    "visibleWhen": { "lifetimeEarned": { "gold": 30 } },
     "completeWhen": { "lifetimeEarned": { "gold": 60 } },
     "reward": { "gold": 50 }
   },

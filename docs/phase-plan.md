@@ -349,7 +349,7 @@ Scope:
 
 - Playtest the first 5 minutes against the target sequence: Sawmill, first Plank, Buildings reveal, Lumber Camp, second Plank, Tech reveal, Market activation, Market purchase, first sale, Mine reveal.
 - Tune production times, early prices, sale values, and reveal timing.
-- Decide whether Sawmill should be purchasable immediately when Buildings unlock or held behind its tech entry.
+- Keep Sawmill purchasable immediately when Buildings unlock; Sawmill Methods is an upgrade prerequisite, not a building unlock.
 - Check that the first 10 minutes naturally create an automation aspiration without requiring it too soon.
 - Update `prototype-functionality.md`, `design-notes.md`, and README to match the new player-facing flow.
 
@@ -358,6 +358,12 @@ Exit criteria:
 - A new player can complete the first sale loop quickly without needing instructions outside the game.
 - The Mine reveal feels like the next natural goal.
 - The game has a clearer foundation for expanding beyond the first 10 to 25 minutes.
+
+Implemented notes:
+
+- Woodworking is now Sawmill Methods and no longer unlocks Sawmill buildings.
+- Early goals now script the opening spine from first Plank through Lumber Camp, second Plank, Market Access, first sale, and steady trade.
+- First sale happens at 3S earned; the 6S steady-trade threshold remains the reveal pressure for Mining and Sawmill Methods.
 
 ## Future Outlook: Contracts And Reputation
 

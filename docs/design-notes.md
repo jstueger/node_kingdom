@@ -78,7 +78,7 @@ The current progression spine is deliberately modest:
 
 1. A stocked starting Sawmill creates the first Plank.
 2. Plank production reveals free Market Access, which unlocks Lumber Camps and Markets.
-3. Selling Planks creates enough money pressure to reveal Mining and Woodworking.
+3. Selling Planks creates enough money pressure to reveal Mining and Sawmill Methods.
 4. Resource production milestones reveal later buildings, while current opening purchases stay money-only.
 5. Sword production and earned money reveal the first Knowledge-producing building.
 6. Knowledge is currently a production milestone for science progression, not a purchase currency.
