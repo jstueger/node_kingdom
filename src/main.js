@@ -84,6 +84,8 @@ function tick() {
   tickGame(state);
   state.clock.lastTickAt = performance.now();
   context.renderWorld();
+  context.renderGoals();
+  context.renderSidebar();
   context.renderTopbar();
 }
 

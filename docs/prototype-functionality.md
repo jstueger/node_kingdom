@@ -90,6 +90,7 @@ Progression UI reveals:
 
 - Producing the first Plank reveals the Buildings button with a short pulse.
 - The Buildings button opens a floating Buildings window.
+- The Buildings window initially offers Lumber Camp and Sawmill.
 - Buying a Lumber Camp, connecting it to the starting Sawmill, and producing a second Plank reveals the Tech button with a short pulse.
 - The Tech button opens the floating Tech Tree window.
 

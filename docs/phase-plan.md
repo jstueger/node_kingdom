@@ -259,7 +259,7 @@ Scope:
 - Open the building menu from a dedicated top-level button.
 - Keep the tech tree in its own window/frame opened from a second top-level button.
 - Hide both buttons at new-game start.
-- Reveal the building-menu button after the first Plank is produced.
+- Reveal the building-menu button after the first Plank is produced, with Lumber Camp and Sawmill available in the menu.
 - Reveal the tech-tree button after the player buys a Lumber Camp, connects it to the starting Sawmill, and produces the second Plank.
 - Make new button reveals visually noticeable, such as a brief flash/pulse.
 

@@ -2,7 +2,10 @@
   "grid": { "cols": 40, "rows": 40 },
   "startingGold": 10,
   "hint": "Start the Sawmill to make your first Plank",
-  "unlockedBuildings": {},
+  "unlockedBuildings": {
+    "lumber": true,
+    "sawmill": true
+  },
   "buildings": [
     {
       "type": "sawmill",
