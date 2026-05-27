@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 
 export function setupInput(context) {
@@ -49,7 +49,7 @@ export function setupInput(context) {
   function placeBuilding(type, gx, gy) {
     const definition = BUILDINGS[type];
     if (!definition) return false;
-    if (!isBuildingUnlocked(state, type)) {
+    if (!isBuildingMenuAvailable(state, type)) {
       context.setHint(`${definition.label} is locked`);
       return false;
     }
@@ -262,7 +262,7 @@ export function setupInput(context) {
       state.interaction.suppressNextSidebarClick = false;
       return;
     }
-    if (!isBuildingUnlocked(state, type)) {
+    if (!isBuildingMenuAvailable(state, type)) {
       context.setHint(`${BUILDINGS[type].label} is locked`);
       return;
     }
@@ -276,7 +276,7 @@ export function setupInput(context) {
 
   function startPlacementDrag(event, type) {
     if (event.button !== 0 || state.interaction.moving || state.interaction.pan) return;
-    if (!isBuildingUnlocked(state, type)) return;
+    if (!isBuildingMenuAvailable(state, type)) return;
     if (state.mode === 'connecting') cancelConnection();
     state.interaction.placementDrag = {
       type,
@@ -328,7 +328,7 @@ export function setupInput(context) {
     drag.overGrid = point.x >= 0 && point.y >= 0 && point.x < state.world.cols * CELL && point.y < state.world.rows * CELL;
     drag.gx = Math.floor(point.x / CELL);
     drag.gy = Math.floor(point.y / CELL);
-    drag.valid = drag.overGrid && isBuildingUnlocked(state, drag.type) && canPayCost(state, definition.costResources) && context.gridFree(drag.gx, drag.gy, definition.w, definition.h);
+    drag.valid = drag.overGrid && isBuildingMenuAvailable(state, drag.type) && canPayCost(state, definition.costResources) && context.gridFree(drag.gx, drag.gy, definition.w, definition.h);
     context.renderBuildings();
   }
 

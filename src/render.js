@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
@@ -406,7 +406,7 @@ export function renderSidebar(context) {
   const cards = document.getElementById('buildingCards');
   cards.innerHTML = '';
   for (const [type, definition] of Object.entries(BUILDINGS)) {
-    const unlocked = isBuildingUnlocked(state, type);
+    const unlocked = isBuildingMenuAvailable(state, type);
     if (!unlocked) continue;
     const card = document.createElement('div');
     card.className = `bcard ${state.placeType === type ? 'sel' : ''} ${!canPayCost(state, definition.costResources) ? 'locked' : ''}`;

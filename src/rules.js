@@ -25,6 +25,12 @@ export function isBuildingUnlocked(state, type) {
   return Boolean(state.unlockedBuildings[type]);
 }
 
+export function isBuildingMenuAvailable(state, type) {
+  if (isBuildingUnlocked(state, type)) return true;
+  if ((state.stats.lifetimeProduced.plank || 0) < 1) return false;
+  return type === 'lumber' || type === 'sawmill';
+}
+
 export function actionTicksFor(building, techs, addons = {}) {
   const addonBonus = addonActionTickBonus(addons, building.type);
   const base = BUILDINGS[building.type].actionTicks || DEFAULT_ACTION_TICKS;
