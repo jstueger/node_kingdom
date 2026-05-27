@@ -20,10 +20,11 @@ Market buildings are sink nodes. They do not use recipes and instead sell all st
 
 The interface has five main areas:
 
-- Top bar: gold, elapsed seconds, zoom controls, Tech button, save/load/reset buttons, and current hint.
-- Left sidebar: placeable building cards with gold costs, active goals, and port legend.
+- Top bar: gold, elapsed seconds, zoom controls, progression-gated Buildings and Tech buttons, save/load/reset buttons, and current hint.
+- Left sidebar: active goals and port legend.
 - Center game area: centered grid, buildings, ports, placement preview, and connector paths.
 - Right inspector: selected-building details.
+- Buildings window: toggleable building menu after it has been revealed.
 - Tech window: toggleable upgrade window.
 
 ## Grid And Placement
@@ -35,7 +36,7 @@ Buildings are placed freely on this grid. Current producer and market buildings 
 Placement controls:
 
 - Click a building card, then click an empty valid grid location.
-- Drag a building card from the sidebar and drop it on the grid.
+- Drag a building card from the Buildings window and drop it on the grid.
 - Press `Escape` to cancel click placement.
 
 Placement rules:
@@ -83,7 +84,16 @@ Current building types:
 - School: produces Knowledge.
 - Market: sells goods for gold.
 
-The game starts with one Sawmill already placed and stocked with enough Wood for the first Plank. No building cards are unlocked until the first Plank reveals Market Access. The left building menu only shows currently unlocked building types.
+The game starts with one Sawmill already placed and stocked with enough Wood for the first Plank. The Buildings and Tech buttons are hidden at new-game start.
+
+Progression UI reveals:
+
+- Producing the first Plank reveals the Buildings button with a short pulse.
+- The Buildings button opens a floating Buildings window.
+- Buying a Lumber Camp, connecting it to the starting Sawmill, and producing a second Plank reveals the Tech button with a short pulse.
+- The Tech button opens the floating Tech Tree window.
+
+No building cards are visible until the Buildings button is revealed. The Buildings window only shows currently unlocked building types.
 
 Each building has:
 
@@ -253,7 +263,7 @@ The current progression model is deliberately simple and bootstrap-focused:
 - A stocked Sawmill starts placed on the grid.
 - The first manual action creates a Plank before the player builds the supply chain.
 - Markets convert stocked trade goods into gold.
-- Lifetime thresholds reveal techs; current resources and gold pay for techs.
+- Lifetime thresholds reveal interface frames and techs; current resources and gold pay for techs.
 - Technology techs unlock early buildings, grid space, storage, crafting, and trade improvements.
 - Science techs use Knowledge and unlock later systems such as Manager slots.
 - Manager slots allow specific placed nodes to hire Managers.

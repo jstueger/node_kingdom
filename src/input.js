@@ -394,7 +394,7 @@ export function setupInput(context) {
       state.mode = 'idle';
       state.placeType = null;
       document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
-      context.setHint('Select a building from the sidebar to place it');
+      context.setHint('Select a building to place it');
     }
   });
   document.addEventListener('pointermove', moveBuilding);
@@ -407,7 +407,16 @@ export function setupInput(context) {
   document.getElementById('saveBtn').addEventListener('click', context.saveGame);
   document.getElementById('loadBtn').addEventListener('click', context.loadGame);
   document.getElementById('resetBtn').addEventListener('click', () => context.resetWorld(true));
+  document.getElementById('buildingsBtn').addEventListener('click', () => {
+    state.interaction.revealedBuildingsButton = true;
+    ui.buildingsBtn.classList.remove('reveal-pulse');
+    ui.buildingWindow.classList.toggle('hidden');
+    context.renderSidebar();
+  });
+  document.getElementById('buildingCloseBtn').addEventListener('click', () => ui.buildingWindow.classList.add('hidden'));
   document.getElementById('techBtn').addEventListener('click', () => {
+    state.interaction.revealedTechButton = true;
+    ui.techBtn.classList.remove('reveal-pulse');
     ui.techWindow.classList.toggle('hidden');
     context.renderTechTree();
   });

@@ -193,6 +193,19 @@ function rewardText(reward = {}) {
   return parts.join(', ');
 }
 
+export function isBuildingsButtonVisible(state) {
+  return (state.stats.lifetimeProduced.plank || 0) >= 1;
+}
+
+export function isTechButtonVisible(state) {
+  if ((state.stats.lifetimeProduced.plank || 0) < 2) return false;
+  return state.connections.some(connection => {
+    const fromBuilding = state.buildings.get(connection.fb);
+    const toBuilding = state.buildings.get(connection.tb);
+    return fromBuilding?.type === 'lumber' && toBuilding?.type === 'sawmill';
+  });
+}
+
 function addonHtml(state, building) {
   const addons = Object.entries(state.addons).filter(([, addon]) => addon.node === building.type && isAddonVisible(state, addon));
   if (!addons.length) return '<div class="field-sub">No addons available for this node type.</div>';
@@ -404,6 +417,23 @@ export function renderSidebar(context) {
   }
 }
 
+function renderProgressionButtons(context) {
+  const { state, ui } = context;
+  const buildingsVisible = isBuildingsButtonVisible(state);
+  const techVisible = isTechButtonVisible(state);
+
+  ui.buildingsBtn.classList.toggle('hidden', !buildingsVisible);
+  ui.techBtn.classList.toggle('hidden', !techVisible);
+  if (!buildingsVisible) ui.buildingWindow.classList.add('hidden');
+  if (!techVisible) ui.techWindow.classList.add('hidden');
+
+  if (buildingsVisible && !state.interaction.revealedBuildingsButton) ui.buildingsBtn.classList.add('reveal-pulse');
+  else ui.buildingsBtn.classList.remove('reveal-pulse');
+
+  if (techVisible && !state.interaction.revealedTechButton) ui.techBtn.classList.add('reveal-pulse');
+  else ui.techBtn.classList.remove('reveal-pulse');
+}
+
 export function renderGoals(context) {
   const { state, actions } = context;
   const cards = document.getElementById('goalCards');
@@ -463,12 +493,14 @@ export function renderPanels(context) {
   renderGoals(context);
   renderInspector(context);
   renderTechTree(context);
+  renderProgressionButtons(context);
 }
 
 export function renderTopbar(context) {
   const { state, ui } = context;
   ui.goldEl.textContent = `💰 ${state.gold} gold`;
   ui.tstat.textContent = `⏱ ${state.ticks}s`;
+  renderProgressionButtons(context);
 }
 
 export function renderAll(context) {

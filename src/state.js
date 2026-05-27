@@ -20,7 +20,9 @@ export function createInteractionState() {
     placementDrag: null,
     movingInvalid: false,
     suppressNextSidebarClick: false,
-    suppressNextGridClick: false
+    suppressNextGridClick: false,
+    revealedBuildingsButton: false,
+    revealedTechButton: false
   };
 }
 

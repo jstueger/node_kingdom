@@ -16,6 +16,10 @@ export function saveGame({ state, toast }) {
     addons: state.addons,
     managerSlots: state.managerSlots,
     unlockedBuildings: state.unlockedBuildings,
+    uiUnlocks: {
+      revealedBuildingsButton: state.interaction.revealedBuildingsButton,
+      revealedTechButton: state.interaction.revealedTechButton
+    },
     techs: state.techs,
     buildings: [...state.buildings.values()],
     conns: state.connections
@@ -37,6 +41,8 @@ export function loadGame(context) {
   state.gold = payload.gold ?? STARTING_GOLD;
   state.ticks = payload.ticks || 0;
   state.connections = payload.conns || [];
+  state.interaction.revealedBuildingsButton = Boolean(payload.uiUnlocks?.revealedBuildingsButton);
+  state.interaction.revealedTechButton = Boolean(payload.uiUnlocks?.revealedTechButton);
   state.stats = {
     lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
     lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },
@@ -127,5 +133,7 @@ export function resetWorld(context, confirmFirst = true) {
   context.drawBg();
   document.querySelectorAll('.bcard').forEach(card => card.classList.remove('sel'));
   setHint(CONTENT.startState.hint || 'Select a building from the sidebar to place it');
+  context.ui.buildingWindow.classList.add('hidden');
+  context.ui.techWindow.classList.add('hidden');
   context.renderAll();
 }

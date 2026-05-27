@@ -40,6 +40,7 @@ VS Code Live Server also works.
 - Grid placement by click or drag-and-drop from the building menu.
 - Movable placed buildings.
 - A stocked Sawmill starts on the grid so the first action creates a Plank before the support chain is built.
+- Buildings and Tech open from progression-gated top-bar buttons that appear during the opening.
 - Lumber Camp and Market unlock through free early Market Access after the first Plank.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.

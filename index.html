@@ -15,7 +15,8 @@
       <button id="zoomOutBtn" class="small-btn" title="Zoom out">−</button>
       <span id="zoomLabel">100%</span>
       <button id="zoomInBtn" class="small-btn" title="Zoom in">+</button>
-      <button id="techBtn" class="small-btn">Tech</button>
+      <button id="buildingsBtn" class="small-btn hidden">Buildings</button>
+      <button id="techBtn" class="small-btn hidden">Tech</button>
       <button id="saveBtn" class="small-btn">Save</button>
       <button id="loadBtn" class="small-btn">Load</button>
       <button id="resetBtn" class="small-btn danger">Reset</button>
@@ -24,9 +25,6 @@
 
     <main id="body">
       <aside id="sidebar">
-        <h4>Buildings</h4>
-        <div id="buildingCards"></div>
-
         <section id="goalsPanel">
           <h4>Goals</h4>
           <div id="goalCards"></div>
@@ -62,6 +60,14 @@
       </aside>
     </main>
   </div>
+
+  <section id="buildingWindow" class="panel-window hidden">
+    <div class="panel-titlebar">
+      <h4>Buildings</h4>
+      <button id="buildingCloseBtn" class="small-btn">Hide</button>
+    </div>
+    <div id="buildingCards"></div>
+  </section>
 
   <section id="techWindow" class="panel-window hidden">
     <div class="panel-titlebar">
