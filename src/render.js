@@ -184,7 +184,79 @@ function techStatus(state, tech) {
   if (!areTechPrerequisitesMet(state, tech)) return { key: 'gated', label: 'Requires tech', button: 'Locked', disabled: true };
   if (!areTechMilestonesMet(state, tech)) return { key: 'gated', label: 'Needs milestone', button: 'Locked', disabled: true };
   if (!canPayCost(state, tech.cost)) return { key: 'unaffordable', label: 'Need resources', button: 'Need resources', disabled: true };
-  return { key: 'available', label: 'Available', button: 'Buy', disabled: false };
+  return { key: 'available', label: 'Available', button: Object.keys(tech.cost || {}).length ? 'Buy' : 'Activate', disabled: false };
+}
+
+function techActionHtml(key, status) {
+  return `<button class="tech-buy" data-tech="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
+}
+
+function buildingTechState(state, entry) {
+  if (entry.hiddenUntilSale && (state.stats.lifetimeEarned.gold || 0) <= 0) return 'mystery';
+  if (entry.techKey) {
+    const tech = state.techs[entry.techKey];
+    if (tech?.bought) return 'bought';
+    if (tech && areTechPrerequisitesMet(state, tech) && areTechMilestonesMet(state, tech) && canPayCost(state, tech.cost)) return 'available';
+    return 'locked';
+  }
+  if (entry.availableWhen?.(state)) return 'available';
+  return 'locked';
+}
+
+function buildingTechHtml(state) {
+  const entries = [
+    {
+      type: 'lumber',
+      title: 'Lumber Camp',
+      desc: 'Feeds the Sawmill with Wood.',
+      availableWhen: () => true
+    },
+    {
+      type: 'sawmill',
+      title: 'Sawmill',
+      desc: 'Turns Wood into Planks.',
+      availableWhen: () => true
+    },
+    {
+      type: 'market',
+      title: 'Market',
+      desc: 'Activates Markets so Planks can become gold.',
+      techKey: 'market_access'
+    },
+    {
+      type: 'iron_mine',
+      title: 'Mine',
+      mysteryTitle: 'Unknown',
+      mysteryDesc: 'Sell goods to reveal the next production branch.',
+      desc: 'Unlocks Iron Mines for the first ore chain.',
+      techKey: 'mining',
+      hiddenUntilSale: true
+    }
+  ];
+  const cards = entries.map((entry, index) => {
+    const stateKey = buildingTechState(state, entry);
+    const definition = BUILDINGS[entry.type];
+    const tech = entry.techKey ? state.techs[entry.techKey] : null;
+    const status = tech ? techStatus(state, tech) : { key: stateKey, label: stateKey === 'available' ? 'Available' : 'Locked', button: 'Available', disabled: true };
+    const isMystery = stateKey === 'mystery';
+    const title = isMystery ? entry.mysteryTitle : entry.title;
+    const desc = isMystery ? entry.mysteryDesc : entry.desc;
+    const icon = isMystery ? '?' : definition?.icon;
+    const action = tech && !isMystery ? techActionHtml(entry.techKey, status) : '';
+    return `
+      <div class="building-tech-node ${stateKey}">
+        <div class="building-tech-connector ${index === 0 ? 'start' : ''}"></div>
+        <div class="building-tech-card">
+          <div class="building-tech-head"><span>${icon} ${title}</span><span>${isMystery ? 'Hidden' : status.label}</span></div>
+          <div class="building-tech-desc">${desc}</div>
+          ${tech && !isMystery ? techMetaHtml(state, tech) : ''}
+          ${action}
+        </div>
+      </div>`;
+  }).join('');
+  return `
+    <div class="tech-group">Building Chain</div>
+    <div class="building-tech-chain">${cards}</div>`;
 }
 
 function rewardText(reward = {}) {
@@ -430,7 +502,8 @@ function renderProgressionButtons(context) {
   if (buildingsVisible && !state.interaction.revealedBuildingsButton) ui.buildingsBtn.classList.add('reveal-pulse');
   else ui.buildingsBtn.classList.remove('reveal-pulse');
 
-  if (techVisible && !state.interaction.revealedTechButton) ui.techBtn.classList.add('reveal-pulse');
+  const shouldPulseTech = techVisible && (!state.interaction.revealedTechButton || ((state.stats.lifetimeEarned.gold || 0) > 0 && !state.interaction.revealedMineHint));
+  if (shouldPulseTech) ui.techBtn.classList.add('reveal-pulse');
   else ui.techBtn.classList.remove('reveal-pulse');
 }
 
@@ -458,8 +531,9 @@ export function renderGoals(context) {
 export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
-  cards.innerHTML = lifetimeSummaryHtml(state);
-  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
+  cards.innerHTML = lifetimeSummaryHtml(state) + buildingTechHtml(state);
+  const buildingChainTechs = new Set(['market_access', 'mining']);
+  const visibleTechs = Object.entries(state.techs).filter(([key, tech]) => !buildingChainTechs.has(key) && isTechDiscovered(state, tech));
   for (const tree of ['technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
     if (!entries.length) continue;
@@ -475,11 +549,13 @@ export function renderTechTree(context) {
         <div class="tech-head"><span>${tech.label}</span><span>${status.label}</span></div>
         <div class="tech-desc">${tech.desc}</div>
         ${techMetaHtml(state, tech)}
-        <button class="tech-buy" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
-      card.querySelector('button').addEventListener('click', () => actions.buyTech(key));
+        ${techActionHtml(key, status)}`;
       cards.appendChild(card);
     }
   }
+  cards.querySelectorAll('.tech-buy').forEach(button => {
+    button.addEventListener('click', () => actions.buyTech(button.dataset.tech));
+  });
 }
 
 export function renderWorld(context) {

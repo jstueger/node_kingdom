@@ -315,6 +315,8 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
+The opening tech tree includes a Building Chain section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. Market is activated for free from this chain. After the first Market sale, the hidden branch is revealed as Mining.
+
 Current techs:
 
 - Market Access: appears after 1 lifetime Plank produced, is free, and unlocks Lumber Camp and Market buildings.

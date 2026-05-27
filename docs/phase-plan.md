@@ -274,6 +274,8 @@ Exit criteria:
 
 Goal: turn the early tech tree into a readable chain of building activations and near-future reveals.
 
+Status: complete.
+
 Scope:
 
 - Rework the early tech tree around entries for Lumber Camp, Sawmill, Market, and one initially unnamed future entry.

@@ -22,7 +22,8 @@ export function createInteractionState() {
     suppressNextSidebarClick: false,
     suppressNextGridClick: false,
     revealedBuildingsButton: false,
-    revealedTechButton: false
+    revealedTechButton: false,
+    revealedMineHint: false
   };
 }
 

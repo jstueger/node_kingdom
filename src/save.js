@@ -18,7 +18,8 @@ export function saveGame({ state, toast }) {
     unlockedBuildings: state.unlockedBuildings,
     uiUnlocks: {
       revealedBuildingsButton: state.interaction.revealedBuildingsButton,
-      revealedTechButton: state.interaction.revealedTechButton
+      revealedTechButton: state.interaction.revealedTechButton,
+      revealedMineHint: state.interaction.revealedMineHint
     },
     techs: state.techs,
     buildings: [...state.buildings.values()],
@@ -43,6 +44,7 @@ export function loadGame(context) {
   state.connections = payload.conns || [];
   state.interaction.revealedBuildingsButton = Boolean(payload.uiUnlocks?.revealedBuildingsButton);
   state.interaction.revealedTechButton = Boolean(payload.uiUnlocks?.revealedTechButton);
+  state.interaction.revealedMineHint = Boolean(payload.uiUnlocks?.revealedMineHint);
   state.stats = {
     lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
     lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },

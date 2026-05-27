@@ -416,6 +416,7 @@ export function setupInput(context) {
   document.getElementById('buildingCloseBtn').addEventListener('click', () => ui.buildingWindow.classList.add('hidden'));
   document.getElementById('techBtn').addEventListener('click', () => {
     state.interaction.revealedTechButton = true;
+    if ((state.stats.lifetimeEarned.gold || 0) > 0) state.interaction.revealedMineHint = true;
     ui.techBtn.classList.remove('reveal-pulse');
     ui.techWindow.classList.toggle('hidden');
     context.renderTechTree();

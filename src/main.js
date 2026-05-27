@@ -86,6 +86,7 @@ function tick() {
   context.renderWorld();
   context.renderGoals();
   context.renderSidebar();
+  if (!ui.techWindow.classList.contains('hidden')) context.renderTechTree();
   context.renderTopbar();
 }
 
