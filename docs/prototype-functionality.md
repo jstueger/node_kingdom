@@ -297,7 +297,7 @@ Current content files:
 - `goals.json`: early milestone goals and rewards.
 - `addons.json`: node-type addon definitions and effects.
 - `managers.json`: Manager slot defaults and Manager purchase costs.
-- `unlock-tree.json`: future building-unlock map content, currently loaded and validated but not yet used for rendering.
+- `unlock-tree.json`: building-unlock map content for the opening Tech Tree building map.
 - `start-state.json`: starting grid size, starting money, start hint, initially unlocked buildings, and pre-placed starting buildings.
 
 Authoring fields use stable content names such as `description`, `size`, and recipe output `resource`. The content loader normalizes those fields into the current runtime shape before state creation.
@@ -317,7 +317,9 @@ Each tech can currently be bought once. Buying a tech spends its cost, marks the
 
 Techs may have visibility thresholds and prerequisite techs. A hidden tech appears once its threshold is met and its prerequisites are purchased. Visibility thresholds are separate from purchase costs.
 
-Visible techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned money.
+The opening building map is rendered from `unlock-tree.json`. It shows hidden identities, locked nodes, available nodes, and unlocked nodes while the migration toward unlock-tree purchasing is in progress.
+
+Visible non-building techs are grouped under Technology or Science headings. The tech window also shows a compact lifetime progress summary for important resources and earned money.
 
 Tech cards can be:
 

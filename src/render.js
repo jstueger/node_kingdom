@@ -1,5 +1,6 @@
 import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
 import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, formatMoney, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { UNLOCK_NODE_STATES, unlockNodeState } from './unlock-tree.js';
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
@@ -236,74 +237,81 @@ function addonSubviewHtml(state, type, options = {}) {
     </div>`;
 }
 
-function buildingTechState(state, entry) {
-  if (entry.hiddenUntilSale && (state.stats.lifetimeEarned.gold || 0) <= 0) return 'mystery';
-  if (entry.techKey) {
-    const tech = state.techs[entry.techKey];
-    if (tech?.bought) return 'bought';
-    if (tech && areTechPrerequisitesMet(state, tech) && areTechMilestonesMet(state, tech) && canPayCost(state, tech.cost)) return 'available';
-    return 'locked';
+function unlockNodeStatus(state, node, legacyTech) {
+  const nodeState = unlockNodeState(state, node);
+  if (nodeState === UNLOCK_NODE_STATES.UNLOCKED) return { key: 'bought', label: 'Unlocked' };
+  if (nodeState === UNLOCK_NODE_STATES.HIDDEN_IDENTITY) return { key: 'mystery', label: 'Hidden' };
+  if (nodeState === UNLOCK_NODE_STATES.UNLOCKABLE) return { key: legacyTech ? techStatus(state, legacyTech).key : 'available', label: 'Available' };
+  return { key: 'locked', label: 'Locked' };
+}
+
+function buildingUnlockTechKey(state, type) {
+  return Object.entries(state.techs).find(([, tech]) => tech.unlocks?.buildings?.includes(type))?.[0];
+}
+
+function unlockNodeCostHtml(node) {
+  if (!Object.keys(node.cost || {}).length) return '<div><span>Cost</span><b>Free</b></div>';
+  return `<div><span>Cost</span><b>${Object.entries(node.cost).map(([resource, amount]) => amountLabel(resource, amount)).join(', ')}</b></div>`;
+}
+
+function unlockTreeEdgesHtml(nodes, minX, minY, cols, rows) {
+  const width = Math.max(1, cols) * 190;
+  const height = Math.max(1, rows) * 280;
+  const lines = [];
+  for (const node of nodes) {
+    const parents = node.parents || (node.parent ? [node.parent] : []);
+    for (const parentId of parents) {
+      const parent = nodes.find(candidate => candidate.id === parentId);
+      if (!parent) continue;
+      const x1 = (parent.position.x - minX) * 190 + 90;
+      const y1 = (parent.position.y - minY) * 280 + 58;
+      const x2 = (node.position.x - minX) * 190 + 90;
+      const y2 = (node.position.y - minY) * 280 + 58;
+      lines.push(`<path d="M ${x1} ${y1} L ${x2} ${y2}" />`);
+    }
   }
-  if (entry.availableWhen?.(state)) return 'available';
-  return 'locked';
+  return `<svg class="unlock-tree-lines" viewBox="0 0 ${width} ${height}" aria-hidden="true">${lines.join('')}</svg>`;
 }
 
 function buildingTechHtml(state) {
-  const entries = [
-    {
-      type: 'lumber',
-      title: 'Lumber Camp',
-      desc: 'Feeds the Sawmill with Wood.',
-      availableWhen: () => true
-    },
-    {
-      type: 'sawmill',
-      title: 'Sawmill',
-      desc: 'Turns Wood into Planks.',
-      availableWhen: () => true
-    },
-    {
-      type: 'market',
-      title: 'Market',
-      desc: 'Activates Markets so Planks can become money.',
-      techKey: 'market_access'
-    },
-    {
-      type: 'iron_mine',
-      title: 'Mine',
-      mysteryTitle: 'Unknown',
-      mysteryDesc: 'Sell goods to reveal the next production branch.',
-      desc: 'Unlocks Iron Mines for the first ore chain.',
-      techKey: 'mining',
-      hiddenUntilSale: true
-    }
-  ];
-  const cards = entries.map((entry, index) => {
-    const stateKey = buildingTechState(state, entry);
-    const definition = BUILDINGS[entry.type];
-    const tech = entry.techKey ? state.techs[entry.techKey] : null;
-    const status = tech ? techStatus(state, tech) : { key: stateKey, label: stateKey === 'available' ? 'Available' : 'Locked', button: 'Available', disabled: true };
-    const isMystery = stateKey === 'mystery';
-    const title = isMystery ? entry.mysteryTitle : entry.title;
-    const desc = isMystery ? entry.mysteryDesc : entry.desc;
+  const nodes = Object.entries(state.unlockTree).map(([id, node]) => ({ ...node, id }));
+  const positions = nodes.map(node => node.position || { x: 0, y: 0 });
+  const minX = Math.min(...positions.map(position => position.x));
+  const minY = Math.min(...positions.map(position => position.y));
+  const maxX = Math.max(...positions.map(position => position.x));
+  const maxY = Math.max(...positions.map(position => position.y));
+  const cols = maxX - minX + 1;
+  const rows = maxY - minY + 1;
+  const cards = nodes.map(node => {
+    const definition = BUILDINGS[node.building];
+    const legacyTechKey = buildingUnlockTechKey(state, node.building);
+    const legacyTech = legacyTechKey ? state.techs[legacyTechKey] : null;
+    const status = unlockNodeStatus(state, node, legacyTech);
+    const isMystery = status.key === 'mystery';
+    const title = isMystery ? node.identity.hiddenLabel : node.identity.revealedLabel;
     const icon = isMystery ? '?' : definition?.icon;
-    const action = tech && !isMystery ? techActionHtml(entry.techKey, status) : '';
-    const upgrades = !isMystery && isBuildingUnlocked(state, entry.type) ? addonSubviewHtml(state, entry.type) : '';
+    const desc = isMystery ? 'Reveal this branch through kingdom progress.' : node.description;
+    const action = legacyTech && !isMystery && !isBuildingUnlocked(state, node.building) ? techActionHtml(legacyTechKey, techStatus(state, legacyTech)) : '';
+    const upgrades = !isMystery && isBuildingUnlocked(state, node.building) ? addonSubviewHtml(state, node.building) : '';
+    const left = (node.position.x - minX) * 190;
+    const top = (node.position.y - minY) * 280;
     return `
-      <div class="building-tech-node ${stateKey}">
-        <div class="building-tech-connector ${index === 0 ? 'start' : ''}"></div>
+      <div class="building-tech-node ${status.key}" style="left:${left}px;top:${top}px">
         <div class="building-tech-card">
-          <div class="building-tech-head"><span>${icon} ${title}</span><span>${isMystery ? 'Hidden' : status.label}</span></div>
+          <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
           <div class="building-tech-desc">${desc}</div>
-          ${tech && !isMystery ? techMetaHtml(state, tech) : ''}
+          ${!isMystery ? `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>` : ''}
           ${action}
           ${upgrades}
         </div>
       </div>`;
   }).join('');
   return `
-    <div class="tech-group">Building Chain</div>
-    <div class="building-tech-chain">${cards}</div>`;
+    <div class="tech-group">Building Tree</div>
+    <div class="building-tech-chain" style="width:${cols * 190}px;height:${rows * 280}px">
+      ${unlockTreeEdgesHtml(nodes, minX, minY, cols, rows)}
+      ${cards}
+    </div>`;
 }
 
 function advancedBuildingUpgradesHtml(state) {
@@ -586,7 +594,10 @@ export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
   cards.innerHTML = lifetimeSummaryHtml(state) + buildingTechHtml(state);
-  const buildingChainTechs = new Set(['market_access', 'mining']);
+  const unlockTreeBuildings = new Set(Object.values(state.unlockTree).flatMap(node => node.unlocks?.buildings || []));
+  const buildingChainTechs = new Set(Object.entries(state.techs)
+    .filter(([, tech]) => tech.unlocks?.buildings?.some(type => unlockTreeBuildings.has(type)))
+    .map(([key]) => key));
   const visibleTechs = Object.entries(state.techs).filter(([key, tech]) => !buildingChainTechs.has(key) && isTechDiscovered(state, tech));
   for (const tree of ['technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);

@@ -39,5 +39,8 @@ export function isUnlockNodeUnlockable(state, node) {
 
 function areParentNodesUnlocked(state, node) {
   const parents = node.parents || (node.parent ? [node.parent] : []);
-  return parents.every(parentId => state.unlockTree?.[parentId]?.bought);
+  return parents.every(parentId => {
+    const parent = state.unlockTree?.[parentId];
+    return parent && isUnlockNodeUnlocked(state, { ...parent, id: parentId });
+  });
 }

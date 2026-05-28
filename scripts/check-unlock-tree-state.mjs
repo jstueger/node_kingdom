@@ -64,4 +64,9 @@ assertState(unlockNodeState(parentedState, marketChild), UNLOCK_NODE_STATES.REVE
 parentedState.unlockTree.market_unlock.bought = true;
 assertState(unlockNodeState(parentedState, marketChild), UNLOCK_NODE_STATES.UNLOCKABLE, 'unlocked parent node');
 
+const startingParentState = createState();
+startingParentState.stats.lifetimeProduced.plank = 2;
+const marketNode = { ...startingParentState.unlockTree.market_unlock, id: 'market_unlock' };
+assertState(unlockNodeState(startingParentState, marketNode), UNLOCK_NODE_STATES.UNLOCKABLE, 'building-backed starting parent node');
+
 console.log('unlock tree state checks ok');

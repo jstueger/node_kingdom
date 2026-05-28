@@ -432,7 +432,7 @@ Implemented notes:
 
 Goal: render the main building tree from `unlock-tree.json`.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -444,6 +444,13 @@ Scope:
 Exit criteria:
 
 - The opening tree looks roughly the same but is content-driven.
+
+Implemented notes:
+
+- The Tech Tree frame now renders its opening building map from `state.unlockTree`, which is loaded from `content/unlock-tree.json`.
+- Unlock nodes display hidden identity, locked, available, and unlocked states through the shared unlock-tree state helpers.
+- Parent checks now treat already-unlocked backing buildings as unlocked parents, so the starting Sawmill can anchor the map safely.
+- Generic tech cards that duplicate unlock-tree building unlocks are hidden from the lower tech list during the migration.
 
 ## Phase 16: Unlock Purchasing
 
