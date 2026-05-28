@@ -69,6 +69,7 @@ node_kingdom/
 │   ├── goals.json
 │   ├── addons.json
 │   ├── managers.json
+│   ├── unlock-tree.json
 │   └── start-state.json
 ├── docs/
 │   ├── design-notes.md

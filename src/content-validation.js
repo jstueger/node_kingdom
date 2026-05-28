@@ -9,6 +9,7 @@ export function validateContent(content) {
   const itemIds = new Set(Object.keys(content.items || {}));
   const buildingIds = new Set(Object.keys(content.buildings || {}));
   const techIds = new Set(Object.keys(content.techs || {}));
+  const unlockTreeIds = new Set(Object.keys(content.unlockTree || {}));
 
   validateItems(content.items || {}, errors);
   validateBuildings(content.buildings || {}, itemIds, errors);
@@ -16,10 +17,33 @@ export function validateContent(content) {
   validateGoals(content.goals || {}, itemIds, techIds, errors);
   validateAddons(content.addons || {}, itemIds, buildingIds, techIds, errors);
   validateManagers(content.managers || {}, itemIds, buildingIds, errors);
+  validateUnlockTree(content.unlockTree || {}, itemIds, buildingIds, techIds, unlockTreeIds, errors);
   validateStartState(content.startState || {}, content.buildings || {}, itemIds, buildingIds, errors);
   validateReachability(content, buildingIds, warnings);
 
   return { valid: errors.length === 0, errors, warnings };
+}
+
+function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTreeIds, errors) {
+  for (const [id, node] of Object.entries(unlockTree)) {
+    if (node.kind !== 'buildingUnlock') errors.push(`Unlock tree node "${id}" has unknown kind "${node.kind}"`);
+    if (!buildingIds.has(node.building)) errors.push(`Unlock tree node "${id}" references unknown building "${node.building}"`);
+    if (node.parent !== undefined && !unlockTreeIds.has(node.parent)) errors.push(`Unlock tree node "${id}" references unknown parent "${node.parent}"`);
+    validateRefs(node.parents || [], unlockTreeIds, `Unlock tree node "${id}" parents`, errors);
+    validateNonNegativeNumber(node.position?.x, `Unlock tree node "${id}" position.x`, errors);
+    validateNonNegativeNumber(node.position?.y, `Unlock tree node "${id}" position.y`, errors);
+    requireString(node.identity?.hiddenLabel, `Unlock tree node "${id}" is missing identity.hiddenLabel`, errors);
+    requireString(node.identity?.revealedLabel, `Unlock tree node "${id}" is missing identity.revealedLabel`, errors);
+    requireString(node.description, `Unlock tree node "${id}" is missing description`, errors);
+    validateCondition(node.revealWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" revealWhen`, errors);
+    validateCondition(node.unlockWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" unlockWhen`, errors);
+    validateCost(node.cost || {}, itemIds, `Unlock tree node "${id}" cost`, errors);
+    validateRefs(node.unlocks?.buildings || [], buildingIds, `Unlock tree node "${id}" unlocked buildings`, errors);
+    for (const [type, amount] of Object.entries(node.unlocks?.managerSlots || {})) {
+      if (!buildingIds.has(type)) errors.push(`Unlock tree node "${id}" unlocks Manager slots for unknown building "${type}"`);
+      validatePositiveNumber(amount, `Unlock tree node "${id}" Manager slot amount for "${type}"`, errors);
+    }
+  }
 }
 
 function validateItems(items, errors) {
@@ -161,6 +185,9 @@ function validateReachability(content, buildingIds, warnings) {
   const techUnlockedBuildings = new Set();
   for (const tech of Object.values(content.techs || {})) {
     for (const type of tech.unlocks?.buildings || []) techUnlockedBuildings.add(type);
+  }
+  for (const node of Object.values(content.unlockTree || {})) {
+    for (const type of node.unlocks?.buildings || []) techUnlockedBuildings.add(type);
   }
   for (const type of buildingIds) {
     if (!startBuildings.has(type) && !techUnlockedBuildings.has(type)) {

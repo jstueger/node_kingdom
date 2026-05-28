@@ -8,6 +8,7 @@ const files = {
   goals: 'content/goals.json',
   addons: 'content/addons.json',
   managers: 'content/managers.json',
+  unlockTree: 'content/unlock-tree.json',
   startState: 'content/start-state.json'
 };
 

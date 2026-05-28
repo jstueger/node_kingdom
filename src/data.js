@@ -13,6 +13,7 @@ export let CONTENT = {
   goals: {},
   addons: {},
   managers: { slots: {}, costs: {} },
+  unlockTree: {},
   startState: { unlockedBuildings: {} }
 };
 
@@ -24,6 +25,7 @@ export function setGameContent(content) {
     goals: content.goals,
     addons: content.addons,
     managers: content.managers,
+    unlockTree: content.unlockTree,
     startState: content.startState
   };
   COLS = content.startState.grid.cols;

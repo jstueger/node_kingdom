@@ -1,5 +1,5 @@
 import { COLS, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, occupyStartingBuildings } from './progression-data.js';
+import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, createUnlockTree, occupyStartingBuildings } from './progression-data.js';
 
 export function createGrid(cols, rows) {
   return Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -46,7 +46,7 @@ export function createState() {
     addons: createAddons(),
     managerSlots: createManagerSlots(),
     unlockedBuildings: createUnlockedBuildings(),
-    unlockTree: {},
+    unlockTree: createUnlockTree(),
     world: { cols: COLS, rows: ROWS },
     camera: {
       zoom: 1,

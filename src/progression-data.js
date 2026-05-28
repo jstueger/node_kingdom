@@ -12,6 +12,10 @@ export function createAddons() {
   return cloneCollection(CONTENT.addons, 'bought', false);
 }
 
+export function createUnlockTree() {
+  return cloneCollection(CONTENT.unlockTree, 'bought', false);
+}
+
 export function createUnlockedBuildings() {
   return { ...(CONTENT.startState.unlockedBuildings || {}) };
 }

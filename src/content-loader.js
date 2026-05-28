@@ -8,6 +8,7 @@ const CONTENT_FILES = {
   goals: 'goals.json',
   addons: 'addons.json',
   managers: 'managers.json',
+  unlockTree: 'unlock-tree.json',
   startState: 'start-state.json'
 };
 
@@ -40,6 +41,7 @@ export function normalizeContent(raw) {
     goals: normalizeProgression(raw.goals, 'claimed', false),
     addons: normalizeProgression(raw.addons, 'bought', false),
     managers: structuredClone(raw.managers),
+    unlockTree: normalizeProgression(raw.unlockTree, 'bought', false),
     startState: structuredClone(raw.startState)
   };
 }

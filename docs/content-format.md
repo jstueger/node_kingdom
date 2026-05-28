@@ -29,6 +29,7 @@ Authoring fields are meant to be readable and stable for editing:
 - Goals use `description`, `visibleWhen`, `completeWhen`, and `reward`.
 - Addons use `description`, `visibleWhen`, `cost`, and `effects`.
 - Managers use `slots` and `costs`.
+- Unlock tree nodes use `kind`, `building`, `parent` or `parents`, `position`, `identity`, `description`, `revealWhen`, `unlockWhen`, `cost`, and `unlocks`.
 - Start state uses `grid`, `startingGold`, optional `hint`, `unlockedBuildings`, and optional starting `buildings`.
 
 Example recipe output:

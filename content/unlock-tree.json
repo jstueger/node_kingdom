@@ -1,0 +1,61 @@
+{
+  "sawmill_unlock": {
+    "kind": "buildingUnlock",
+    "building": "sawmill",
+    "position": { "x": 0, "y": 0 },
+    "identity": {
+      "hiddenLabel": "Sawmill",
+      "revealedLabel": "Sawmill"
+    },
+    "description": "Turns Wood into Planks.",
+    "revealWhen": {},
+    "unlockWhen": {},
+    "cost": {},
+    "unlocks": { "buildings": ["sawmill"] }
+  },
+  "lumber_unlock": {
+    "kind": "buildingUnlock",
+    "building": "lumber",
+    "parent": "sawmill_unlock",
+    "position": { "x": 0, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Wood Source",
+      "revealedLabel": "Lumber Camp"
+    },
+    "description": "Feeds the Sawmill with Wood.",
+    "revealWhen": { "lifetimeProduced": { "plank": 1 } },
+    "unlockWhen": { "lifetimeProduced": { "plank": 1 } },
+    "cost": { "gold": 50 },
+    "unlocks": { "buildings": ["lumber"] }
+  },
+  "market_unlock": {
+    "kind": "buildingUnlock",
+    "building": "market",
+    "parent": "sawmill_unlock",
+    "position": { "x": 1, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Trade",
+      "revealedLabel": "Market"
+    },
+    "description": "Sells stocked goods for money.",
+    "revealWhen": { "lifetimeProduced": { "plank": 2 } },
+    "unlockWhen": { "lifetimeProduced": { "plank": 2 } },
+    "cost": {},
+    "unlocks": { "buildings": ["market"] }
+  },
+  "mine_unlock": {
+    "kind": "buildingUnlock",
+    "building": "iron_mine",
+    "parent": "market_unlock",
+    "position": { "x": 2, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Unknown Metal Source",
+      "revealedLabel": "Mine"
+    },
+    "description": "Unlocks Iron Mines for the first ore chain.",
+    "revealWhen": { "lifetimeEarned": { "gold": 30 } },
+    "unlockWhen": { "lifetimeEarned": { "gold": 60 } },
+    "cost": { "gold": 80 },
+    "unlocks": { "buildings": ["iron_mine"] }
+  }
+}

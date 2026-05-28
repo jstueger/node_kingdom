@@ -407,7 +407,7 @@ Implemented notes:
 
 Goal: separate building unlock map data from generic tech data.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -420,6 +420,13 @@ Exit criteria:
 
 - Current opening building unlocks can be represented in data without changing player-visible behavior.
 - Content validation checks unlock-tree references.
+
+Implemented notes:
+
+- Added `content/unlock-tree.json` with Sawmill, Lumber Camp, Market, and Mine unlock nodes.
+- Content loading now includes the unlock tree.
+- Content validation checks unlock-node building refs, parent refs, position, identity labels, conditions, costs, and unlock effects.
+- Runtime state and save/load now carry unlock-tree progress, but no rendering or purchasing behavior has been switched over yet.
 
 ## Phase 15: Unlock Tree Renderer
 

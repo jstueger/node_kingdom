@@ -297,11 +297,12 @@ Current content files:
 - `goals.json`: early milestone goals and rewards.
 - `addons.json`: node-type addon definitions and effects.
 - `managers.json`: Manager slot defaults and Manager purchase costs.
+- `unlock-tree.json`: future building-unlock map content, currently loaded and validated but not yet used for rendering.
 - `start-state.json`: starting grid size, starting money, start hint, initially unlocked buildings, and pre-placed starting buildings.
 
 Authoring fields use stable content names such as `description`, `size`, and recipe output `resource`. The content loader normalizes those fields into the current runtime shape before state creation.
 
-Content validation runs before the game starts. It checks building, recipe, tech, goal, addon, manager, and start-state references so content edits fail clearly instead of silently breaking the prototype.
+Content validation runs before the game starts. It checks building, recipe, tech, goal, addon, manager, unlock-tree, and start-state references so content edits fail clearly instead of silently breaking the prototype.
 
 ## Tech Tree
 

@@ -1,5 +1,5 @@
 import { BUILDINGS, COLS, CONTENT, ROWS, STARTING_GOLD } from './data.js';
-import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, occupyStartingBuildings } from './progression-data.js';
+import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, createUnlockTree, occupyStartingBuildings } from './progression-data.js';
 import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
@@ -19,6 +19,7 @@ export function saveGame({ state, toast }) {
     goals: state.goals,
     addons: state.addons,
     managerSlots: state.managerSlots,
+    unlockTree: state.unlockTree,
     unlockedBuildings: state.unlockedBuildings,
     uiUnlocks: {
       revealedBuildingsButton: state.interaction.revealedBuildingsButton,
@@ -64,6 +65,10 @@ export function loadGame(context) {
     if (state.addons[key]) state.addons[key].bought = Boolean(saved.bought);
   }
   state.managerSlots = { ...createManagerSlots(), ...(payload.managerSlots || {}) };
+  state.unlockTree = createUnlockTree();
+  for (const [key, saved] of Object.entries(payload.unlockTree || {})) {
+    if (state.unlockTree[key]) state.unlockTree[key].bought = Boolean(saved.bought);
+  }
   state.unlockedBuildings = { ...createUnlockedBuildings(), ...(payload.unlockedBuildings || {}) };
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
   state.world.rows = Math.max(payload.worldRows || ROWS, ROWS);
@@ -135,7 +140,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.addons = createAddons();
   state.managerSlots = createManagerSlots();
   state.unlockedBuildings = createUnlockedBuildings();
-  state.unlockTree = {};
+  state.unlockTree = createUnlockTree();
   state.buildings = starting.buildings;
   state.world.cols = COLS;
   state.world.rows = ROWS;
