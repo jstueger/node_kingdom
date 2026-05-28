@@ -6,13 +6,13 @@ For exact implemented behavior, use `prototype-functionality.md`. For broader de
 
 ## Current Alignment
 
-The prototype already includes parts of the earlier progression direction:
+The prototype has completed the current opening-progression foundation through Phase 12:
 
 - Manual node work instead of automatic production.
 - Lifetime stats for production, sales, and money earned.
-- Building unlocks through tech.
+- Building unlocks through the current tech-tree presentation.
 - Money-only opening tech costs, with resource costs still supported by the content model.
-- Hidden locked buildings in the progression-gated Buildings window.
+- Hidden locked buildings in the progression-gated Buildings frame.
 - A first Knowledge resource, School building, and Science heading.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
@@ -26,7 +26,7 @@ The prototype already includes parts of the earlier progression direction:
 - Node addons can improve existing production lines through work-time reduction, faster manager progress, input efficiency, extra output, storage, or sale value.
 - Content is authored in JSON and validated before runtime state is created.
 
-This means the earlier broad phases 1 to 3 are partially implemented, but not in the clean incremental order we want going forward. The plan below resets the roadmap from the current codebase state.
+The next roadmap step is to make the tech tree capable of representing the larger unlock-map design without losing the stable opening flow.
 
 ## Phase 1: Stabilize Current Progression
 
@@ -59,7 +59,7 @@ Scope:
 - Separate Technology and Science visually.
 - Show unavailable-but-discovered prerequisites where useful.
 - Add clearer purchased, affordable, and unaffordable states.
-- Preserve the current toggleable tech window.
+- Improve the current tech view without changing the simulation model.
 - Avoid adding node addon menus in this phase.
 
 Exit criteria:
@@ -76,7 +76,7 @@ Scope:
 
 - Add simple milestone goals tied to the current progression chain.
 - Surface goals in a compact UI area.
-- Reward completion with small amounts of gold, resources, or tech visibility.
+- Reward completion with small amounts of money, resources, or tech visibility.
 - Keep goals deterministic and local to the existing economy.
 
 Exit criteria:
@@ -245,7 +245,7 @@ Scope:
 Exit criteria:
 
 - A new player sees transformation before raw gathering.
-- The first complete chain is Wood to Plank to Gold.
+- The first complete chain is Wood to Plank to money.
 - Automation and Mining remain near-term aspirations after the first sale loop.
 
 ## Phase 8: Progressive Interface Frames
@@ -270,6 +270,10 @@ Exit criteria:
 - The Buildings button appears as a reward for producing the first Plank.
 - The Tech button appears only after the player has demonstrated the basic Wood to Plank supply loop.
 - Existing building placement and tech-tree behavior still work inside their new frames.
+
+Implemented notes:
+
+- Main, Buildings, and Tech Tree are now exclusive top-level frames; only one is visible at a time.
 
 ## Phase 9: Opening Tech Tree Rewrite
 
@@ -296,6 +300,8 @@ Exit criteria:
 
 Goal: simplify early purchasing so the first progression layer is about production flow, not mixed-cost accounting.
 
+Status: complete.
+
 Scope:
 
 - Convert early building costs to money-only.
@@ -321,6 +327,8 @@ Implemented notes:
 
 Goal: move building-specific upgrade decisions into the tech tree so progression has one coherent home.
 
+Status: complete.
+
 Scope:
 
 - Give each building tech-tree entry a focused sub-view.
@@ -345,6 +353,8 @@ Implemented notes:
 
 Goal: tune the full revised opening after the interface, tech, economy, and upgrade structure changes are in place.
 
+Status: complete.
+
 Scope:
 
 - Playtest the first 5 minutes against the target sequence: Sawmill, first Plank, Buildings reveal, Lumber Camp, second Plank, Tech reveal, Market activation, Market purchase, first sale, Mine reveal.
@@ -365,21 +375,182 @@ Implemented notes:
 - Early goals now script the opening spine from first Plank through Lumber Camp, second Plank, Market Access, first sale, and steady trade.
 - First sale happens at 3S earned; the 6S steady-trade threshold remains the reveal pressure for Mining and Sawmill Methods.
 
+## Phase 13: Unlock Tree State Model
+
+Goal: define explicit unlock-node states before changing the tech tree UI heavily.
+
+Status: planned.
+
+Scope:
+
+- Add helper functions for unlock-node state:
+  - `hiddenIdentity`
+  - `revealedLocked`
+  - `unlockable`
+  - `unlocked`
+- Keep the current tech tree UI unchanged.
+- Add focused smoke checks for state transitions.
+
+Exit criteria:
+
+- The game can ask what state an unlock node is in without relying on render logic.
+- Existing opening behavior is unchanged.
+
+## Phase 14: Unlock Tree Content
+
+Goal: separate building unlock map data from generic tech data.
+
+Status: planned.
+
+Scope:
+
+- Add `content/unlock-tree.json`.
+- Define unlock nodes with ids, building refs, parent refs, positions, hidden/revealed labels, reveal rules, costs, and unlock effects.
+- Represent the current opening chain first: Lumber Camp, Sawmill, Market, and Mine.
+- Keep existing `techs.json` compatibility during the migration.
+
+Exit criteria:
+
+- Current opening building unlocks can be represented in data without changing player-visible behavior.
+- Content validation checks unlock-tree references.
+
+## Phase 15: Unlock Tree Renderer
+
+Goal: render the main building tree from `unlock-tree.json`.
+
+Status: planned.
+
+Scope:
+
+- Replace the hardcoded opening building-chain renderer with content-driven unlock nodes.
+- Render hidden identity, revealed locked, unlockable, and unlocked states.
+- Keep the current compact card layout initially.
+- Preserve Market free activation and Mine reveal behavior.
+
+Exit criteria:
+
+- The opening tree looks roughly the same but is content-driven.
+
+## Phase 16: Unlock Purchasing
+
+Goal: make building unlock nodes the source of truth for building availability.
+
+Status: planned.
+
+Scope:
+
+- Buying an unlock-tree node applies building unlocks.
+- Remove duplicated building-unlock behavior from generic techs.
+- Keep global upgrades such as Storage Bins, Workshop Tuning, and Market Bargaining in `techs.json`.
+- Keep saves loading safely through the migration.
+
+Exit criteria:
+
+- Building availability comes from unlock-tree nodes rather than generic tech cards.
+
+## Phase 17: Node Detail View Routing
+
+Goal: make unlocked tree nodes open focused building detail screens.
+
+Status: planned.
+
+Scope:
+
+- Add tech-tree navigation state for unlock map versus building detail.
+- Clicking an unlocked building node opens its detail view.
+- Detail view shows current node-type upgrades.
+- Add a Back control to return to the unlock map.
+- Do not change upgrade effects yet.
+
+Exit criteria:
+
+- The main tree answers what can be unlocked next.
+- The detail view answers how to improve a known building type.
+
+## Phase 18: Upgrade Track Shape
+
+Goal: turn addon lists into structured building upgrade tracks.
+
+Status: planned.
+
+Scope:
+
+- Add track metadata for manager, speed, quality, recipes, storage, efficiency, and sale value.
+- Display current addons inside those groups.
+- Implement Speed using existing `actionTicks` effects first.
+- Keep Quality as a placeholder or omit it until demand/contracts give it purpose.
+
+Exit criteria:
+
+- Sawmill, Lumber Camp, Market, and Mine detail screens read as coherent upgrade branches rather than loose cards.
+
+## Phase 19: Main Tree Layout
+
+Goal: move the main unlock tree toward the diagrammed production map.
+
+Status: planned.
+
+Scope:
+
+- Use unlock-node position data.
+- Draw connector lines between parent and child nodes.
+- Show hidden identity labels for future branches.
+- Add optional branch language such as Wood, Trade, Metal, Leather, and Military where useful.
+
+Exit criteria:
+
+- The main tech tree visually communicates production domains and long-term direction.
+
+## Phase 20: Content Expansion Pass
+
+Goal: add the next production domains safely.
+
+Status: planned.
+
+Scope:
+
+- Add the Carpenter branch.
+- Add Hunters to Leather Worker to Tailor.
+- Add Forge to Blacksmith to Barracks to Outfitter.
+- Add placeholder unlocks where mechanics are not ready.
+- Avoid implementing Quality or contracts in this phase.
+
+Exit criteria:
+
+- The tree shows the future kingdom shape without requiring all future mechanics to exist.
+
+## Phase 21: Quality And Demand Prep
+
+Goal: introduce Quality only once it has a clear gameplay purpose.
+
+Status: planned.
+
+Scope:
+
+- Decide whether Quality affects sale value, contracts, premium outputs, recipe tiers, or another demand system.
+- Prefer tying Quality to contracts or external demand.
+- Add validation for quality effects once the mechanic is defined.
+- Add UI only after the loop exists.
+
+Exit criteria:
+
+- Quality is a real gameplay axis rather than decorative progress.
+
 ## Future Outlook: Contracts And Reputation
 
-Goal: add external demand and a longer-term progression pressure after the opening flow is stronger.
+Goal: add external demand and a longer-term progression pressure after the unlock tree and opening flow are stronger.
 
 Possible scope:
 
 - Add simple contracts that request delivered goods.
 - Add Reputation or Prestige as a later reward currency if it proves useful.
-- Use contracts to unlock advanced trade, science, or manager options.
+- Use contracts to unlock advanced trade, science, quality, or manager options.
 - Keep contracts separate from direct Market selling.
 
 Possible exit criteria:
 
-- The player can choose between selling goods for gold and fulfilling a contract for a different reward.
+- The player can choose between selling goods for money and fulfilling a contract for a different reward.
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 9: Opening Tech Tree Rewrite.
+The next phase to implement is Phase 13: Unlock Tree State Model.
