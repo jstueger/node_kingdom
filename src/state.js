@@ -46,6 +46,7 @@ export function createState() {
     addons: createAddons(),
     managerSlots: createManagerSlots(),
     unlockedBuildings: createUnlockedBuildings(),
+    unlockTree: {},
     world: { cols: COLS, rows: ROWS },
     camera: {
       zoom: 1,

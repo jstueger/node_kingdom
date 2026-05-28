@@ -135,6 +135,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.addons = createAddons();
   state.managerSlots = createManagerSlots();
   state.unlockedBuildings = createUnlockedBuildings();
+  state.unlockTree = {};
   state.buildings = starting.buildings;
   state.world.cols = COLS;
   state.world.rows = ROWS;

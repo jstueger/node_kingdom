@@ -379,7 +379,7 @@ Implemented notes:
 
 Goal: define explicit unlock-node states before changing the tech tree UI heavily.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -395,6 +395,13 @@ Exit criteria:
 
 - The game can ask what state an unlock node is in without relying on render logic.
 - Existing opening behavior is unchanged.
+
+Implemented notes:
+
+- Added `src/unlock-tree.js` with explicit unlock-node state helpers.
+- Unlock nodes can now evaluate hidden identity, revealed locked, unlockable, and unlocked states.
+- Added `npm run check:unlock-tree` as a focused smoke check for state transitions.
+- No player-visible tech tree behavior changed in this phase.
 
 ## Phase 14: Unlock Tree Content
 

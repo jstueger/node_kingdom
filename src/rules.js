@@ -228,7 +228,7 @@ function addonSaleMultiplier(addons, type) {
   return activeAddonsFor(addons, type).reduce((total, addon) => total + (addon.effects?.saleMultiplier || 0), 0);
 }
 
-function isConditionMet(state, condition) {
+export function isConditionMet(state, condition) {
   for (const key of condition.techs || []) {
     if (!state.techs[key]?.bought) return false;
   }
@@ -240,6 +240,9 @@ function isConditionMet(state, condition) {
   }
   for (const [resource, amount] of Object.entries(condition.lifetimeEarned || {})) {
     if ((state.stats.lifetimeEarned[resource] || 0) < amount) return false;
+  }
+  for (const [resource, amount] of Object.entries(condition.lifetimeSold || {})) {
+    if ((state.stats.lifetimeSold[resource] || 0) < amount) return false;
   }
   return true;
 }
