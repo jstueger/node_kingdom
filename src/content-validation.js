@@ -14,7 +14,7 @@ export function validateContent(content) {
   validateItems(content.items || {}, errors);
   validateBuildings(content.buildings || {}, itemIds, errors);
   validateTechs(content.techs || {}, itemIds, buildingIds, errors, warnings);
-  validateGoals(content.goals || {}, itemIds, techIds, errors);
+  validateGoals(content.goals || {}, itemIds, techIds, buildingIds, errors);
   validateAddons(content.addons || {}, itemIds, buildingIds, techIds, errors);
   validateManagers(content.managers || {}, itemIds, buildingIds, errors);
   validateUnlockTree(content.unlockTree || {}, itemIds, buildingIds, techIds, unlockTreeIds, errors);
@@ -108,12 +108,12 @@ function validateTechs(techs, itemIds, buildingIds, errors, warnings) {
   }
 }
 
-function validateGoals(goals, itemIds, techIds, errors) {
+function validateGoals(goals, itemIds, techIds, buildingIds, errors) {
   for (const [id, goal] of Object.entries(goals)) {
     requireString(goal.label, `Goal "${id}" is missing label`, errors);
     requireString(goal.description, `Goal "${id}" is missing description`, errors);
-    validateCondition(goal.visibleWhen || {}, itemIds, techIds, new Set(), `Goal "${id}" visibleWhen`, errors);
-    validateCondition(goal.completeWhen || {}, itemIds, techIds, new Set(), `Goal "${id}" completeWhen`, errors);
+    validateCondition(goal.visibleWhen || {}, itemIds, techIds, buildingIds, `Goal "${id}" visibleWhen`, errors);
+    validateCondition(goal.completeWhen || {}, itemIds, techIds, buildingIds, `Goal "${id}" completeWhen`, errors);
     validateCost(goal.reward || {}, itemIds, `Goal "${id}" reward`, errors);
   }
 }

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { initializeContent } from '../src/content-loader.js';
+import { applyUnlockNodeUnlocks, spendCost } from '../src/rules.js';
 import { createState } from '../src/state.js';
 import { UNLOCK_NODE_STATES, unlockNodeState } from '../src/unlock-tree.js';
 
@@ -68,5 +69,10 @@ const startingParentState = createState();
 startingParentState.stats.lifetimeProduced.plank = 2;
 const marketNode = { ...startingParentState.unlockTree.market_unlock, id: 'market_unlock' };
 assertState(unlockNodeState(startingParentState, marketNode), UNLOCK_NODE_STATES.UNLOCKABLE, 'building-backed starting parent node');
+
+if (!spendCost(startingParentState, marketNode.cost)) throw new Error('free unlock node cost should be spendable');
+startingParentState.unlockTree.market_unlock.bought = true;
+applyUnlockNodeUnlocks(startingParentState, marketNode);
+if (!startingParentState.unlockedBuildings.market) throw new Error('unlock node should apply building unlocks');
 
 console.log('unlock tree state checks ok');

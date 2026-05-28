@@ -1,6 +1,6 @@
 import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
 import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, formatMoney, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
-import { UNLOCK_NODE_STATES, unlockNodeState } from './unlock-tree.js';
+import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES, unlockNodeState } from './unlock-tree.js';
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
@@ -237,21 +237,22 @@ function addonSubviewHtml(state, type, options = {}) {
     </div>`;
 }
 
-function unlockNodeStatus(state, node, legacyTech) {
+function unlockNodeStatus(state, node) {
   const nodeState = unlockNodeState(state, node);
-  if (nodeState === UNLOCK_NODE_STATES.UNLOCKED) return { key: 'bought', label: 'Unlocked' };
-  if (nodeState === UNLOCK_NODE_STATES.HIDDEN_IDENTITY) return { key: 'mystery', label: 'Hidden' };
-  if (nodeState === UNLOCK_NODE_STATES.UNLOCKABLE) return { key: legacyTech ? techStatus(state, legacyTech).key : 'available', label: 'Available' };
-  return { key: 'locked', label: 'Locked' };
-}
-
-function buildingUnlockTechKey(state, type) {
-  return Object.entries(state.techs).find(([, tech]) => tech.unlocks?.buildings?.includes(type))?.[0];
+  if (nodeState === UNLOCK_NODE_STATES.UNLOCKED) return { key: 'bought', label: 'Unlocked', button: 'Unlocked', disabled: true };
+  if (nodeState === UNLOCK_NODE_STATES.HIDDEN_IDENTITY) return { key: 'mystery', label: 'Hidden', button: 'Hidden', disabled: true };
+  if (nodeState === UNLOCK_NODE_STATES.UNLOCKABLE) return { key: 'available', label: 'Available', button: Object.keys(node.cost || {}).length ? 'Buy' : 'Activate', disabled: false };
+  if (areUnlockNodeConditionsMet(state, node) && !isUnlockNodeAffordable(state, node)) return { key: 'unaffordable', label: 'Need money', button: 'Need money', disabled: true };
+  return { key: 'locked', label: 'Locked', button: 'Locked', disabled: true };
 }
 
 function unlockNodeCostHtml(node) {
   if (!Object.keys(node.cost || {}).length) return '<div><span>Cost</span><b>Free</b></div>';
   return `<div><span>Cost</span><b>${Object.entries(node.cost).map(([resource, amount]) => amountLabel(resource, amount)).join(', ')}</b></div>`;
+}
+
+function unlockActionHtml(key, status) {
+  return `<button class="unlock-buy" data-unlock="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
 }
 
 function unlockTreeEdgesHtml(nodes, minX, minY, cols, rows) {
@@ -284,14 +285,12 @@ function buildingTechHtml(state) {
   const rows = maxY - minY + 1;
   const cards = nodes.map(node => {
     const definition = BUILDINGS[node.building];
-    const legacyTechKey = buildingUnlockTechKey(state, node.building);
-    const legacyTech = legacyTechKey ? state.techs[legacyTechKey] : null;
-    const status = unlockNodeStatus(state, node, legacyTech);
+    const status = unlockNodeStatus(state, node);
     const isMystery = status.key === 'mystery';
     const title = isMystery ? node.identity.hiddenLabel : node.identity.revealedLabel;
     const icon = isMystery ? '?' : definition?.icon;
     const desc = isMystery ? 'Reveal this branch through kingdom progress.' : node.description;
-    const action = legacyTech && !isMystery && !isBuildingUnlocked(state, node.building) ? techActionHtml(legacyTechKey, techStatus(state, legacyTech)) : '';
+    const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
     const upgrades = !isMystery && isBuildingUnlocked(state, node.building) ? addonSubviewHtml(state, node.building) : '';
     const left = (node.position.x - minX) * 190;
     const top = (node.position.y - minY) * 280;
@@ -594,11 +593,7 @@ export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
   cards.innerHTML = lifetimeSummaryHtml(state) + buildingTechHtml(state);
-  const unlockTreeBuildings = new Set(Object.values(state.unlockTree).flatMap(node => node.unlocks?.buildings || []));
-  const buildingChainTechs = new Set(Object.entries(state.techs)
-    .filter(([, tech]) => tech.unlocks?.buildings?.some(type => unlockTreeBuildings.has(type)))
-    .map(([key]) => key));
-  const visibleTechs = Object.entries(state.techs).filter(([key, tech]) => !buildingChainTechs.has(key) && isTechDiscovered(state, tech));
+  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
   for (const tree of ['technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
     if (!entries.length) continue;
@@ -621,6 +616,9 @@ export function renderTechTree(context) {
   cards.insertAdjacentHTML('beforeend', advancedBuildingUpgradesHtml(state));
   cards.querySelectorAll('.tech-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyTech(button.dataset.tech));
+  });
+  cards.querySelectorAll('.unlock-buy').forEach(button => {
+    button.addEventListener('click', () => actions.buyUnlock(button.dataset.unlock));
   });
   cards.querySelectorAll('.addon-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));

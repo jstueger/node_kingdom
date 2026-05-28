@@ -255,7 +255,7 @@ Goals are not contracts. They do not require delivery, consume resources, or cre
 Current goals:
 
 - First Plank: produce 1 lifetime Plank, rewards 3S.
-- Open Trade: appears after 2 lifetime Planks produced; activate free Market Access, rewards 5S.
+- Open Trade: appears after 2 lifetime Planks produced; activate the free Market unlock, rewards 5S.
 - Place A Lumber Camp: produce 1 lifetime Wood with a Lumber Camp, rewards 3S.
 - Feed The Sawmill: produce 2 lifetime Planks by connecting Lumber Camp to Sawmill, rewards 3S.
 - First Sale: earn 3S from Markets, rewards 5S.
@@ -263,7 +263,7 @@ Current goals:
 - Strike Ore: produce 6 lifetime Iron Ore, rewards 5S.
 - Plank Supply: produce 3 lifetime Planks, rewards 6S.
 - First Bars: produce 2 lifetime Iron Bars, rewards 8S.
-- First Outpost: appears after Mining and Sawmill Methods are researched; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50S earned; rewards 20S.
+- First Outpost: appears after Sawmill Methods are researched and Iron Mines are unlocked; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50S earned; rewards 20S.
 - Armed Trade: produce 1 lifetime Sword, rewards 10S.
 - Written Records: produce 5 lifetime Knowledge, rewards 10S.
 
@@ -277,13 +277,13 @@ The current progression model is deliberately simple and bootstrap-focused:
 - The first manual action creates a Plank before the player builds the supply chain.
 - Markets convert stocked trade goods into money.
 - Lifetime thresholds reveal interface frames and techs; current opening purchases are paid with money.
-- Technology techs unlock early buildings, grid space, storage, crafting methods, and trade improvements.
+- The Building Tree unlocks early production buildings, while Technology techs unlock grid space, storage, crafting methods, later buildings, and trade improvements.
 - Science techs use Knowledge milestones and unlock later systems such as Manager slots.
 - Manager slots allow specific placed nodes to hire Managers.
 - Managers automate work after their node type has an unlocked Manager slot.
 - Addons improve node types through storage, work speed, manager pace, input efficiency, output bonuses, or sale value.
 
-The intended early loop is: start the Sawmill, produce the first Plank, place a Lumber Camp, connect Lumber Camp to Sawmill, produce the second Plank, activate Market Access for free, place a Market, connect goods to it, then sell the first stocked item for money.
+The intended early loop is: start the Sawmill, produce the first Plank, place a Lumber Camp, connect Lumber Camp to Sawmill, produce the second Plank, activate the free Market unlock, place a Market, connect goods to it, then sell the first stocked item for money.
 
 ## Content Model
 
@@ -330,26 +330,24 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
-The opening tech tree includes a Building Chain section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. Market is activated for free from this chain. After the first Market sale, the hidden branch is revealed as Mining.
+The opening tech tree includes a Building Tree section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
 
 Building entries can include permanent upgrade subviews. These subviews show bought, locked, affordable, and unaffordable node-type upgrades next to the building they improve. Later unlocked buildings that are not part of the opening chain appear in a separate Building Upgrades section when they have available upgrade content.
 
 Current techs:
 
-- Market Access: appears after 1 lifetime Plank produced, is free, and unlocks Lumber Camp and Market buildings.
-- Mining: requires Market Access, appears after 6S earned, costs 8S, and unlocks Iron Mine buildings.
-- Sawmill Methods: requires Market Access, appears after 6S earned and 2 lifetime Planks produced, costs 6S, and unlocks Sawmill-focused upgrades.
-- Smelting: requires Mining, appears after 6 lifetime Iron Ore produced, costs 12S, and unlocks Forge buildings.
+- Sawmill Methods: appears after 6S earned and 2 lifetime Planks produced, costs 6S, and unlocks Sawmill-focused upgrades.
+- Smelting: appears once Iron Mines are unlocked and 6 lifetime Iron Ore has been produced, costs 12S, and unlocks Forge buildings.
 - Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 14S, and unlocks Coal Mine buildings.
 - Blacksmithing: requires Sawmill Methods and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 22S, and unlocks Blacksmith buildings.
 - Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60S earned, costs 35S, and unlocks School buildings.
 - Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 10S, and makes Market sale timers 2 seconds shorter.
-- Lumber Management: requires Market Access, appears after 20 lifetime Wood produced and 15S earned, costs 20S, and unlocks one Lumber Camp Manager slot.
+- Lumber Management: appears after 20 lifetime Wood produced and 15S earned, costs 20S, and unlocks one Lumber Camp Manager slot.
 - Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80S earned, costs 35S, and unlocks one Market Manager slot.
-- Grid Expansion: requires Market Access, appears after 25S earned, costs 50S, and adds 16 columns and 8 rows to the playable grid.
-- Storage Bins: requires Market Access, appears after 12 lifetime Wood produced, costs 12S, and adds 5 storage capacity to every resource slot.
+- Grid Expansion: appears after 25S earned, costs 50S, and adds 16 columns and 8 rows to the playable grid.
+- Storage Bins: appears after 12 lifetime Wood produced, costs 12S, and adds 5 storage capacity to every resource slot.
 - Workshop Tuning: requires Sawmill Methods, appears once Sawmills are unlocked, costs 35S, and makes crafter action timers 2 seconds shorter.
-- Market Bargaining: requires Market Access and Sawmill Methods, appears after 40S earned, costs 35S, and increases Market sale prices by 25%, rounded down.
+- Market Bargaining: requires Sawmill Methods, appears after 40S earned and Market unlock, costs 35S, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 

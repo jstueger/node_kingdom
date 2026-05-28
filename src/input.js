@@ -1,6 +1,7 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, buyManager as purchaseManager, canPayCost, formatCost, formatMoney, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyGoalReward, applyTechUnlocks, applyUnlockNodeUnlocks, buyManager as purchaseManager, canPayCost, formatCost, formatMoney, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
+import { isUnlockNodeUnlocked, isUnlockNodeUnlockable } from './unlock-tree.js';
 
 export function setupInput(context) {
   const { state, ui, geometry } = context;
@@ -220,6 +221,25 @@ export function setupInput(context) {
     context.setHint(`${tech.label} purchased`);
     context.renderAll();
     context.toast('Tech purchased');
+  }
+
+  function buyUnlock(key) {
+    const node = state.unlockTree[key];
+    const nodeWithId = node ? { ...node, id: key } : null;
+    if (!nodeWithId || isUnlockNodeUnlocked(state, nodeWithId)) return;
+    if (!isUnlockNodeUnlockable(state, nodeWithId)) {
+      context.toast('Unlock unavailable');
+      return;
+    }
+    if (!spendCost(state, node.cost)) {
+      context.toast('Not enough resources');
+      return;
+    }
+    node.bought = true;
+    applyUnlockNodeUnlocks(state, node);
+    context.setHint(`${node.identity?.revealedLabel || 'Building'} unlocked`);
+    context.renderAll();
+    context.toast('Building unlocked');
   }
 
   function claimGoal(key) {
@@ -497,5 +517,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyAddon, buyManager, claimGoal, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyUnlock, buyAddon, buyManager, claimGoal, selectBuildingType, toast: context.toast };
 }

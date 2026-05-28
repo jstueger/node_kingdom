@@ -26,9 +26,7 @@ export function isBuildingUnlocked(state, type) {
 }
 
 export function isBuildingMenuAvailable(state, type) {
-  if (isBuildingUnlocked(state, type)) return true;
-  if ((state.stats.lifetimeProduced.plank || 0) < 1) return false;
-  return type === 'lumber' || type === 'sawmill';
+  return isBuildingUnlocked(state, type);
 }
 
 export function actionTicksFor(building, techs, addons = {}) {
@@ -143,6 +141,13 @@ export function spendCost(state, cost = {}) {
 export function applyTechUnlocks(state, tech) {
   for (const type of tech.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
   for (const [type, amount] of Object.entries(tech.unlocks?.managerSlots || {})) {
+    state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
+  }
+}
+
+export function applyUnlockNodeUnlocks(state, node) {
+  for (const type of node.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
+  for (const [type, amount] of Object.entries(node.unlocks?.managerSlots || {})) {
     state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
   }
 }

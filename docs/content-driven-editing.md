@@ -149,21 +149,18 @@ A tech definition could look like this:
 
 ```json
 {
-  "market_access": {
+  "storage_bins": {
     "tree": "technology",
-    "label": "Market Access",
-    "description": "Unlocks Markets so stocked goods can be sold for gold.",
+    "label": "Storage Bins",
+    "description": "Adds storage capacity to every resource slot.",
     "visibleWhen": {
       "lifetimeProduced": {
-        "wood": 5
+        "wood": 12
       }
     },
     "requires": [],
     "cost": {
-      "wood": 5
-    },
-    "unlocks": {
-      "buildings": ["market"]
+      "gold": 120
     }
   }
 }
@@ -354,16 +351,15 @@ The tech editor could show:
 ```text
 Technology / Science
 
-Market Access
-Mining
-Woodworking
+Storage Bins
+Sawmill Methods
 Smelting
 Knowledge Production
 
 Selected Tech:
-ID: market_access
+ID: storage_bins
 Visible when:
-  lifetimeProduced wood >= 5
+  lifetimeProduced wood >= 12
 Cost:
   wood 5
 Unlocks:

@@ -7,9 +7,9 @@
   },
   "first_trade": {
     "label": "Open Trade",
-    "description": "Open the Tech Tree and activate free Market Access.",
+    "description": "Open the Tech Tree and activate the Market unlock.",
     "visibleWhen": { "lifetimeProduced": { "plank": 2 } },
-    "completeWhen": { "techs": ["market_access"] },
+    "completeWhen": { "unlockedBuildings": ["market"] },
     "reward": { "gold": 50 }
   },
   "first_wood": {
@@ -29,7 +29,7 @@
   "first_sales": {
     "label": "First Sale",
     "description": "Place a Market, connect goods to it, and sell your first stocked item.",
-    "visibleWhen": { "techs": ["market_access"] },
+    "visibleWhen": { "unlockedBuildings": ["market"] },
     "completeWhen": { "lifetimeEarned": { "gold": 30 } },
     "reward": { "gold": 50 }
   },
@@ -43,14 +43,14 @@
   "first_ore": {
     "label": "Strike Ore",
     "description": "Produce 6 Iron Ore.",
-    "visibleWhen": { "techs": ["mining"] },
+    "visibleWhen": { "unlockedBuildings": ["iron_mine"] },
     "completeWhen": { "lifetimeProduced": { "iron_ore": 6 } },
     "reward": { "gold": 50 }
   },
   "first_planks": {
     "label": "Plank Supply",
     "description": "Produce 3 Planks.",
-    "visibleWhen": { "techs": ["market_access"] },
+    "visibleWhen": { "unlockedBuildings": ["market"] },
     "completeWhen": { "lifetimeProduced": { "plank": 3 } },
     "reward": { "gold": 60 }
   },
@@ -64,7 +64,7 @@
   "first_outpost": {
     "label": "First Outpost",
     "description": "Prove the kingdom can support a frontier foothold.",
-    "visibleWhen": { "techs": ["woodworking", "mining"] },
+    "visibleWhen": { "techs": ["woodworking"], "unlockedBuildings": ["iron_mine"] },
     "completeWhen": {
       "lifetimeProduced": { "wood": 30, "plank": 10, "iron_ore": 10, "iron_bar": 3 },
       "lifetimeEarned": { "gold": 500 }

@@ -1,5 +1,6 @@
 import { BUILDINGS, COLS, CONTENT, ROWS, STARTING_GOLD } from './data.js';
 import { createAddons, createGoals, createManagerSlots, createStartingBuildings, createStartingSelection, createTechs, createUnlockedBuildings, createUnlockTree, occupyStartingBuildings } from './progression-data.js';
+import { applyUnlockNodeUnlocks } from './rules.js';
 import { createGrid, createInteractionState, createStats } from './state.js';
 
 const STORAGE_KEY = 'factory-node-prototype-save';
@@ -69,6 +70,10 @@ export function loadGame(context) {
   for (const [key, saved] of Object.entries(payload.unlockTree || {})) {
     if (state.unlockTree[key]) state.unlockTree[key].bought = Boolean(saved.bought);
   }
+  const legacyUnlockTechs = { market_access: 'market_unlock', mining: 'mine_unlock' };
+  for (const [techKey, unlockKey] of Object.entries(legacyUnlockTechs)) {
+    if (payload.techs?.[techKey]?.bought && state.unlockTree[unlockKey]) state.unlockTree[unlockKey].bought = true;
+  }
   state.unlockedBuildings = { ...createUnlockedBuildings(), ...(payload.unlockedBuildings || {}) };
   state.world.cols = Math.max(payload.worldCols || COLS, COLS);
   state.world.rows = Math.max(payload.worldRows || ROWS, ROWS);
@@ -84,6 +89,9 @@ export function loadGame(context) {
         state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
       }
     }
+  }
+  for (const node of Object.values(state.unlockTree)) {
+    if (node.bought) applyUnlockNodeUnlocks(state, node);
   }
   context.applyWorldSize();
   context.drawBg();

@@ -456,7 +456,7 @@ Implemented notes:
 
 Goal: make building unlock nodes the source of truth for building availability.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -468,6 +468,14 @@ Scope:
 Exit criteria:
 
 - Building availability comes from unlock-tree nodes rather than generic tech cards.
+
+Implemented notes:
+
+- Unlock-tree nodes now have purchase buttons and apply their `unlocks` payload when activated.
+- Building menu availability now follows `state.unlockedBuildings` directly.
+- Market Access and Mining were removed from generic tech content; opening Market and Mine availability now comes from `unlock-tree.json`.
+- Goals and downstream tech prerequisites that depended on those generic techs now use unlocked-building conditions or direct milestones.
+- Save loading reapplies bought unlock-tree effects so older and current saves keep building availability consistent.
 
 ## Phase 17: Node Detail View Routing
 
