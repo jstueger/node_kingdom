@@ -2,6 +2,7 @@
   "type": "module",
   "scripts": {
     "validate:content": "node scripts/validate-content.mjs",
-    "check:unlock-tree": "node scripts/check-unlock-tree-state.mjs"
+    "check:unlock-tree": "node scripts/check-unlock-tree-state.mjs",
+    "test:hardening": "node scripts/run-hardening-tests.mjs"
   }
 }

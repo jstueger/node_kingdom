@@ -1,26 +1,9 @@
-import { readFile } from 'node:fs/promises';
-import { initializeContent } from '../src/content-loader.js';
+import { loadTestContent } from './test-helpers.mjs';
 import { applyUnlockNodeUnlocks, spendCost } from '../src/rules.js';
 import { createState } from '../src/state.js';
 import { UNLOCK_NODE_STATES, unlockNodeState } from '../src/unlock-tree.js';
 
-const files = {
-  items: 'content/items.json',
-  buildings: 'content/buildings.json',
-  techs: 'content/techs.json',
-  goals: 'content/goals.json',
-  addons: 'content/addons.json',
-  managers: 'content/managers.json',
-  unlockTree: 'content/unlock-tree.json',
-  startState: 'content/start-state.json'
-};
-
-const raw = {};
-for (const [key, path] of Object.entries(files)) {
-  raw[key] = JSON.parse(await readFile(path, 'utf8'));
-}
-
-initializeContent(raw);
+await loadTestContent();
 
 function assertState(actual, expected, label) {
   if (actual !== expected) throw new Error(`${label}: expected ${expected}, got ${actual}`);

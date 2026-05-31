@@ -42,7 +42,14 @@ export function loadGame(context) {
     toast('No save found');
     return;
   }
-  const payload = JSON.parse(raw);
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch (error) {
+    console.warn('Could not load save:', error);
+    toast('Save data is corrupted');
+    return;
+  }
   const moneyScale = payload.moneyScaleVersion === MONEY_SCALE_VERSION ? 1 : 10;
   resetWorld(context, false);
   state.nextId = payload.nextId;

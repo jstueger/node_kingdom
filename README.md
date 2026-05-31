@@ -78,6 +78,9 @@ node_kingdom/
 │   ├── phase-plan.md
 │   └── prototype-functionality.md
 ├── scripts/
+│   ├── check-unlock-tree-state.mjs
+│   ├── run-hardening-tests.mjs
+│   ├── test-helpers.mjs
 │   └── validate-content.mjs
 └── src/
     ├── data.js
@@ -110,6 +113,12 @@ node scripts/validate-content.mjs
 
 The same check is also available as `npm run validate:content`.
 
+Run the focused hardening checks with:
+
+```bash
+npm run test:hardening
+```
+
 Production, crafting, and selling begin as manual work. The current opening starts from a pre-placed Sawmill with stored Wood so the player sees transformation before building the supply chain. Researched Manager slots and hired Managers then create the first automation layer for individual nodes. Addons can improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
 
-Good next engineering steps are adding tests for `rules.js`, `simulation.js`, and `world.js`, then continuing to split `input.js` only when interaction complexity makes that worthwhile.
+Good next engineering steps are expanding test coverage as new systems land, then continuing to split `input.js` or `render.js` only when interaction or UI complexity makes that worthwhile.

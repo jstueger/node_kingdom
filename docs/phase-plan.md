@@ -532,7 +532,7 @@ Implemented notes:
 
 Goal: protect the current progression skeleton before intensive playtesting.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -545,6 +545,13 @@ Exit criteria:
 
 - Core production, selling, unlock purchasing, save migration, and addon effects have automated coverage.
 - The prototype is ready for an intensive manual playtest pass.
+
+Implemented notes:
+
+- Added `npm run test:hardening` with focused Node assertion coverage for production, selling, managed automation, unlock-tree application, addon effects, world occupancy, save/load, legacy unlock migration, and corrupted save handling.
+- Shared content-loading helpers now support validation and test scripts.
+- Save loading now reports corrupted JSON without resetting the current game state.
+- The next milestone is intensive manual playtesting against the stabilized progression skeleton.
 
 ## Phase 19: Main Tree Layout
 
