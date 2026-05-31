@@ -507,7 +507,7 @@ Implemented notes:
 
 Goal: turn addon lists into structured building upgrade tracks.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -519,6 +519,32 @@ Scope:
 Exit criteria:
 
 - Sawmill, Lumber Camp, Market, and Mine detail screens read as coherent upgrade branches rather than loose cards.
+
+Implemented notes:
+
+- Addons now carry explicit `track` metadata.
+- Content validation checks addon track names.
+- Building detail views group addons into Manager, Speed, Quality, Recipes, Storage, Efficiency, and Sale Value tracks.
+- Empty tracks render as placeholders so future upgrade branches have visible homes.
+- Existing upgrade effects and costs are unchanged.
+
+## Phase 18.5: Hardening Before Playtest
+
+Goal: protect the current progression skeleton before intensive playtesting.
+
+Status: planned.
+
+Scope:
+
+- Add focused tests for rules, simulation, save/load migration, and unlock-tree progression.
+- Add a small test runner script using Node's built-in assertions.
+- Fix any low-risk bugs found while writing those tests.
+- Do not expand gameplay content in this phase.
+
+Exit criteria:
+
+- Core production, selling, unlock purchasing, save migration, and addon effects have automated coverage.
+- The prototype is ready for an intensive manual playtest pass.
 
 ## Phase 19: Main Tree Layout
 

@@ -1,6 +1,7 @@
 {
   "lumber_sharper_axes": {
     "node": "lumber",
+    "track": "speed",
     "label": "Sharper Axes",
     "description": "Lumber Camp action timers are 2 seconds shorter.",
     "cost": { "gold": 100 },
@@ -8,6 +9,7 @@
   },
   "lumber_wood_yard": {
     "node": "lumber",
+    "track": "storage",
     "label": "Wood Yard",
     "description": "Lumber Camps store 8 more Wood.",
     "cost": { "gold": 80 },
@@ -15,6 +17,7 @@
   },
   "lumber_foreman": {
     "node": "lumber",
+    "track": "manager",
     "label": "Foreman Routine",
     "description": "Managed Lumber Camps work twice as fast.",
     "visibleWhen": { "techs": ["lumber_management"] },
@@ -23,6 +26,7 @@
   },
   "sawmill_thin_kerf": {
     "node": "sawmill",
+    "track": "efficiency",
     "label": "Thin Kerf Blades",
     "description": "Sawmills need 1 less Wood when making Planks.",
     "visibleWhen": { "techs": ["woodworking"] },
@@ -31,6 +35,7 @@
   },
   "forge_paired_molds": {
     "node": "forge",
+    "track": "quality",
     "label": "Paired Molds",
     "description": "Forges produce 1 extra Iron Bar per Iron Bar craft.",
     "visibleWhen": { "techs": ["smelting", "knowledge_production"] },
@@ -39,6 +44,7 @@
   },
   "market_larger_stall": {
     "node": "market",
+    "track": "storage",
     "label": "Larger Stall",
     "description": "Markets store 5 more of every good.",
     "cost": { "gold": 150 },
@@ -46,6 +52,7 @@
   },
   "market_better_rates": {
     "node": "market",
+    "track": "sale",
     "label": "Better Rates",
     "description": "Markets earn 15% more money from sales.",
     "visibleWhen": { "techs": ["woodworking"] },
@@ -54,6 +61,7 @@
   },
   "market_shift_lead": {
     "node": "market",
+    "track": "manager",
     "label": "Shift Lead",
     "description": "Managed Markets work twice as fast.",
     "visibleWhen": { "techs": ["market_management"] },

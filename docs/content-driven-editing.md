@@ -200,6 +200,7 @@ Node-specific addons could also be data-driven:
 {
   "lumber_sharper_axes": {
     "node": "lumber",
+    "track": "speed",
     "label": "Sharper Axes",
     "description": "Lumber Camp action timers are 2 seconds shorter.",
     "cost": {
@@ -219,6 +220,7 @@ For manager-based automation:
 {
   "lumber_foreman": {
     "node": "lumber",
+    "track": "manager",
     "label": "Foreman Routine",
     "description": "Managed Lumber Camps work twice as fast.",
     "visibleWhen": {

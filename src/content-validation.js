@@ -2,6 +2,7 @@ const RESOURCE_CONDITION_KEYS = ['lifetimeProduced', 'lifetimeSold'];
 const GOLD_CONDITION_KEYS = ['lifetimeEarned'];
 const ADDON_EFFECT_RESOURCE_KEYS = ['storage', 'inputEfficiency', 'outputBonus'];
 const ADDON_EFFECT_KEYS = ['actionTicks', 'storage', 'storageAll', 'saleMultiplier', 'managerWork', 'inputEfficiency', 'outputBonus'];
+const ADDON_TRACKS = ['manager', 'speed', 'quality', 'recipes', 'storage', 'efficiency', 'sale'];
 
 export function validateContent(content) {
   const errors = [];
@@ -121,6 +122,8 @@ function validateGoals(goals, itemIds, techIds, buildingIds, errors) {
 function validateAddons(addons, itemIds, buildingIds, techIds, errors) {
   for (const [id, addon] of Object.entries(addons)) {
     if (!buildingIds.has(addon.node)) errors.push(`Addon "${id}" targets unknown building "${addon.node}"`);
+    requireString(addon.track, `Addon "${id}" is missing track`, errors);
+    if (addon.track !== undefined && !ADDON_TRACKS.includes(addon.track)) errors.push(`Addon "${id}" has unknown track "${addon.track}"`);
     requireString(addon.label, `Addon "${id}" is missing label`, errors);
     requireString(addon.description, `Addon "${id}" is missing description`, errors);
     validateCost(addon.cost || {}, itemIds, `Addon "${id}" cost`, errors);

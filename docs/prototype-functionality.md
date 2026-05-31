@@ -425,7 +425,7 @@ Current Manager costs:
 
 ## Node Addons
 
-Addons are permanent node-type upgrades bought from building subviews in the tech tree. They apply to every building of that node type.
+Addons are permanent node-type upgrades bought from building detail views in the tech tree. They apply to every building of that node type. Building detail views group addons into Manager, Speed, Quality, Recipes, Storage, Efficiency, and Sale Value tracks; empty tracks are shown as placeholders for planned upgrade branches.
 
 Current addons:
 

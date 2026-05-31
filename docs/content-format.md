@@ -27,7 +27,7 @@ Authoring fields are meant to be readable and stable for editing:
 - Recipe outputs use `resource` and `amount`.
 - Techs use `description`, `visibleWhen`, `requires`, `cost`, and `unlocks`.
 - Goals use `description`, `visibleWhen`, `completeWhen`, and `reward`.
-- Addons use `description`, `visibleWhen`, `cost`, and `effects`.
+- Addons use `track`, `description`, `visibleWhen`, `cost`, and `effects`.
 - Managers use `slots` and `costs`.
 - Unlock tree nodes use `kind`, `building`, `parent` or `parents`, `position`, `identity`, `description`, `revealWhen`, `unlockWhen`, `cost`, and `unlocks`.
 - Start state uses `grid`, `startingGold`, optional `hint`, `unlockedBuildings`, and optional starting `buildings`.

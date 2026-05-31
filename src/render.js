@@ -4,6 +4,15 @@ import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES,
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
+const ADDON_TRACKS = [
+  { key: 'manager', label: 'Manager' },
+  { key: 'speed', label: 'Speed' },
+  { key: 'quality', label: 'Quality' },
+  { key: 'recipes', label: 'Recipes' },
+  { key: 'storage', label: 'Storage' },
+  { key: 'efficiency', label: 'Efficiency' },
+  { key: 'sale', label: 'Sale Value' }
+];
 
 function formatSeconds(seconds) {
   const clamped = Math.max(0, seconds);
@@ -215,26 +224,55 @@ function buildingAddonEntries(state, type, includeLocked = true) {
   });
 }
 
+function addonTrackFor(addon) {
+  if (addon.track) return addon.track;
+  if (addon.effects?.managerWork) return 'manager';
+  if (addon.effects?.actionTicks) return 'speed';
+  if (addon.effects?.storage || addon.effects?.storageAll) return 'storage';
+  if (addon.effects?.inputEfficiency) return 'efficiency';
+  if (addon.effects?.outputBonus) return 'quality';
+  if (addon.effects?.saleMultiplier) return 'sale';
+  return 'recipes';
+}
+
+function addonCardHtml(key, addon, state) {
+  const status = addonStatus(state, addon);
+  return `
+    <div class="building-upgrade ${status.key}">
+      <div class="building-upgrade-main">
+        <span>${addon.label}</span>
+        <span>${status.label}</span>
+      </div>
+      <div class="building-upgrade-desc">${addon.desc}</div>
+      <button class="addon-buy" data-addon="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>
+    </div>`;
+}
+
 function addonSubviewHtml(state, type, options = {}) {
   const addons = buildingAddonEntries(state, type, options.includeLocked ?? true);
   if (!addons.length) return '';
-  const rows = addons.map(([key, addon]) => {
-    const status = addonStatus(state, addon);
-    return `
-      <div class="building-upgrade ${status.key}">
-        <div class="building-upgrade-main">
-          <span>${addon.label}</span>
-          <span>${status.label}</span>
-        </div>
-        <div class="building-upgrade-desc">${addon.desc}</div>
-        <button class="addon-buy" data-addon="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>
-      </div>`;
-  }).join('');
+  const rows = addons.map(([key, addon]) => addonCardHtml(key, addon, state)).join('');
   return `
     <div class="building-upgrades">
       <div class="building-upgrades-title">Upgrades</div>
       ${rows}
     </div>`;
+}
+
+function addonTracksHtml(state, type) {
+  const addons = buildingAddonEntries(state, type, true);
+  const groups = ADDON_TRACKS.map(track => {
+    const rows = addons.filter(([, addon]) => addonTrackFor(addon) === track.key);
+    const content = rows.length
+      ? rows.map(([key, addon]) => addonCardHtml(key, addon, state)).join('')
+      : '<div class="upgrade-track-empty">No upgrades in this track yet.</div>';
+    return `
+      <div class="upgrade-track ${rows.length ? '' : 'empty'}">
+        <div class="upgrade-track-title">${track.label}</div>
+        ${content}
+      </div>`;
+  }).join('');
+  return `<div class="upgrade-track-grid">${groups}</div>`;
 }
 
 function unlockNodeStatus(state, node) {
@@ -328,7 +366,7 @@ function buildingDetailHtml(state, type) {
       <div class="building-detail-card">
         <div class="building-tech-head"><span>${definition.icon} ${definition.label}</span><span>Building</span></div>
         <div class="building-tech-desc">${definition.desc}</div>
-        ${addonSubviewHtml(state, type) || '<div class="building-detail-empty">No permanent upgrades available yet.</div>'}
+        ${addonTracksHtml(state, type)}
       </div>
     </div>`;
 }
