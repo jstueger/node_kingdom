@@ -481,7 +481,7 @@ Implemented notes:
 
 Goal: make unlocked tree nodes open focused building detail screens.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -495,6 +495,13 @@ Exit criteria:
 
 - The main tree answers what can be unlocked next.
 - The detail view answers how to improve a known building type.
+
+Implemented notes:
+
+- Added Tech Tree routing state for map and building-detail modes.
+- Unlocked Building Tree nodes now show a Details action instead of inline upgrade lists.
+- Building detail screens show current node-type upgrades and a Back control.
+- Upgrade effects and purchase behavior are unchanged.
 
 ## Phase 18: Upgrade Track Shape
 

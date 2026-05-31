@@ -242,6 +242,17 @@ export function setupInput(context) {
     context.toast('Building unlocked');
   }
 
+  function openUnlockDetail(type) {
+    if (!isBuildingUnlocked(state, type)) return;
+    state.techTreeView = { mode: 'detail', building: type };
+    context.renderTechTree();
+  }
+
+  function closeUnlockDetail() {
+    state.techTreeView = { mode: 'map', building: null };
+    context.renderTechTree();
+  }
+
   function claimGoal(key) {
     const goal = state.goals[key];
     if (!goal || goal.claimed || !isGoalComplete(state, goal)) return;
@@ -455,6 +466,7 @@ export function setupInput(context) {
     if ((state.stats.lifetimeEarned.gold || 0) > 0) state.interaction.revealedMineHint = true;
     ui.techBtn.classList.remove('reveal-pulse');
     state.view = 'tech';
+    state.techTreeView = state.techTreeView || { mode: 'map', building: null };
     context.renderTechTree();
     context.renderTopbar();
   });
@@ -517,5 +529,5 @@ export function setupInput(context) {
     ui.gameEl.classList.remove('panning');
   });
 
-  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyUnlock, buyAddon, buyManager, claimGoal, selectBuildingType, toast: context.toast };
+  return { onPort, startMoveBuilding, startPlacementDrag, workNode, deleteBuilding, changeRecipe, buyTech, buyUnlock, openUnlockDetail, closeUnlockDetail, buyAddon, buyManager, claimGoal, selectBuildingType, toast: context.toast };
 }

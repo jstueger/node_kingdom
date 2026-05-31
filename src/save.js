@@ -138,6 +138,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.gold = STARTING_GOLD;
   state.ticks = 0;
   state.view = 'main';
+  state.techTreeView = { mode: 'map', building: null };
   state.selectedId = createStartingSelection(starting.buildings);
   state.mode = 'idle';
   state.placeType = null;

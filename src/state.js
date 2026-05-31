@@ -36,6 +36,7 @@ export function createState() {
     gold: STARTING_GOLD,
     ticks: 0,
     view: 'main',
+    techTreeView: { mode: 'map', building: null },
     selectedId: createStartingSelection(starting.buildings),
     mode: 'idle',
     placeType: null,

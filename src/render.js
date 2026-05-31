@@ -255,6 +255,11 @@ function unlockActionHtml(key, status) {
   return `<button class="unlock-buy" data-unlock="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
 }
 
+function unlockDetailActionHtml(node, status) {
+  if (status.key !== 'bought') return '';
+  return `<button class="unlock-detail" data-building="${node.building}">Details</button>`;
+}
+
 function unlockTreeEdgesHtml(nodes, minX, minY, cols, rows) {
   const width = Math.max(1, cols) * 190;
   const height = Math.max(1, rows) * 280;
@@ -291,17 +296,18 @@ function buildingTechHtml(state) {
     const icon = isMystery ? '?' : definition?.icon;
     const desc = isMystery ? 'Reveal this branch through kingdom progress.' : node.description;
     const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
-    const upgrades = !isMystery && isBuildingUnlocked(state, node.building) ? addonSubviewHtml(state, node.building) : '';
+    const detailAction = !isMystery ? unlockDetailActionHtml(node, status) : '';
     const left = (node.position.x - minX) * 190;
     const top = (node.position.y - minY) * 280;
+    const detailData = status.key === 'bought' ? `data-building-detail="${node.building}"` : '';
     return `
-      <div class="building-tech-node ${status.key}" style="left:${left}px;top:${top}px">
+      <div class="building-tech-node ${status.key}" ${detailData} style="left:${left}px;top:${top}px">
         <div class="building-tech-card">
           <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
           <div class="building-tech-desc">${desc}</div>
           ${!isMystery ? `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>` : ''}
           ${action}
-          ${upgrades}
+          ${detailAction}
         </div>
       </div>`;
   }).join('');
@@ -311,6 +317,42 @@ function buildingTechHtml(state) {
       ${unlockTreeEdgesHtml(nodes, minX, minY, cols, rows)}
       ${cards}
     </div>`;
+}
+
+function buildingDetailHtml(state, type) {
+  const definition = BUILDINGS[type];
+  if (!definition) return '';
+  return `
+    <div class="building-detail">
+      <button class="tech-back" type="button">Back</button>
+      <div class="building-detail-card">
+        <div class="building-tech-head"><span>${definition.icon} ${definition.label}</span><span>Building</span></div>
+        <div class="building-tech-desc">${definition.desc}</div>
+        ${addonSubviewHtml(state, type) || '<div class="building-detail-empty">No permanent upgrades available yet.</div>'}
+      </div>
+    </div>`;
+}
+
+function techMapHtml(state) {
+  let html = lifetimeSummaryHtml(state) + buildingTechHtml(state);
+  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
+  for (const tree of ['technology', 'science']) {
+    const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
+    if (!entries.length) continue;
+    html += `<div class="tech-group">${tree === 'science' ? 'Science' : 'Technology'}</div>`;
+    html += entries.map(([key, tech]) => {
+      const status = techStatus(state, tech);
+      return `
+        <div class="tech-card ${status.key}">
+          <div class="tech-head"><span>${tech.label}</span><span>${status.label}</span></div>
+          <div class="tech-desc">${tech.desc}</div>
+          ${techMetaHtml(state, tech)}
+          ${techActionHtml(key, status)}
+        </div>`;
+    }).join('');
+  }
+  html += advancedBuildingUpgradesHtml(state);
+  return html;
 }
 
 function advancedBuildingUpgradesHtml(state) {
@@ -592,33 +634,27 @@ export function renderGoals(context) {
 export function renderTechTree(context) {
   const { state, actions } = context;
   const cards = document.getElementById('techCards');
-  cards.innerHTML = lifetimeSummaryHtml(state) + buildingTechHtml(state);
-  const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
-  for (const tree of ['technology', 'science']) {
-    const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
-    if (!entries.length) continue;
-    const header = document.createElement('div');
-    header.className = 'tech-group';
-    header.textContent = tree === 'science' ? 'Science' : 'Technology';
-    cards.appendChild(header);
-    for (const [key, tech] of entries) {
-      const card = document.createElement('div');
-      const status = techStatus(state, tech);
-      card.className = `tech-card ${status.key}`;
-      card.innerHTML = `
-        <div class="tech-head"><span>${tech.label}</span><span>${status.label}</span></div>
-        <div class="tech-desc">${tech.desc}</div>
-        ${techMetaHtml(state, tech)}
-        ${techActionHtml(key, status)}`;
-      cards.appendChild(card);
-    }
-  }
-  cards.insertAdjacentHTML('beforeend', advancedBuildingUpgradesHtml(state));
+  const techTreeView = state.techTreeView || { mode: 'map', building: null };
+  cards.innerHTML = techTreeView.mode === 'detail'
+    ? buildingDetailHtml(state, techTreeView.building)
+    : techMapHtml(state);
   cards.querySelectorAll('.tech-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyTech(button.dataset.tech));
   });
   cards.querySelectorAll('.unlock-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyUnlock(button.dataset.unlock));
+  });
+  cards.querySelectorAll('.unlock-detail').forEach(button => {
+    button.addEventListener('click', () => actions.openUnlockDetail(button.dataset.building));
+  });
+  cards.querySelectorAll('.building-tech-node.bought[data-building-detail]').forEach(node => {
+    node.addEventListener('click', event => {
+      if (event.target.closest('button')) return;
+      actions.openUnlockDetail(node.dataset.buildingDetail);
+    });
+  });
+  cards.querySelectorAll('.tech-back').forEach(button => {
+    button.addEventListener('click', () => actions.closeUnlockDetail());
   });
   cards.querySelectorAll('.addon-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));
