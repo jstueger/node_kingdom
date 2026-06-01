@@ -557,7 +557,7 @@ Implemented notes:
 
 Goal: move the main unlock tree toward the diagrammed production map.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -569,6 +569,13 @@ Scope:
 Exit criteria:
 
 - The main tech tree visually communicates production domains and long-term direction.
+
+Implemented notes:
+
+- Unlock-tree nodes now support optional `branch` labels.
+- The main Building Tree renders Wood, Trade, and Metal branch labels from content.
+- Connector paths now use elbow lines and state-aware styling for bought, available, locked, and hidden branches.
+- Hidden identity labels remain visible for future branches while revealed nodes show their building identity.
 
 ## Phase 20: Content Expansion Pass
 

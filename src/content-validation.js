@@ -29,6 +29,7 @@ function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTre
   for (const [id, node] of Object.entries(unlockTree)) {
     if (node.kind !== 'buildingUnlock') errors.push(`Unlock tree node "${id}" has unknown kind "${node.kind}"`);
     if (!buildingIds.has(node.building)) errors.push(`Unlock tree node "${id}" references unknown building "${node.building}"`);
+    if (node.branch !== undefined) requireString(node.branch, `Unlock tree node "${id}" has invalid branch`, errors);
     if (node.parent !== undefined && !unlockTreeIds.has(node.parent)) errors.push(`Unlock tree node "${id}" references unknown parent "${node.parent}"`);
     validateRefs(node.parents || [], unlockTreeIds, `Unlock tree node "${id}" parents`, errors);
     validateNonNegativeNumber(node.position?.x, `Unlock tree node "${id}" position.x`, errors);

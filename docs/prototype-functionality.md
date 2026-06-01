@@ -330,7 +330,7 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
-The opening tech tree includes a Building Tree section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
+The opening tech tree includes a Building Tree section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. The map uses branch labels such as Wood, Trade, and Metal, with connector lines between parent and child unlocks. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
 
 Unlocked building entries can open a focused building detail view. The detail view shows permanent node-type upgrades for that building, plus a Back control to return to the Building Tree. Later unlocked buildings that are not part of the opening chain still appear in a separate Building Upgrades section when they have available upgrade content.
 

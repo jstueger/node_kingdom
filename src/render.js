@@ -4,6 +4,9 @@ import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES,
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
+const UNLOCK_CELL_W = 190;
+const UNLOCK_CELL_H = 280;
+const UNLOCK_LABEL_H = 34;
 const ADDON_TRACKS = [
   { key: 'manager', label: 'Manager' },
   { key: 'speed', label: 'Speed' },
@@ -298,23 +301,39 @@ function unlockDetailActionHtml(node, status) {
   return `<button class="unlock-detail" data-building="${node.building}">Details</button>`;
 }
 
-function unlockTreeEdgesHtml(nodes, minX, minY, cols, rows) {
-  const width = Math.max(1, cols) * 190;
-  const height = Math.max(1, rows) * 280;
+function unlockTreeEdgesHtml(state, nodes, minX, minY, cols, rows) {
+  const width = Math.max(1, cols) * UNLOCK_CELL_W;
+  const height = Math.max(1, rows) * UNLOCK_CELL_H + UNLOCK_LABEL_H;
   const lines = [];
   for (const node of nodes) {
     const parents = node.parents || (node.parent ? [node.parent] : []);
     for (const parentId of parents) {
       const parent = nodes.find(candidate => candidate.id === parentId);
       if (!parent) continue;
-      const x1 = (parent.position.x - minX) * 190 + 90;
-      const y1 = (parent.position.y - minY) * 280 + 58;
-      const x2 = (node.position.x - minX) * 190 + 90;
-      const y2 = (node.position.y - minY) * 280 + 58;
-      lines.push(`<path d="M ${x1} ${y1} L ${x2} ${y2}" />`);
+      const parentStatus = unlockNodeStatus(state, parent).key;
+      const childStatus = unlockNodeStatus(state, node).key;
+      const x1 = (parent.position.x - minX) * UNLOCK_CELL_W + 90;
+      const y1 = (parent.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H + 58;
+      const x2 = (node.position.x - minX) * UNLOCK_CELL_W + 90;
+      const y2 = (node.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H + 58;
+      const midY = y1 + (y2 - y1) * 0.5;
+      lines.push(`<path class="${parentStatus} ${childStatus}" d="M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}" />`);
     }
   }
   return `<svg class="unlock-tree-lines" viewBox="0 0 ${width} ${height}" aria-hidden="true">${lines.join('')}</svg>`;
+}
+
+function unlockBranchLabelsHtml(nodes, minX) {
+  const labels = new Map();
+  for (const node of nodes) {
+    if (!node.branch) continue;
+    const current = labels.get(node.branch);
+    const x = node.position.x - minX;
+    labels.set(node.branch, current === undefined ? x : Math.min(current, x));
+  }
+  return [...labels.entries()].map(([branch, x]) => {
+    return `<div class="unlock-domain-label" style="left:${x * UNLOCK_CELL_W}px">${branch}</div>`;
+  }).join('');
 }
 
 function buildingTechHtml(state) {
@@ -326,6 +345,7 @@ function buildingTechHtml(state) {
   const maxY = Math.max(...positions.map(position => position.y));
   const cols = maxX - minX + 1;
   const rows = maxY - minY + 1;
+  const branchLabels = unlockBranchLabelsHtml(nodes, minX);
   const cards = nodes.map(node => {
     const definition = BUILDINGS[node.building];
     const status = unlockNodeStatus(state, node);
@@ -335,13 +355,14 @@ function buildingTechHtml(state) {
     const desc = isMystery ? 'Reveal this branch through kingdom progress.' : node.description;
     const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
     const detailAction = !isMystery ? unlockDetailActionHtml(node, status) : '';
-    const left = (node.position.x - minX) * 190;
-    const top = (node.position.y - minY) * 280;
+    const left = (node.position.x - minX) * UNLOCK_CELL_W;
+    const top = (node.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H;
     const detailData = status.key === 'bought' ? `data-building-detail="${node.building}"` : '';
     return `
       <div class="building-tech-node ${status.key}" ${detailData} style="left:${left}px;top:${top}px">
         <div class="building-tech-card">
           <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
+          ${node.branch ? `<div class="unlock-branch-pill">${node.branch}</div>` : ''}
           <div class="building-tech-desc">${desc}</div>
           ${!isMystery ? `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>` : ''}
           ${action}
@@ -351,8 +372,9 @@ function buildingTechHtml(state) {
   }).join('');
   return `
     <div class="tech-group">Building Tree</div>
-    <div class="building-tech-chain" style="width:${cols * 190}px;height:${rows * 280}px">
-      ${unlockTreeEdgesHtml(nodes, minX, minY, cols, rows)}
+    <div class="building-tech-chain" style="width:${cols * UNLOCK_CELL_W}px;height:${rows * UNLOCK_CELL_H + UNLOCK_LABEL_H}px">
+      ${branchLabels}
+      ${unlockTreeEdgesHtml(state, nodes, minX, minY, cols, rows)}
       ${cards}
     </div>`;
 }
