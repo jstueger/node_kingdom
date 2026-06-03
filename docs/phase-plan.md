@@ -12,11 +12,11 @@ The prototype has completed the current opening-progression foundation through P
 - Lifetime stats for production, sales, and money earned.
 - Building unlocks through the current tech-tree presentation.
 - Money-only opening tech costs, with resource costs still supported by the content model.
-- Hidden locked buildings in the progression-gated Buildings frame.
+- Hidden locked buildings in the progression-gated Buildings pop-out menu.
 - A first Knowledge resource, School building, and Science heading.
 - Stabilized early tech costs, clearer tech card details, and a compact lifetime progress summary.
 - Tech tree presentation states for available, unaffordable, gated, and purchased techs.
-- Main, Buildings, and Tech Tree are exclusive top-level frames.
+- Main and Tech Tree are exclusive top-level screens; Buildings is a pop-out menu on Main.
 - Early milestone goals with claimable money rewards.
 - Manual actions are started with one click and complete after a visible timer.
 - Node-type addons bought from building subviews in the tech tree.
@@ -273,7 +273,7 @@ Exit criteria:
 
 Implemented notes:
 
-- Main, Buildings, and Tech Tree are now exclusive top-level frames; only one is visible at a time.
+- Main, Buildings, and Tech Tree became exclusive top-level frames in this phase. Phase 19.5 later replaces the Buildings frame with a pop-out menu.
 
 ## Phase 9: Opening Tech Tree Rewrite
 
@@ -576,6 +576,34 @@ Implemented notes:
 - The main Building Tree renders Wood, Trade, and Metal branch labels from content.
 - Connector paths now use elbow lines and state-aware styling for bought, available, locked, and hidden branches.
 - Hidden identity labels remain visible for future branches while revealed nodes show their building identity.
+
+## Phase 19.5: Two-Screen Interface Layout
+
+Goal: simplify navigation so Main and Tech Tree are the two primary screens, while Buildings becomes a pop-out tool menu.
+
+Status: complete.
+
+Scope:
+
+- Replace the Buildings frame with a button-triggered pop-out menu.
+- Keep Buildings reveal timing and flashing behavior.
+- Make Main and Tech Tree exclusive full-screen modes.
+- Hide Main grid, inspector, and sidebar while Tech Tree is active.
+- Preserve drag/drop and click placement from the Buildings pop-out.
+- Keep Tech Tree map/detail routing from Phase 17.
+- Update docs and tests where view assumptions changed.
+
+Exit criteria:
+
+- The player builds in Main and plans in Tech Tree.
+- Buildings behaves as a compact tool menu rather than a destination screen.
+
+Implemented notes:
+
+- Buildings now opens as a top-bar pop-out menu on Main.
+- Main and Tech Tree are the only exclusive top-level screens.
+- Click placement and drag/drop placement still work from the Buildings pop-out.
+- Opening Tech Tree or starting placement closes the Buildings pop-out.
 
 ## Phase 20: Content Expansion Pass
 

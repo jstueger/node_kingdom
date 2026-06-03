@@ -21,6 +21,7 @@ export function createInteractionState() {
     movingInvalid: false,
     suppressNextSidebarClick: false,
     suppressNextGridClick: false,
+    buildingsMenuOpen: false,
     revealedBuildingsButton: false,
     revealedTechButton: false,
     revealedMineHint: false

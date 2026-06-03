@@ -303,6 +303,7 @@ export function setupInput(context) {
     state.mode = 'placing';
     state.placeType = type;
     state.view = 'main';
+    state.interaction.buildingsMenuOpen = false;
     context.setHint(`Placing ${BUILDINGS[type].label} — click the grid · Esc to cancel`);
     context.renderAll();
   }
@@ -354,6 +355,7 @@ export function setupInput(context) {
     if (!drag.active) {
       drag.active = true;
       state.interaction.suppressNextSidebarClick = true;
+      state.interaction.buildingsMenuOpen = false;
       state.mode = 'dragging-placement';
       state.placeType = drag.type;
       context.setHint(`Drop ${definition.label} onto the grid`);
@@ -420,6 +422,11 @@ export function setupInput(context) {
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
+    if (state.interaction.buildingsMenuOpen) {
+      state.interaction.buildingsMenuOpen = false;
+      context.renderAll();
+      return;
+    }
     if (state.view !== 'main') {
       state.view = 'main';
       context.renderAll();
@@ -448,17 +455,18 @@ export function setupInput(context) {
   document.getElementById('resetBtn').addEventListener('click', () => context.resetWorld(true));
   document.getElementById('mainBtn').addEventListener('click', () => {
     state.view = 'main';
+    state.interaction.buildingsMenuOpen = false;
     context.renderAll();
   });
   document.getElementById('buildingsBtn').addEventListener('click', () => {
     state.interaction.revealedBuildingsButton = true;
     ui.buildingsBtn.classList.remove('reveal-pulse');
-    state.view = 'buildings';
-    context.renderSidebar();
-    context.renderTopbar();
+    state.view = 'main';
+    state.interaction.buildingsMenuOpen = !state.interaction.buildingsMenuOpen;
+    context.renderAll();
   });
   document.getElementById('buildingCloseBtn').addEventListener('click', () => {
-    state.view = 'main';
+    state.interaction.buildingsMenuOpen = false;
     context.renderAll();
   });
   document.getElementById('techBtn').addEventListener('click', () => {
@@ -466,6 +474,7 @@ export function setupInput(context) {
     if ((state.stats.lifetimeEarned.gold || 0) > 0) state.interaction.revealedMineHint = true;
     ui.techBtn.classList.remove('reveal-pulse');
     state.view = 'tech';
+    state.interaction.buildingsMenuOpen = false;
     state.techTreeView = state.techTreeView || { mode: 'map', building: null };
     context.renderTechTree();
     context.renderTopbar();

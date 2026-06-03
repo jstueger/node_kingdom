@@ -37,10 +37,10 @@ VS Code Live Server also works.
 
 ## Feature Snapshot
 
-- Grid placement by selecting a building from the Buildings frame, then placing it on the Main frame.
+- Grid placement by selecting or dragging a building from the Buildings pop-out menu, then placing it on the Main screen.
 - Movable placed buildings.
 - A stocked Sawmill starts on the grid so the first action creates a Plank before the support chain is built.
-- Main, Buildings, and Tech Tree are exclusive top-level frames; only one is visible at a time.
+- Main and Tech Tree are exclusive top-level screens; Buildings is a pop-out menu on Main.
 - Lumber Camp and Market unlock through free early Market Access after the first Plank.
 - In-node recipe switching for crafters.
 - One outgoing connection per output and one incoming connection per input.

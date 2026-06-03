@@ -647,10 +647,10 @@ function renderProgressionButtons(context) {
   const buildingsVisible = isBuildingsButtonVisible(state);
   const techVisible = isTechButtonVisible(state);
 
-  if (!buildingsVisible && state.view === 'buildings') state.view = 'main';
+  if (!buildingsVisible) state.interaction.buildingsMenuOpen = false;
   if (!techVisible && state.view === 'tech') state.view = 'main';
   ui.body.classList.toggle('hidden', state.view !== 'main');
-  ui.buildingWindow.classList.toggle('hidden', state.view !== 'buildings');
+  ui.buildingWindow.classList.toggle('hidden', !buildingsVisible || !state.interaction.buildingsMenuOpen || state.view !== 'main');
   ui.techWindow.classList.toggle('hidden', state.view !== 'tech');
   ui.mainBtn.classList.toggle('hidden', state.view === 'main');
   ui.zoomOutBtn.classList.toggle('hidden', state.view !== 'main');
@@ -659,7 +659,7 @@ function renderProgressionButtons(context) {
   ui.buildingsBtn.classList.toggle('hidden', !buildingsVisible);
   ui.techBtn.classList.toggle('hidden', !techVisible);
   ui.mainBtn.classList.toggle('active', state.view === 'main');
-  ui.buildingsBtn.classList.toggle('active', state.view === 'buildings');
+  ui.buildingsBtn.classList.toggle('active', state.interaction.buildingsMenuOpen);
   ui.techBtn.classList.toggle('active', state.view === 'tech');
 
   if (buildingsVisible && !state.interaction.revealedBuildingsButton) ui.buildingsBtn.classList.add('reveal-pulse');

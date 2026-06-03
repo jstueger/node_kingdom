@@ -18,13 +18,12 @@ Market buildings are sink nodes. They do not use recipes and instead sell all st
 
 ## Interface Layout
 
-The interface has three exclusive top-level frames:
+The interface has two exclusive top-level screens:
 
 - Main: production graph, goals, inspector, camera, and node operation.
-- Buildings: building catalog and placement selection.
 - Tech Tree: building unlocks, techs, and permanent node-type upgrades.
 
-Only one top-level frame is visible at a time. The top bar remains global for money, elapsed time, frame navigation, save/load/reset, and the current hint.
+Only one top-level screen is visible at a time. The Buildings catalog is a button-triggered pop-out menu on the Main screen. The top bar remains global for money, elapsed time, navigation, save/load/reset, and the current hint.
 
 The Main frame has three areas:
 
@@ -40,7 +39,8 @@ Buildings are placed freely on this grid. Current producer and market buildings 
 
 Placement controls:
 
-- Open the Buildings frame and click a building card to return to Main in placement mode.
+- Open the Buildings pop-out menu and click a building card to enter placement mode.
+- Drag a building card from the pop-out menu onto the grid to place it directly.
 - Click an empty valid grid location to place the selected building.
 - Press `Escape` to cancel click placement.
 
@@ -99,12 +99,12 @@ The game starts with one Sawmill already placed and stocked with enough Wood for
 Progression UI reveals:
 
 - Producing the first Plank reveals the Buildings button with a short pulse.
-- The Buildings button opens the exclusive Buildings frame.
-- The Buildings frame initially offers Lumber Camp and Sawmill.
+- The Buildings button opens the Buildings pop-out menu.
+- The Buildings pop-out initially offers Lumber Camp and Sawmill.
 - Buying a Lumber Camp, connecting it to the starting Sawmill, and producing a second Plank reveals the Tech button with a short pulse.
-- The Tech button opens the exclusive Tech Tree frame.
+- The Tech button opens the exclusive Tech Tree screen.
 
-No building cards are visible until the Buildings button is revealed. The Buildings frame only shows currently unlocked building types.
+No building cards are visible until the Buildings button is revealed. The Buildings pop-out only shows currently unlocked building types.
 
 Each building has:
 

@@ -59,6 +59,7 @@ export function loadGame(context) {
   state.interaction.revealedBuildingsButton = Boolean(payload.uiUnlocks?.revealedBuildingsButton);
   state.interaction.revealedTechButton = Boolean(payload.uiUnlocks?.revealedTechButton);
   state.interaction.revealedMineHint = Boolean(payload.uiUnlocks?.revealedMineHint);
+  state.interaction.buildingsMenuOpen = false;
   state.stats = {
     lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
     lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },
