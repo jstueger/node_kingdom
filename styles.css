@@ -13,6 +13,7 @@ button{font-family:inherit}
 .small-btn.active{border-color:#d4a843;color:#f0d06a;background:#15130a}
 .small-btn.danger:hover{border-color:#b64646;color:#f0c0c0}
 #body{display:flex;flex:1;overflow:hidden}
+#body.hidden{display:none}
 #sidebar,#inspector{width:210px;flex-shrink:0;background:#080812;padding:10px 8px;overflow-y:auto}
 #sidebar{border-right:1px solid #1a1a32}
 #inspector{border-left:1px solid #1a1a32}
