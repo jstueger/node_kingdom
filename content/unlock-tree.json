@@ -134,6 +134,23 @@
     "cost": { "gold": 220 },
     "unlocks": { "buildings": ["blacksmith"] }
   },
+  "school_unlock": {
+    "kind": "buildingUnlock",
+    "building": "school",
+    "parent": "blacksmith_unlock",
+    "branch": "Science",
+    "position": { "x": 5, "y": 0 },
+    "identity": {
+      "hiddenLabel": "Records",
+      "revealedLabel": "School",
+      "hiddenDescription": "A future knowledge building for science progression."
+    },
+    "description": "Produces Knowledge for science upgrades.",
+    "revealWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 600 } },
+    "unlockWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 600 } },
+    "cost": { "gold": 350 },
+    "unlocks": { "buildings": ["school"] }
+  },
   "hunters_unlock": {
     "kind": "buildingUnlock",
     "building": "hunters",

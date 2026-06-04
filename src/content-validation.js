@@ -161,10 +161,18 @@ function validateAddons(addons, itemIds, buildingIds, techIds, errors) {
     requireString(addon.description, `Addon "${id}" is missing description`, errors);
     validateCost(addon.cost || {}, itemIds, `Addon "${id}" cost`, errors);
     validateCondition(addon.visibleWhen || {}, itemIds, techIds, buildingIds, `Addon "${id}" visibleWhen`, errors);
+    if (addon.placeholder !== undefined && typeof addon.placeholder !== 'boolean') errors.push(`Addon "${id}" placeholder must be true or false`);
+    if (addon.placeholder && (Object.keys(addon.cost || {}).length || Object.keys(addon.effects || {}).length || Object.keys(addon.unlocks || {}).length)) {
+      errors.push(`Addon "${id}" is a placeholder and cannot have cost, effects, or unlocks`);
+    }
     for (const key of Object.keys(addon.effects || {})) {
       if (!ADDON_EFFECT_KEYS.includes(key)) errors.push(`Addon "${id}" has unknown effect "${key}"`);
     }
     for (const key of ADDON_EFFECT_RESOURCE_KEYS) validateResourceMap(addon.effects?.[key] || {}, itemIds, `Addon "${id}" ${key}`, errors);
+    for (const [type, amount] of Object.entries(addon.unlocks?.managerSlots || {})) {
+      if (!buildingIds.has(type)) errors.push(`Addon "${id}" unlocks Manager slots for unknown building "${type}"`);
+      validatePositiveNumber(amount, `Addon "${id}" Manager slot amount for "${type}"`, errors);
+    }
   }
 }
 

@@ -57,14 +57,14 @@
   "first_bars": {
     "label": "First Bars",
     "description": "Produce 2 Iron Bars.",
-    "visibleWhen": { "techs": ["smelting"] },
+    "visibleWhen": { "unlockedBuildings": ["forge"] },
     "completeWhen": { "lifetimeProduced": { "iron_bar": 2 } },
     "reward": { "gold": 80 }
   },
   "first_outpost": {
     "label": "First Outpost",
     "description": "Prove the kingdom can support a frontier foothold.",
-    "visibleWhen": { "techs": ["woodworking"], "unlockedBuildings": ["iron_mine"] },
+    "visibleWhen": { "unlockedBuildings": ["iron_mine", "forge"] },
     "completeWhen": {
       "lifetimeProduced": { "wood": 30, "plank": 10, "iron_ore": 10, "iron_bar": 3 },
       "lifetimeEarned": { "gold": 500 }
@@ -74,14 +74,14 @@
   "first_sword": {
     "label": "Armed Trade",
     "description": "Produce 1 Sword.",
-    "visibleWhen": { "techs": ["blacksmithing"] },
+    "visibleWhen": { "unlockedBuildings": ["blacksmith"] },
     "completeWhen": { "lifetimeProduced": { "sword": 1 } },
     "reward": { "gold": 100 }
   },
   "first_knowledge": {
     "label": "Written Records",
     "description": "Produce 5 Knowledge.",
-    "visibleWhen": { "techs": ["knowledge_production"] },
+    "visibleWhen": { "unlockedBuildings": ["school"] },
     "completeWhen": { "lifetimeProduced": { "knowledge": 5 } },
     "reward": { "gold": 100 }
   }

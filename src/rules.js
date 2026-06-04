@@ -17,7 +17,7 @@ export function inputAlreadyConnected(connections, buildingId, portIndex) {
 
 export function storageCapFor(building, resource, techs, addons = {}) {
   return capFor(building, resource)
-    + (techs.storage_bins.bought ? 5 : 0)
+    + (techs.storage_bins?.bought ? 5 : 0)
     + addonStorageBonus(addons, building.type, resource);
 }
 
@@ -33,10 +33,10 @@ export function actionTicksFor(building, techs, addons = {}) {
   const addonBonus = addonActionTickBonus(addons, building.type);
   const base = BUILDINGS[building.type].actionTicks || DEFAULT_ACTION_TICKS;
   if (BUILDINGS[building.type].kind === 'seller') {
-    return Math.max(1, base - (techs.basic_accounting?.bought ? 2 : 0) + addonBonus);
+    return Math.max(1, base + addonBonus);
   }
   if (BUILDINGS[building.type].kind !== 'crafter') return Math.max(1, base + addonBonus);
-  return Math.max(1, base - (techs.workshop_tuning.bought ? 2 : 0) + addonBonus);
+  return Math.max(1, base + addonBonus);
 }
 
 export function managerWorkFor(building, addons = {}) {
@@ -65,7 +65,7 @@ export function recipeOutputFor(building, addons = {}) {
 
 export function salePriceFor(type, resource, techs, addons = {}) {
   const base = BUILDINGS[type].sellPrices?.[resource] || 0;
-  return Math.floor(base * ((techs.market_bargaining.bought ? 1.25 : 1) + addonSaleMultiplier(addons, type)));
+  return Math.floor(base * (1 + addonSaleMultiplier(addons, type)));
 }
 
 export function totalStoredResource(state, resource) {
@@ -148,6 +148,12 @@ export function applyTechUnlocks(state, tech) {
 export function applyUnlockNodeUnlocks(state, node) {
   for (const type of node.unlocks?.buildings || []) state.unlockedBuildings[type] = true;
   for (const [type, amount] of Object.entries(node.unlocks?.managerSlots || {})) {
+    state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
+  }
+}
+
+export function applyAddonUnlocks(state, addon) {
+  for (const [type, amount] of Object.entries(addon.unlocks?.managerSlots || {})) {
     state.managerSlots[type] = Math.max(state.managerSlots[type] || 0, amount);
   }
 }

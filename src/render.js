@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, inputPorts, itemIcon, itemLabel, outputPort } from './data.js';
-import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, formatMoney, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
+import { areTechMilestonesMet, areTechPrerequisitesMet, canBuyManager, canPayCost, connectionStatus, formatCost, formatMoney, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isConditionMet, isGoalComplete, isGoalVisible, isTechDiscovered, managerCostFor, managerCountFor, managerSlotsFor, recipeInputsFor, recipeOutputFor, salePriceFor, storageCapFor } from './rules.js';
 import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES, unlockNodeState } from './unlock-tree.js';
 import { nodeViewState } from './view-models.js';
 
@@ -209,10 +209,11 @@ function techActionHtml(key, status) {
 }
 
 function addonPrerequisitesMet(state, addon) {
-  return !(addon.visibleWhen?.techs?.some(key => !state.techs[key]?.bought));
+  return isConditionMet(state, addon.visibleWhen || {});
 }
 
 function addonStatus(state, addon) {
+  if (addon.placeholder) return { key: 'planned', label: 'Planned', button: 'Planned', disabled: true };
   if (addon.bought) return { key: 'bought', label: 'Purchased', button: 'Purchased', disabled: true };
   if (!isBuildingUnlocked(state, addon.node) || !addonPrerequisitesMet(state, addon)) return { key: 'locked', label: 'Locked', button: 'Locked', disabled: true };
   if (!canPayCost(state, addon.cost)) return { key: 'unaffordable', label: `Need ${formatCost(addon.cost)}`, button: 'Need money', disabled: true };
@@ -240,6 +241,7 @@ function addonTrackFor(addon) {
 
 function addonCardHtml(key, addon, state) {
   const status = addonStatus(state, addon);
+  const button = addon.placeholder ? '' : `<button class="addon-buy" data-addon="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
   return `
     <div class="building-upgrade ${status.key}">
       <div class="building-upgrade-main">
@@ -247,18 +249,7 @@ function addonCardHtml(key, addon, state) {
         <span>${status.label}</span>
       </div>
       <div class="building-upgrade-desc">${addon.desc}</div>
-      <button class="addon-buy" data-addon="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>
-    </div>`;
-}
-
-function addonSubviewHtml(state, type, options = {}) {
-  const addons = buildingAddonEntries(state, type, options.includeLocked ?? true);
-  if (!addons.length) return '';
-  const rows = addons.map(([key, addon]) => addonCardHtml(key, addon, state)).join('');
-  return `
-    <div class="building-upgrades">
-      <div class="building-upgrades-title">Upgrades</div>
-      ${rows}
+      ${button}
     </div>`;
 }
 
@@ -396,10 +387,11 @@ function buildingDetailHtml(state, type) {
 function techMapHtml(state) {
   let html = lifetimeSummaryHtml(state) + buildingTechHtml(state);
   const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
-  for (const tree of ['technology', 'science']) {
+  const treeLabels = { kingdom: 'Kingdom', technology: 'Technology', science: 'Science' };
+  for (const tree of ['kingdom', 'technology', 'science']) {
     const entries = visibleTechs.filter(([, tech]) => (tech.tree || 'technology') === tree);
     if (!entries.length) continue;
-    html += `<div class="tech-group">${tree === 'science' ? 'Science' : 'Technology'}</div>`;
+    html += `<div class="tech-group">${treeLabels[tree]}</div>`;
     html += entries.map(([key, tech]) => {
       const status = techStatus(state, tech);
       return `
@@ -411,24 +403,7 @@ function techMapHtml(state) {
         </div>`;
     }).join('');
   }
-  html += advancedBuildingUpgradesHtml(state);
   return html;
-}
-
-function advancedBuildingUpgradesHtml(state) {
-  const chainTypes = new Set(['lumber', 'sawmill', 'market', 'iron_mine']);
-  const types = Object.keys(BUILDINGS).filter(type => !chainTypes.has(type) && buildingAddonEntries(state, type).length);
-  if (!types.length) return '';
-  const cards = types.map(type => {
-    const definition = BUILDINGS[type];
-    return `
-      <div class="building-upgrade-card">
-        <div class="building-tech-head"><span>${definition.icon} ${definition.label}</span><span>Upgrades</span></div>
-        <div class="building-tech-desc">${definition.desc}</div>
-        ${addonSubviewHtml(state, type)}
-      </div>`;
-  }).join('');
-  return `<div class="tech-group">Building Upgrades</div><div class="building-upgrade-grid">${cards}</div>`;
 }
 
 function rewardText(reward = {}) {

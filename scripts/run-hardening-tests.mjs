@@ -3,7 +3,7 @@ import { activeRecipe } from '../src/data.js';
 import { canProduce, sellGoods, tickGame, workBuilding } from '../src/simulation.js';
 import { createState } from '../src/state.js';
 import { gridFree } from '../src/world.js';
-import { applyUnlockNodeUnlocks, buyManager, managerWorkFor, recipeInputsFor, salePriceFor, storageCapFor } from '../src/rules.js';
+import { applyAddonUnlocks, applyUnlockNodeUnlocks, buyManager, managerWorkFor, recipeInputsFor, salePriceFor, storageCapFor } from '../src/rules.js';
 import { loadGame, saveGame } from '../src/save.js';
 import { validateContent } from '../src/content-validation.js';
 import { loadTestContent, createContext, createDomStub, createMemoryStorage } from './test-helpers.mjs';
@@ -79,6 +79,12 @@ test('addon effects alter storage, speed, manager work, efficiency, and sale val
   assert.equal(managerWorkFor(lumber, state.addons), 2);
   assert.deepEqual(recipeInputsFor(sawmill, state.addons), { wood: 1 });
   assert.equal(salePriceFor(market.type, 'plank', state.techs, state.addons), 34);
+});
+
+test('addon unlocks can grant manager slots', () => {
+  const state = freshState();
+  applyAddonUnlocks(state, state.addons.lumber_manager_slot);
+  assert.equal(state.managerSlots.lumber, 1);
 });
 
 test('managed buildings auto-start and complete production', () => {
@@ -185,6 +191,14 @@ test('unlock-tree validation rejects empty hidden descriptions', () => {
   const result = validateContent(content);
   assert.equal(result.valid, false);
   assert(result.errors.some(error => error.includes('identity.hiddenDescription')));
+});
+
+test('content validation rejects buyable placeholders', () => {
+  const content = structuredClone(baseContent);
+  content.addons.forge_quality_reserved.cost = { gold: 10 };
+  const result = validateContent(content);
+  assert.equal(result.valid, false);
+  assert(result.errors.some(error => error.includes('placeholder')));
 });
 
 console.log('hardening tests ok');

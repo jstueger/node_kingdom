@@ -219,7 +219,7 @@ Scope:
 - Lower starting gold so early placement choices matter.
 - Add item tags for future goods, science, and military vocabulary.
 - Add per-building work-time overrides and make Lumber Camps faster than the global default.
-- Move Lumber Management into early Technology so first automation can arrive before Knowledge.
+- Move the first Lumber Manager path earlier so first automation can arrive before Knowledge.
 - Add First Outpost as the first medium-term kingdom-development objective.
 
 Exit criteria:
@@ -359,7 +359,7 @@ Scope:
 
 - Playtest the first 5 minutes against the target sequence: Sawmill, first Plank, Buildings reveal, Lumber Camp, second Plank, Tech reveal, Market activation, Market purchase, first sale, Mine reveal.
 - Tune production times, early prices, sale values, and reveal timing.
-- Keep Sawmill purchasable immediately when Buildings unlock; Sawmill Methods is an upgrade prerequisite, not a building unlock.
+- Keep Sawmill purchasable immediately when Buildings unlock; Sawmill upgrades are prerequisites for later woodworking strength, not building unlocks.
 - Check that the first 10 minutes naturally create an automation aspiration without requiring it too soon.
 - Update `prototype-functionality.md`, `design-notes.md`, and README to match the new player-facing flow.
 
@@ -371,9 +371,9 @@ Exit criteria:
 
 Implemented notes:
 
-- Woodworking is now Sawmill Methods and no longer unlocks Sawmill buildings.
+- Woodworking progression no longer unlocks Sawmill buildings.
 - Early goals now script the opening spine from first Plank through Lumber Camp, second Plank, Market Access, first sale, and steady trade.
-- First sale happens at 3S earned; the 6S steady-trade threshold remains the reveal pressure for Mining and Sawmill Methods.
+- First sale happens at 3S earned; the 6S steady-trade threshold remains the reveal pressure for Mining and early Sawmill upgrades.
 
 ## Phase 13: Unlock Tree State Model
 
@@ -462,7 +462,7 @@ Scope:
 
 - Buying an unlock-tree node applies building unlocks.
 - Remove duplicated building-unlock behavior from generic techs.
-- Keep global upgrades such as Storage Bins, Workshop Tuning, and Market Bargaining in `techs.json`.
+- Keep true global upgrades in `techs.json`; later phases moved node-specific upgrades into building detail sub-trees.
 - Keep saves loading safely through the migration.
 
 Exit criteria:
@@ -658,7 +658,39 @@ Implemented notes:
 - Moved Forge, Coal Mine, and Blacksmith building availability to unlock-tree nodes so generic tech cards do not duplicate those purchases.
 - Kept the expansion within existing producer/crafter/seller rules; Quality, contracts, and demand systems remain future phases.
 
-## Phase 21: Quality And Demand Prep
+## Phase 21: Complete Tech Tree Structure
+
+Goal: make the tech tree the single progression surface for building unlocks and node-specific upgrades.
+
+Status: complete.
+
+Scope:
+
+- Keep the main Building Tree focused on domain and building unlocks.
+- Move node-specific manager slots, automation support, speed, storage, efficiency, and sale upgrades into building detail sub-trees.
+- Remove node-specific upgrades from generic/global tech rendering.
+- Keep only true global kingdom upgrades in the generic tech card area.
+- Add placeholder support for postponed systems such as Quality.
+- Keep Quality, contracts, and demand mechanics postponed.
+
+Exit criteria:
+
+- Building-specific upgrades and addons appear only inside the clicked building's detail sub-tree.
+- Manager slot unlocks can be bought from node sub-trees.
+- The main tree contains the intended production-domain shape, including School as a building unlock.
+- Placeholder entries are visible as planned notes but cannot be purchased.
+
+Implemented notes:
+
+- Added addon-level Manager slot unlocks and validation.
+- Moved Lumber and Market Manager slot unlocks out of generic techs and into their building sub-trees.
+- Moved Market speed and sale upgrades and Sawmill speed/efficiency upgrades into building sub-trees.
+- Reduced `techs.json` to global Kingdom upgrades: Grid Expansion and Storage Bins.
+- Removed the generated Building Upgrades section from the main tech screen.
+- Added School to the Building Tree.
+- Added hardening coverage for addon Manager slot unlocks and invalid buyable placeholders.
+
+## Phase 22: Quality And Demand Prep
 
 Goal: introduce Quality only once it has a clear gameplay purpose.
 
@@ -692,4 +724,4 @@ Possible exit criteria:
 
 ## Near-Term Next Step
 
-The next phase to implement is Phase 13: Unlock Tree State Model.
+The next phase to implement is Phase 22: Quality And Demand Prep.

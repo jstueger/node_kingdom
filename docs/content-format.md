@@ -25,9 +25,9 @@ Authoring fields are meant to be readable and stable for editing:
 - Building `cost` is always an object, even when it is only `{ "gold": 5 }`.
 - Recipes use `inputs` and `output`.
 - Recipe outputs use `resource` and `amount`.
-- Techs use `description`, `visibleWhen`, `requires`, `cost`, and `unlocks`.
+- Techs use `description`, `visibleWhen`, `requires`, `cost`, and `unlocks`; current techs are reserved for global Kingdom upgrades.
 - Goals use `description`, `visibleWhen`, `completeWhen`, and `reward`.
-- Addons use `track`, `description`, `visibleWhen`, `cost`, and `effects`.
+- Addons use `track`, `description`, `visibleWhen`, `cost`, `effects`, optional `unlocks`, and optional `placeholder`.
 - Managers use `slots` and `costs`.
 - Unlock tree nodes use `kind`, `building`, optional `branch`, `parent` or `parents`, `position`, `identity`, `description`, `revealWhen`, `unlockWhen`, `cost`, and `unlocks`. `identity` includes `hiddenLabel`, `revealedLabel`, and optional `hiddenDescription`.
 - Start state uses `grid`, `startingGold`, optional `hint`, `unlockedBuildings`, and optional starting `buildings`.
@@ -82,10 +82,10 @@ Validation checks:
 - seller prices
 - tech prerequisites, visibility conditions, unlock targets, and cycles
 - goal visibility/completion references
-- addon targets and effect references
+- addon targets, effect references, manager-slot unlocks, and placeholder shape
 - manager slot/cost targets
 - start-state grid, gold, hint, unlocked building ids, starting building placement, starting recipes, and starting inventory
-- buildings that are neither in start state nor unlocked by any tech
+- buildings that are neither in start state nor unlocked by any tech or unlock-tree node
 
 Some checks are errors and stop startup. Reachability checks are warnings unless they would break references.
 

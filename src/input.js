@@ -1,5 +1,5 @@
 import { BUILDINGS, CELL, firstRecipe, inputPorts, itemLabel, outputPort } from './data.js';
-import { applyGoalReward, applyTechUnlocks, applyUnlockNodeUnlocks, buyManager as purchaseManager, canPayCost, formatCost, formatMoney, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
+import { applyAddonUnlocks, applyGoalReward, applyTechUnlocks, applyUnlockNodeUnlocks, buyManager as purchaseManager, canPayCost, formatCost, formatMoney, inputAccepts, inputAlreadyConnected, isAddonVisible, isBuildingMenuAvailable, isBuildingUnlocked, isGoalComplete, isTechVisible, spendCost } from './rules.js';
 import { workBuilding } from './simulation.js';
 import { isUnlockNodeUnlocked, isUnlockNodeUnlockable } from './unlock-tree.js';
 
@@ -265,12 +265,13 @@ export function setupInput(context) {
 
   function buyAddon(key) {
     const addon = state.addons[key];
-    if (!addon || addon.bought || !isAddonVisible(state, addon)) return;
+    if (!addon || addon.placeholder || addon.bought || !isAddonVisible(state, addon)) return;
     if (!spendCost(state, addon.cost)) {
       context.toast('Not enough resources');
       return;
     }
     addon.bought = true;
+    applyAddonUnlocks(state, addon);
     context.setHint(`${addon.label} purchased`);
     context.renderAll();
     context.toast('Addon purchased');

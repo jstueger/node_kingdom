@@ -275,7 +275,7 @@ Current goals:
 - Strike Ore: produce 6 lifetime Iron Ore, rewards 5S.
 - Plank Supply: produce 3 lifetime Planks, rewards 6S.
 - First Bars: produce 2 lifetime Iron Bars, rewards 8S.
-- First Outpost: appears after Sawmill Methods are researched and Iron Mines are unlocked; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50S earned; rewards 20S.
+- First Outpost: appears after Iron Mines and Forges are unlocked; requires 30 lifetime Wood, 10 lifetime Planks, 10 lifetime Iron Ore, 3 lifetime Iron Bars, and 50S earned; rewards 20S.
 - Armed Trade: produce 1 lifetime Sword, rewards 10S.
 - Written Records: produce 5 lifetime Knowledge, rewards 10S.
 
@@ -344,24 +344,14 @@ Discovered techs may be shown before they are buyable when doing so clarifies a 
 
 The opening tech tree includes a Building Tree section that starts with Lumber Camp, Sawmill, Market, and a hidden future production branch. The map uses branch labels such as Wood, Trade, Metal, Leather, and Military, with connector lines between parent and child unlocks. Hidden nodes can show content-authored hint descriptions before their true identity is revealed. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
 
-The current expanded Building Tree also contains future-shape branches for Carpenter, Hunters, Leather Worker, Tailor, Forge, Coal Mine, Blacksmith, Barracks, and Outfitter. These entries use the existing unlock and recipe systems, but do not add Quality, contracts, reputation, or external demand yet.
+The current expanded Building Tree also contains future-shape branches for Carpenter, Hunters, Leather Worker, Tailor, Forge, Coal Mine, Blacksmith, Barracks, Outfitter, and School. These entries use the existing unlock and recipe systems, but do not add Quality, contracts, reputation, or external demand yet.
 
-Unlocked building entries can open a focused building detail view. The detail view shows permanent node-type upgrades for that building, plus a Back control to return to the Building Tree. Later unlocked buildings that are not part of the opening chain still appear in a separate Building Upgrades section when they have available upgrade content.
+Unlocked building entries can open a focused building detail view. The detail view shows permanent node-type upgrades for that building, plus a Back control to return to the Building Tree. Building-specific upgrades are not shown in any separate global list.
 
-Current techs:
+Current global techs:
 
-- Sawmill Methods: appears after 6S earned and 2 lifetime Planks produced, costs 6S, and unlocks Sawmill-focused upgrades.
-- Smelting: appears once Iron Mines are unlocked and 6 lifetime Iron Ore has been produced, costs 12S, and establishes Forge-focused upgrade progression.
-- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 14S, and establishes advanced metal fuel progression.
-- Blacksmithing: requires Sawmill Methods and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 22S, and establishes Blacksmith-focused upgrade progression.
-- Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60S earned, costs 35S, and unlocks School buildings.
-- Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 10S, and makes Market sale timers 2 seconds shorter.
-- Lumber Management: appears after 20 lifetime Wood produced and 15S earned, costs 20S, and unlocks one Lumber Camp Manager slot.
-- Market Management: requires Basic Accounting, appears after 10 lifetime Knowledge produced and 80S earned, costs 35S, and unlocks one Market Manager slot.
 - Grid Expansion: appears after 25S earned, costs 50S, and adds 16 columns and 8 rows to the playable grid.
 - Storage Bins: appears after 12 lifetime Wood produced, costs 12S, and adds 5 storage capacity to every resource slot.
-- Workshop Tuning: requires Sawmill Methods, appears once Sawmills are unlocked, costs 35S, and makes crafter action timers 2 seconds shorter.
-- Market Bargaining: requires Sawmill Methods, appears after 40S earned and Market unlock, costs 35S, and increases Market sale prices by 25%, rounded down.
 
 Grid Expansion preserves existing buildings, inventories, and connections while resizing the background canvas, SVG connection layer, and placement area.
 
@@ -377,8 +367,7 @@ Manual work:
 - The progress bar fills as the timer advances.
 - When the timer fills, the node performs one action: mining, crafting, or selling.
 - If the node is missing inputs, has full output storage, or has nothing to sell, work cannot start.
-- Workshop Tuning reduces crafter action timers to 8 seconds.
-- Basic Accounting reduces Market sale timers to 8 seconds.
+- Node-specific speed upgrades can reduce matching building action timers.
 
 Lifetime production and sale stats are tracked separately from current inventory. They are used for tech visibility thresholds, while current money pays opening tech costs.
 
@@ -422,12 +411,7 @@ Recipe changes are made directly on crafter nodes, not in the inspector.
 
 ## Manager Slots
 
-Manager slots are node-type capabilities unlocked through techs. They are shown in the inspector for matching selected buildings.
-
-Current Manager slot techs:
-
-- Lumber Management is an early Technology tech that unlocks one Manager slot for Lumber Camps.
-- Market Management unlocks one Manager slot for Markets.
+Manager slots are node-type capabilities unlocked through building detail sub-trees in the Tech Tree. They are shown in the inspector for matching selected buildings after the matching node-type upgrade is purchased.
 
 Managers are bought per placed node from the inspector after the matching node type has an unlocked Manager slot. A hired Manager occupies one slot on that node, starts work when possible, and advances that node's normal work action automatically. This means managed Producers produce, managed Crafters craft, and managed Markets sell without manual starts when their normal inputs, inventory, and output constraints allow it.
 
@@ -443,16 +427,21 @@ Addons are permanent node-type upgrades bought from building detail views in the
 
 Current addons:
 
+- Lumber Camp, Manager Slot: appears after 20 lifetime Wood and 15S earned, costs 20S; unlocks one Lumber Camp Manager slot.
 - Lumber Camp, Sharper Axes: costs 10S; Lumber Camp action timers are 2 seconds shorter.
 - Lumber Camp, Wood Yard: costs 8S; Lumber Camps store 8 more Wood.
-- Lumber Camp, Foreman Routine: requires Lumber Management, costs 45S; managed Lumber Camps work twice as fast.
-- Sawmill, Thin Kerf Blades: requires Sawmill Methods, costs 30S; Sawmills need 1 less Wood when making Planks.
-- Forge, Paired Molds: requires Smelting and Knowledge Production, costs 55S; Forges produce 1 extra Iron Bar per Iron Bar craft.
+- Lumber Camp, Foreman Routine: appears after 25 lifetime Wood and 25S earned, costs 45S; managed Lumber Camps work twice as fast.
+- Sawmill, Thin Kerf Blades: appears after 3 lifetime Planks and 6S earned, costs 30S; Sawmills need 1 less Wood when making Planks.
+- Sawmill, Workshop Rhythm: appears after 5 lifetime Planks and 12S earned, costs 35S; Sawmill action timers are 2 seconds shorter.
 - Market, Larger Stall: costs 15S; Markets store 5 more of every good.
-- Market, Better Rates: requires Sawmill Methods, costs 25S; Markets earn 15% more money from sales.
-- Market, Shift Lead: requires Market Management, costs 50S; managed Markets work twice as fast.
+- Market, Basic Accounting: appears after 5 lifetime Knowledge produced, costs 10S; Market sale timers are 2 seconds shorter.
+- Market, Better Rates: appears after 15S earned, costs 25S; Markets earn 15% more money from sales.
+- Market, Market Bargaining: appears after 40S earned, costs 35S; Markets earn 25% more money from sales.
+- Market, Manager Slot: appears after 80S earned, costs 35S; unlocks one Market Manager slot.
+- Market, Shift Lead: appears after 90S earned, costs 50S; managed Markets work twice as fast.
+- Forge, Paired Molds: planned placeholder; Quality and premium-output upgrades are reserved for a later demand phase.
 
-Addon effects stack with tech effects where both apply. Efficiency addons change the effective recipe shown in the inspector and the actual simulation result.
+Addon effects stack with global tech effects where both apply. Efficiency addons change the effective recipe shown in the inspector and the actual simulation result. Placeholder addons are visible planning notes and cannot be purchased.
 
 ## Save, Load, And Reset
 

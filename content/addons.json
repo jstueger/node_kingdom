@@ -1,4 +1,22 @@
 {
+  "lumber_manager_slot": {
+    "node": "lumber",
+    "track": "manager",
+    "label": "Manager Slot",
+    "description": "Unlocks one Manager slot for Lumber Camps.",
+    "visibleWhen": { "lifetimeProduced": { "wood": 20 }, "lifetimeEarned": { "gold": 150 } },
+    "cost": { "gold": 200 },
+    "unlocks": { "managerSlots": { "lumber": 1 } }
+  },
+  "lumber_foreman": {
+    "node": "lumber",
+    "track": "manager",
+    "label": "Foreman Routine",
+    "description": "Managed Lumber Camps work twice as fast.",
+    "visibleWhen": { "lifetimeProduced": { "wood": 25 }, "lifetimeEarned": { "gold": 250 } },
+    "cost": { "gold": 450 },
+    "effects": { "managerWork": 1 }
+  },
   "lumber_sharper_axes": {
     "node": "lumber",
     "track": "speed",
@@ -15,32 +33,23 @@
     "cost": { "gold": 80 },
     "effects": { "storage": { "wood": 8 } }
   },
-  "lumber_foreman": {
-    "node": "lumber",
-    "track": "manager",
-    "label": "Foreman Routine",
-    "description": "Managed Lumber Camps work twice as fast.",
-    "visibleWhen": { "techs": ["lumber_management"] },
-    "cost": { "gold": 450 },
-    "effects": { "managerWork": 1 }
-  },
   "sawmill_thin_kerf": {
     "node": "sawmill",
     "track": "efficiency",
     "label": "Thin Kerf Blades",
     "description": "Sawmills need 1 less Wood when making Planks.",
-    "visibleWhen": { "techs": ["woodworking"] },
+    "visibleWhen": { "lifetimeProduced": { "plank": 3 }, "lifetimeEarned": { "gold": 60 } },
     "cost": { "gold": 300 },
     "effects": { "inputEfficiency": { "wood": 1 } }
   },
-  "forge_paired_molds": {
-    "node": "forge",
-    "track": "quality",
-    "label": "Paired Molds",
-    "description": "Forges produce 1 extra Iron Bar per Iron Bar craft.",
-    "visibleWhen": { "techs": ["smelting", "knowledge_production"] },
-    "cost": { "gold": 550 },
-    "effects": { "outputBonus": { "iron_bar": 1 } }
+  "sawmill_rhythm": {
+    "node": "sawmill",
+    "track": "speed",
+    "label": "Workshop Rhythm",
+    "description": "Sawmill action timers are 2 seconds shorter.",
+    "visibleWhen": { "lifetimeProduced": { "plank": 5 }, "lifetimeEarned": { "gold": 120 } },
+    "cost": { "gold": 350 },
+    "effects": { "actionTicks": -2 }
   },
   "market_larger_stall": {
     "node": "market",
@@ -50,22 +59,56 @@
     "cost": { "gold": 150 },
     "effects": { "storageAll": 5 }
   },
+  "market_faster_accounting": {
+    "node": "market",
+    "track": "speed",
+    "label": "Basic Accounting",
+    "description": "Market sale timers are 2 seconds shorter.",
+    "visibleWhen": { "lifetimeProduced": { "knowledge": 5 } },
+    "cost": { "gold": 100 },
+    "effects": { "actionTicks": -2 }
+  },
   "market_better_rates": {
     "node": "market",
     "track": "sale",
     "label": "Better Rates",
     "description": "Markets earn 15% more money from sales.",
-    "visibleWhen": { "techs": ["woodworking"] },
+    "visibleWhen": { "lifetimeEarned": { "gold": 150 } },
     "cost": { "gold": 250 },
     "effects": { "saleMultiplier": 0.15 }
+  },
+  "market_bargaining": {
+    "node": "market",
+    "track": "sale",
+    "label": "Market Bargaining",
+    "description": "Markets earn 25% more money from sales.",
+    "visibleWhen": { "lifetimeEarned": { "gold": 400 } },
+    "cost": { "gold": 350 },
+    "effects": { "saleMultiplier": 0.25 }
+  },
+  "market_manager_slot": {
+    "node": "market",
+    "track": "manager",
+    "label": "Manager Slot",
+    "description": "Unlocks one Manager slot for Markets.",
+    "visibleWhen": { "lifetimeEarned": { "gold": 800 } },
+    "cost": { "gold": 350 },
+    "unlocks": { "managerSlots": { "market": 1 } }
   },
   "market_shift_lead": {
     "node": "market",
     "track": "manager",
     "label": "Shift Lead",
     "description": "Managed Markets work twice as fast.",
-    "visibleWhen": { "techs": ["market_management"] },
+    "visibleWhen": { "lifetimeEarned": { "gold": 900 } },
     "cost": { "gold": 500 },
     "effects": { "managerWork": 1 }
+  },
+  "forge_quality_reserved": {
+    "node": "forge",
+    "track": "quality",
+    "label": "Paired Molds",
+    "description": "Quality and premium-output upgrades are reserved for the later demand phase.",
+    "placeholder": true
   }
 }
