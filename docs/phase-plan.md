@@ -635,7 +635,7 @@ Implemented notes:
 
 Goal: add the next production domains safely.
 
-Status: planned.
+Status: complete.
 
 Scope:
 
@@ -648,6 +648,15 @@ Scope:
 Exit criteria:
 
 - The tree shows the future kingdom shape without requiring all future mechanics to exist.
+
+Implemented notes:
+
+- Added Carpenter content as a Wood branch extension from Sawmill.
+- Added Hunters, Leather Worker, and Tailor as the first Leather branch.
+- Added Forge, Coal Mine, Blacksmith, Barracks, and Outfitter as Metal/Military branch content.
+- Added the new resources, recipes, Market sell support, and unlock-tree nodes needed for these branches.
+- Moved Forge, Coal Mine, and Blacksmith building availability to unlock-tree nodes so generic tech cards do not duplicate those purchases.
+- Kept the expansion within existing producer/crafter/seller rules; Quality, contracts, and demand systems remain future phases.
 
 ## Phase 21: Quality And Demand Prep
 

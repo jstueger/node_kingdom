@@ -11,29 +11,29 @@
   "smelting": {
     "tree": "technology",
     "label": "Smelting",
-    "description": "Unlocks Forges for turning ore and fuel into metal bars.",
+    "description": "Establishes repeatable metalworking methods and unlocks Forge-focused upgrades.",
     "visibleWhen": { "unlockedBuildings": ["iron_mine"], "lifetimeProduced": { "iron_ore": 6 } },
     "requires": [],
     "cost": { "gold": 120 },
-    "unlocks": { "buildings": ["forge"] }
+    "unlocks": {}
   },
   "coal_processing": {
     "tree": "technology",
     "label": "Coal Processing",
-    "description": "Unlocks Coal Mines for hotter, stronger metal production.",
+    "description": "Establishes coal handling methods for advanced metal production.",
     "visibleWhen": { "lifetimeProduced": { "iron_bar": 1 } },
     "requires": ["smelting"],
     "cost": { "gold": 140 },
-    "unlocks": { "buildings": ["coal_mine"] }
+    "unlocks": {}
   },
   "blacksmithing": {
     "tree": "technology",
     "label": "Blacksmithing",
-    "description": "Unlocks Blacksmiths for finished goods and stronger trade value.",
+    "description": "Establishes finished metal goods and unlocks Blacksmith-focused upgrades.",
     "visibleWhen": { "lifetimeProduced": { "plank": 3, "iron_bar": 2 } },
     "requires": ["woodworking", "smelting"],
     "cost": { "gold": 220 },
-    "unlocks": { "buildings": ["blacksmith"] }
+    "unlocks": {}
   },
   "knowledge_production": {
     "tree": "science",

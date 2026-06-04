@@ -90,6 +90,89 @@
       }
     }
   },
+  "carpenter": {
+    "label": "Carpenter",
+    "icon": "🪚",
+    "color": "#1e1709",
+    "kind": "crafter",
+    "size": { "w": 16, "h": 8 },
+    "cost": { "gold": 160 },
+    "description": "Turns Planks into sturdier wood goods.",
+    "capacity": { "plank": 8, "beam": 8, "furniture": 6 },
+    "recipes": {
+      "beam": {
+        "label": "Beam",
+        "inputs": { "plank": 2 },
+        "output": { "resource": "beam", "amount": 1 }
+      },
+      "furniture": {
+        "label": "Furniture",
+        "inputs": { "plank": 3 },
+        "output": { "resource": "furniture", "amount": 1 }
+      }
+    }
+  },
+  "hunters": {
+    "label": "Hunters",
+    "icon": "🏹",
+    "color": "#14200d",
+    "kind": "producer",
+    "size": { "w": 8, "h": 8 },
+    "cost": { "gold": 120 },
+    "description": "Produces hides and meat from the woods.",
+    "capacity": { "hide": 12, "game_meat": 10 },
+    "recipes": {
+      "hide": {
+        "label": "Gather Hides",
+        "inputs": {},
+        "output": { "resource": "hide", "amount": 1 }
+      },
+      "game_meat": {
+        "label": "Hunt Game",
+        "inputs": {},
+        "output": { "resource": "game_meat", "amount": 1 }
+      }
+    }
+  },
+  "leather_worker": {
+    "label": "Leather Worker",
+    "icon": "🧵",
+    "color": "#24150c",
+    "kind": "crafter",
+    "size": { "w": 16, "h": 8 },
+    "cost": { "gold": 180 },
+    "description": "Processes Hides into Leather and simple Armor.",
+    "capacity": { "hide": 8, "leather": 8, "armor": 5 },
+    "recipes": {
+      "leather": {
+        "label": "Leather",
+        "inputs": { "hide": 2 },
+        "output": { "resource": "leather", "amount": 1 }
+      },
+      "armor": {
+        "label": "Armor",
+        "inputs": { "leather": 3 },
+        "output": { "resource": "armor", "amount": 1 }
+      }
+    }
+  },
+  "tailor": {
+    "label": "Tailor",
+    "icon": "🧶",
+    "color": "#1b1427",
+    "kind": "crafter",
+    "size": { "w": 16, "h": 8 },
+    "cost": { "gold": 220 },
+    "description": "Turns Leather into finished Garments.",
+    "capacity": { "leather": 8, "garment": 6 },
+    "recipes": {
+      "garment": {
+        "label": "Garment",
+        "inputs": { "leather": 2 },
+        "output": { "resource": "garment", "amount": 1 }
+      }
+    }
+  },
   "blacksmith": {
     "label": "Blacksmith",
     "icon": "⚒️",
@@ -109,6 +192,40 @@
         "label": "Steel Sword",
         "inputs": { "steel_bar": 2, "plank": 1 },
         "output": { "resource": "sword", "amount": 2 }
+      }
+    }
+  },
+  "barracks": {
+    "label": "Barracks",
+    "icon": "🏰",
+    "color": "#171827",
+    "kind": "crafter",
+    "size": { "w": 16, "h": 8 },
+    "cost": { "gold": 300 },
+    "description": "Bundles weapons and supplies into Guard Kits.",
+    "capacity": { "sword": 5, "armor": 5, "plank": 6, "guard_kit": 4 },
+    "recipes": {
+      "guard_kit": {
+        "label": "Guard Kit",
+        "inputs": { "sword": 1, "armor": 1, "plank": 1 },
+        "output": { "resource": "guard_kit", "amount": 1 }
+      }
+    }
+  },
+  "outfitter": {
+    "label": "Outfitter",
+    "icon": "🧭",
+    "color": "#101d24",
+    "kind": "crafter",
+    "size": { "w": 16, "h": 8 },
+    "cost": { "gold": 360 },
+    "description": "Combines civilian and military goods into Expedition Gear.",
+    "capacity": { "garment": 5, "guard_kit": 4, "furniture": 4, "expedition_gear": 3 },
+    "recipes": {
+      "expedition_gear": {
+        "label": "Expedition Gear",
+        "inputs": { "garment": 1, "guard_kit": 1, "furniture": 1 },
+        "output": { "resource": "expedition_gear", "amount": 1 }
       }
     }
   },
@@ -137,15 +254,24 @@
     "size": { "w": 8, "h": 8 },
     "cost": { "gold": 50 },
     "description": "Sells any trade goods it receives.",
-    "capacity": { "iron_ore": 10, "wood": 10, "coal": 10, "iron_bar": 10, "plank": 10, "steel_bar": 8, "sword": 8 },
+    "capacity": { "iron_ore": 10, "wood": 10, "coal": 10, "iron_bar": 10, "plank": 10, "beam": 8, "furniture": 6, "steel_bar": 8, "hide": 10, "game_meat": 10, "leather": 8, "garment": 6, "armor": 5, "sword": 8, "guard_kit": 4, "expedition_gear": 3 },
     "sellPrices": {
       "iron_ore": 10,
       "wood": 10,
       "coal": 20,
       "iron_bar": 50,
       "plank": 30,
+      "beam": 80,
+      "furniture": 140,
       "steel_bar": 120,
-      "sword": 250
+      "hide": 20,
+      "game_meat": 20,
+      "leather": 70,
+      "garment": 160,
+      "armor": 180,
+      "sword": 250,
+      "guard_kit": 420,
+      "expedition_gear": 650
     }
   }
 }

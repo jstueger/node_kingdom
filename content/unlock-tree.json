@@ -32,6 +32,23 @@
     "cost": { "gold": 50 },
     "unlocks": { "buildings": ["lumber"] }
   },
+  "carpenter_unlock": {
+    "kind": "buildingUnlock",
+    "building": "carpenter",
+    "parent": "sawmill_unlock",
+    "branch": "Wood",
+    "position": { "x": 1, "y": 0 },
+    "identity": {
+      "hiddenLabel": "Woodcraft",
+      "revealedLabel": "Carpenter",
+      "hiddenDescription": "A future workshop for sturdier wood goods."
+    },
+    "description": "Turns Planks into Beams and Furniture.",
+    "revealWhen": { "lifetimeProduced": { "plank": 3 } },
+    "unlockWhen": { "lifetimeProduced": { "plank": 5 }, "lifetimeEarned": { "gold": 100 } },
+    "cost": { "gold": 160 },
+    "unlocks": { "buildings": ["carpenter"] }
+  },
   "market_unlock": {
     "kind": "buildingUnlock",
     "building": "market",
@@ -65,5 +82,141 @@
     "unlockWhen": { "lifetimeEarned": { "gold": 60 } },
     "cost": { "gold": 80 },
     "unlocks": { "buildings": ["iron_mine"] }
+  },
+  "coal_mine_unlock": {
+    "kind": "buildingUnlock",
+    "building": "coal_mine",
+    "parent": "forge_unlock",
+    "branch": "Metal",
+    "position": { "x": 3, "y": 0 },
+    "identity": {
+      "hiddenLabel": "Fuel Source",
+      "revealedLabel": "Coal Mine",
+      "hiddenDescription": "A hotter fuel source for advanced metalwork."
+    },
+    "description": "Produces Coal for steel production.",
+    "revealWhen": { "lifetimeProduced": { "iron_bar": 1 } },
+    "unlockWhen": { "lifetimeProduced": { "iron_bar": 1 }, "lifetimeEarned": { "gold": 140 } },
+    "cost": { "gold": 140 },
+    "unlocks": { "buildings": ["coal_mine"] }
+  },
+  "forge_unlock": {
+    "kind": "buildingUnlock",
+    "building": "forge",
+    "parent": "mine_unlock",
+    "branch": "Metal",
+    "position": { "x": 3, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Smelter",
+      "revealedLabel": "Forge",
+      "hiddenDescription": "A workshop for turning ore into metal bars."
+    },
+    "description": "Turns Iron Ore and fuel into Iron Bars or Steel Bars.",
+    "revealWhen": { "lifetimeProduced": { "iron_ore": 6 } },
+    "unlockWhen": { "lifetimeProduced": { "iron_ore": 6 }, "lifetimeEarned": { "gold": 120 } },
+    "cost": { "gold": 120 },
+    "unlocks": { "buildings": ["forge"] }
+  },
+  "blacksmith_unlock": {
+    "kind": "buildingUnlock",
+    "building": "blacksmith",
+    "parent": "forge_unlock",
+    "branch": "Metal",
+    "position": { "x": 4, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Metal Goods",
+      "revealedLabel": "Blacksmith",
+      "hiddenDescription": "A future workshop for finished metal goods."
+    },
+    "description": "Crafts Swords from Bars and Planks.",
+    "revealWhen": { "lifetimeProduced": { "iron_bar": 2, "plank": 3 } },
+    "unlockWhen": { "lifetimeProduced": { "iron_bar": 2, "plank": 3 }, "lifetimeEarned": { "gold": 220 } },
+    "cost": { "gold": 220 },
+    "unlocks": { "buildings": ["blacksmith"] }
+  },
+  "hunters_unlock": {
+    "kind": "buildingUnlock",
+    "building": "hunters",
+    "parent": "lumber_unlock",
+    "branch": "Leather",
+    "position": { "x": 0, "y": 2 },
+    "identity": {
+      "hiddenLabel": "Woodland Camp",
+      "revealedLabel": "Hunters",
+      "hiddenDescription": "A future camp for hides and food."
+    },
+    "description": "Produces Hides and Game Meat.",
+    "revealWhen": { "lifetimeProduced": { "wood": 10 } },
+    "unlockWhen": { "lifetimeProduced": { "wood": 15 }, "lifetimeEarned": { "gold": 120 } },
+    "cost": { "gold": 120 },
+    "unlocks": { "buildings": ["hunters"] }
+  },
+  "leather_worker_unlock": {
+    "kind": "buildingUnlock",
+    "building": "leather_worker",
+    "parent": "hunters_unlock",
+    "branch": "Leather",
+    "position": { "x": 1, "y": 2 },
+    "identity": {
+      "hiddenLabel": "Tannery",
+      "revealedLabel": "Leather Worker",
+      "hiddenDescription": "A future workshop for processing hides."
+    },
+    "description": "Turns Hides into Leather and simple Armor.",
+    "revealWhen": { "lifetimeProduced": { "hide": 3 } },
+    "unlockWhen": { "lifetimeProduced": { "hide": 6 }, "lifetimeEarned": { "gold": 180 } },
+    "cost": { "gold": 180 },
+    "unlocks": { "buildings": ["leather_worker"] }
+  },
+  "tailor_unlock": {
+    "kind": "buildingUnlock",
+    "building": "tailor",
+    "parent": "leather_worker_unlock",
+    "branch": "Leather",
+    "position": { "x": 2, "y": 2 },
+    "identity": {
+      "hiddenLabel": "Clothier",
+      "revealedLabel": "Tailor",
+      "hiddenDescription": "A future workshop for finished garments."
+    },
+    "description": "Turns Leather into Garments.",
+    "revealWhen": { "lifetimeProduced": { "leather": 2 } },
+    "unlockWhen": { "lifetimeProduced": { "leather": 4 }, "lifetimeEarned": { "gold": 220 } },
+    "cost": { "gold": 220 },
+    "unlocks": { "buildings": ["tailor"] }
+  },
+  "barracks_unlock": {
+    "kind": "buildingUnlock",
+    "building": "barracks",
+    "parent": "blacksmith_unlock",
+    "branch": "Military",
+    "position": { "x": 5, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Garrison",
+      "revealedLabel": "Barracks",
+      "hiddenDescription": "A future military support building."
+    },
+    "description": "Bundles Swords, Armor, and Planks into Guard Kits.",
+    "revealWhen": { "lifetimeProduced": { "sword": 1 } },
+    "unlockWhen": { "lifetimeProduced": { "sword": 2, "armor": 1 }, "lifetimeEarned": { "gold": 300 } },
+    "cost": { "gold": 300 },
+    "unlocks": { "buildings": ["barracks"] }
+  },
+  "outfitter_unlock": {
+    "kind": "buildingUnlock",
+    "building": "outfitter",
+    "parents": ["barracks_unlock", "tailor_unlock", "carpenter_unlock"],
+    "branch": "Military",
+    "position": { "x": 6, "y": 1 },
+    "identity": {
+      "hiddenLabel": "Expedition Supply",
+      "revealedLabel": "Outfitter",
+      "hiddenDescription": "A future endpoint combining several production domains."
+    },
+    "description": "Combines Guard Kits, Garments, and Furniture into Expedition Gear.",
+    "revealWhen": { "lifetimeProduced": { "guard_kit": 1, "garment": 1 } },
+    "unlockWhen": { "lifetimeProduced": { "guard_kit": 1, "garment": 1, "furniture": 1 }, "lifetimeEarned": { "gold": 360 } },
+    "cost": { "gold": 360 },
+    "unlocks": { "buildings": ["outfitter"] }
   }
 }

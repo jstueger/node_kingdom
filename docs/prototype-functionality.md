@@ -90,7 +90,13 @@ Current building types:
 - Lumber Camp: produces wood.
 - Forge: crafts iron bars or steel bars.
 - Sawmill: crafts planks.
+- Carpenter: crafts beams and furniture.
+- Hunters: produce hides or game meat.
+- Leather Worker: crafts leather or armor.
+- Tailor: crafts garments.
 - Blacksmith: crafts swords.
+- Barracks: crafts guard kits.
+- Outfitter: crafts expedition gear.
 - School: produces Knowledge.
 - Market: sells goods for money.
 
@@ -125,7 +131,13 @@ Current placement costs:
 - Lumber Camp: 5S.
 - Forge: 12S.
 - Sawmill: 10S.
+- Carpenter: 16S.
+- Hunters: 12S.
+- Leather Worker: 18S.
+- Tailor: 22S.
 - Blacksmith: 18S.
+- Barracks: 30S.
+- Outfitter: 36S.
 - School: 25S.
 - Market: 5S.
 
@@ -330,16 +342,18 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
-The opening tech tree includes a Building Tree section that shows Lumber Camp, Sawmill, Market, and a hidden future production branch. The map uses branch labels such as Wood, Trade, and Metal, with connector lines between parent and child unlocks. Hidden nodes can show content-authored hint descriptions before their true identity is revealed. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
+The opening tech tree includes a Building Tree section that starts with Lumber Camp, Sawmill, Market, and a hidden future production branch. The map uses branch labels such as Wood, Trade, Metal, Leather, and Military, with connector lines between parent and child unlocks. Hidden nodes can show content-authored hint descriptions before their true identity is revealed. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
+
+The current expanded Building Tree also contains future-shape branches for Carpenter, Hunters, Leather Worker, Tailor, Forge, Coal Mine, Blacksmith, Barracks, and Outfitter. These entries use the existing unlock and recipe systems, but do not add Quality, contracts, reputation, or external demand yet.
 
 Unlocked building entries can open a focused building detail view. The detail view shows permanent node-type upgrades for that building, plus a Back control to return to the Building Tree. Later unlocked buildings that are not part of the opening chain still appear in a separate Building Upgrades section when they have available upgrade content.
 
 Current techs:
 
 - Sawmill Methods: appears after 6S earned and 2 lifetime Planks produced, costs 6S, and unlocks Sawmill-focused upgrades.
-- Smelting: appears once Iron Mines are unlocked and 6 lifetime Iron Ore has been produced, costs 12S, and unlocks Forge buildings.
-- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 14S, and unlocks Coal Mine buildings.
-- Blacksmithing: requires Sawmill Methods and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 22S, and unlocks Blacksmith buildings.
+- Smelting: appears once Iron Mines are unlocked and 6 lifetime Iron Ore has been produced, costs 12S, and establishes Forge-focused upgrade progression.
+- Coal Processing: requires Smelting, appears after 1 lifetime Iron Bar produced, costs 14S, and establishes advanced metal fuel progression.
+- Blacksmithing: requires Sawmill Methods and Smelting, appears after 3 lifetime Planks and 2 lifetime Iron Bars produced, costs 22S, and establishes Blacksmith-focused upgrade progression.
 - Knowledge Production: requires Blacksmithing, appears after 1 lifetime Sword produced and 60S earned, costs 35S, and unlocks School buildings.
 - Basic Accounting: requires Knowledge Production, appears after 5 lifetime Knowledge produced, costs 10S, and makes Market sale timers 2 seconds shorter.
 - Lumber Management: appears after 20 lifetime Wood produced and 15S earned, costs 20S, and unlocks one Lumber Camp Manager slot.
@@ -490,10 +504,37 @@ Each recipe action normally takes 10 seconds after it is started. Techs and addo
 
 - Plank: consumes 2 Wood, produces 1 Plank.
 
+### Carpenter
+
+- Beam: consumes 2 Planks, produces 1 Beam.
+- Furniture: consumes 3 Planks, produces 1 Furniture.
+
+### Hunters
+
+- Gather Hides: produces 1 Hide.
+- Hunt Game: produces 1 Game Meat.
+
+### Leather Worker
+
+- Leather: consumes 2 Hides, produces 1 Leather.
+- Armor: consumes 3 Leather, produces 1 Armor.
+
+### Tailor
+
+- Garment: consumes 2 Leather, produces 1 Garment.
+
 ### Blacksmith
 
 - Sword: consumes 2 Iron Bars and 1 Plank, produces 1 Sword.
 - Steel Sword: consumes 2 Steel Bars and 1 Plank, produces 2 Swords.
+
+### Barracks
+
+- Guard Kit: consumes 1 Sword, 1 Armor, and 1 Plank, produces 1 Guard Kit.
+
+### Outfitter
+
+- Expedition Gear: consumes 1 Garment, 1 Guard Kit, and 1 Furniture, produces 1 Expedition Gear.
 
 ### School
 
@@ -510,8 +551,17 @@ Current sell prices:
 - Coal: 2S.
 - Iron Bar: 5S.
 - Plank: 3S.
+- Beam: 8S.
+- Furniture: 14S.
 - Steel Bar: 12S.
+- Hide: 2S.
+- Game Meat: 2S.
+- Leather: 7S.
+- Garment: 16S.
+- Armor: 18S.
 - Sword: 25S.
+- Guard Kit: 42S.
+- Expedition Gear: 65S.
 
 ## Current Limitations
 
