@@ -605,6 +605,32 @@ Implemented notes:
 - Click placement and drag/drop placement still work from the Buildings pop-out.
 - Opening Tech Tree or starting placement closes the Buildings pop-out.
 
+## Phase 19.6: Unlock Tree Validation Tightening
+
+Goal: harden unlock-tree content before the map grows in Phase 20.
+
+Status: complete.
+
+Scope:
+
+- Detect parent cycles in `unlock-tree.json`.
+- Detect duplicate unlock-node positions.
+- Add optional hidden descriptions for mystery nodes.
+- Add hardening tests for invalid unlock-tree content.
+- Keep unlock behavior unchanged.
+
+Exit criteria:
+
+- Invalid unlock-tree structure fails content validation before runtime.
+- Mystery node copy can be authored in content instead of hardcoded in render logic.
+
+Implemented notes:
+
+- Unlock-tree validation now catches parent cycles and duplicate positions.
+- `identity.hiddenDescription` is supported and validated when present.
+- Mystery node cards render `hiddenDescription` before falling back to generic copy.
+- Hardening tests cover parent cycles, duplicate positions, and invalid hidden descriptions.
+
 ## Phase 20: Content Expansion Pass
 
 Goal: add the next production domains safely.

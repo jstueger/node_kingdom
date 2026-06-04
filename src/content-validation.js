@@ -36,6 +36,7 @@ function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTre
     validateNonNegativeNumber(node.position?.y, `Unlock tree node "${id}" position.y`, errors);
     requireString(node.identity?.hiddenLabel, `Unlock tree node "${id}" is missing identity.hiddenLabel`, errors);
     requireString(node.identity?.revealedLabel, `Unlock tree node "${id}" is missing identity.revealedLabel`, errors);
+    if (node.identity?.hiddenDescription !== undefined) requireString(node.identity.hiddenDescription, `Unlock tree node "${id}" has invalid identity.hiddenDescription`, errors);
     requireString(node.description, `Unlock tree node "${id}" is missing description`, errors);
     validateCondition(node.revealWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" revealWhen`, errors);
     validateCondition(node.unlockWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" unlockWhen`, errors);
@@ -46,6 +47,37 @@ function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTre
       validatePositiveNumber(amount, `Unlock tree node "${id}" Manager slot amount for "${type}"`, errors);
     }
   }
+  validateUnlockTreePositions(unlockTree, errors);
+  validateUnlockTreeCycles(unlockTree, errors);
+}
+
+function validateUnlockTreePositions(unlockTree, errors) {
+  const positions = new Map();
+  for (const [id, node] of Object.entries(unlockTree)) {
+    if (typeof node.position?.x !== 'number' || typeof node.position?.y !== 'number') continue;
+    const key = `${node.position.x},${node.position.y}`;
+    const existing = positions.get(key);
+    if (existing) errors.push(`Unlock tree nodes "${existing}" and "${id}" share position ${key}`);
+    else positions.set(key, id);
+  }
+}
+
+function validateUnlockTreeCycles(unlockTree, errors) {
+  const visiting = new Set();
+  const visited = new Set();
+  const visit = (id, path = []) => {
+    if (visited.has(id)) return;
+    if (visiting.has(id)) {
+      errors.push(`Unlock tree contains a parent cycle: ${[...path, id].join(' -> ')}`);
+      return;
+    }
+    visiting.add(id);
+    const parents = unlockTree[id]?.parents || (unlockTree[id]?.parent ? [unlockTree[id].parent] : []);
+    for (const parentId of parents) if (unlockTree[parentId]) visit(parentId, [...path, id]);
+    visiting.delete(id);
+    visited.add(id);
+  };
+  for (const id of Object.keys(unlockTree)) visit(id);
 }
 
 function validateItems(items, errors) {

@@ -6,7 +6,8 @@
     "position": { "x": 0, "y": 0 },
     "identity": {
       "hiddenLabel": "Sawmill",
-      "revealedLabel": "Sawmill"
+      "revealedLabel": "Sawmill",
+      "hiddenDescription": "A first woodworking station."
     },
     "description": "Turns Wood into Planks.",
     "revealWhen": {},
@@ -22,7 +23,8 @@
     "position": { "x": 0, "y": 1 },
     "identity": {
       "hiddenLabel": "Wood Source",
-      "revealedLabel": "Lumber Camp"
+      "revealedLabel": "Lumber Camp",
+      "hiddenDescription": "A source of raw Wood for the first production chain."
     },
     "description": "Feeds the Sawmill with Wood.",
     "revealWhen": { "lifetimeProduced": { "plank": 1 } },
@@ -38,7 +40,8 @@
     "position": { "x": 1, "y": 1 },
     "identity": {
       "hiddenLabel": "Trade",
-      "revealedLabel": "Market"
+      "revealedLabel": "Market",
+      "hiddenDescription": "A way to turn stocked goods into money."
     },
     "description": "Sells stocked goods for money.",
     "revealWhen": { "lifetimeProduced": { "plank": 2 } },
@@ -54,7 +57,8 @@
     "position": { "x": 2, "y": 1 },
     "identity": {
       "hiddenLabel": "Unknown Metal Source",
-      "revealedLabel": "Mine"
+      "revealedLabel": "Mine",
+      "hiddenDescription": "A future source of metal materials."
     },
     "description": "Unlocks Iron Mines for the first ore chain.",
     "revealWhen": { "lifetimeEarned": { "gold": 30 } },

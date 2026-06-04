@@ -5,9 +5,10 @@ import { createState } from '../src/state.js';
 import { gridFree } from '../src/world.js';
 import { applyUnlockNodeUnlocks, buyManager, managerWorkFor, recipeInputsFor, salePriceFor, storageCapFor } from '../src/rules.js';
 import { loadGame, saveGame } from '../src/save.js';
+import { validateContent } from '../src/content-validation.js';
 import { loadTestContent, createContext, createDomStub, createMemoryStorage } from './test-helpers.mjs';
 
-await loadTestContent();
+const { raw: baseContent } = await loadTestContent();
 
 globalThis.performance = globalThis.performance || { now: () => 0 };
 globalThis.document = createDomStub();
@@ -159,6 +160,31 @@ test('content shape exposes expected recipes for starter building', () => {
   const state = freshState();
   const sawmill = [...state.buildings.values()].find(building => building.type === 'sawmill');
   assert.equal(activeRecipe(sawmill).output.res, 'plank');
+});
+
+test('unlock-tree validation rejects parent cycles', () => {
+  const content = structuredClone(baseContent);
+  content.unlockTree.sawmill_unlock.parent = 'lumber_unlock';
+  content.unlockTree.lumber_unlock.parent = 'sawmill_unlock';
+  const result = validateContent(content);
+  assert.equal(result.valid, false);
+  assert(result.errors.some(error => error.includes('parent cycle')));
+});
+
+test('unlock-tree validation rejects duplicate positions', () => {
+  const content = structuredClone(baseContent);
+  content.unlockTree.market_unlock.position = { ...content.unlockTree.lumber_unlock.position };
+  const result = validateContent(content);
+  assert.equal(result.valid, false);
+  assert(result.errors.some(error => error.includes('share position')));
+});
+
+test('unlock-tree validation rejects empty hidden descriptions', () => {
+  const content = structuredClone(baseContent);
+  content.unlockTree.mine_unlock.identity.hiddenDescription = ' ';
+  const result = validateContent(content);
+  assert.equal(result.valid, false);
+  assert(result.errors.some(error => error.includes('identity.hiddenDescription')));
 });
 
 console.log('hardening tests ok');

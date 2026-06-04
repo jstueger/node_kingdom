@@ -352,7 +352,7 @@ function buildingTechHtml(state) {
     const isMystery = status.key === 'mystery';
     const title = isMystery ? node.identity.hiddenLabel : node.identity.revealedLabel;
     const icon = isMystery ? '?' : definition?.icon;
-    const desc = isMystery ? 'Reveal this branch through kingdom progress.' : node.description;
+    const desc = isMystery ? (node.identity.hiddenDescription || 'Reveal this branch through kingdom progress.') : node.description;
     const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
     const detailAction = !isMystery ? unlockDetailActionHtml(node, status) : '';
     const left = (node.position.x - minX) * UNLOCK_CELL_W;
