@@ -342,7 +342,7 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
-The opening tech tree includes a Building Tree section rendered as a capability map. Its main spine is Sawmill to Market to Mine to Forge to Blacksmith to Barracks to Outfitter. Side branches sit in subtle domain regions such as Woodland, Market Road, Ore & Flame, Wilds & Hide, Records, and Muster Yard. Hidden nodes can show content-authored hint descriptions before their true identity is revealed and render as compact mystery landmarks. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
+The opening tech tree includes a Building Tree section rendered as a capability map. Its main spine is Sawmill to Market to Mine to Forge to Blacksmith to Barracks to Outfitter. Side branches sit in subtle domain regions such as Woodland, Market Road, Ore & Flame, Wilds & Hide, Records, and Muster Yard. Map nodes show compact overview information; full descriptions live in detail views and hover/title hints. Hidden nodes render as compact mystery landmarks before their true identity is revealed. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
 
 The current expanded Building Tree also contains future-shape branches for Carpenter, Hunters, Leather Worker, Tailor, Forge, Coal Mine, Blacksmith, Barracks, Outfitter, and School. These entries use the existing unlock and recipe systems, but do not add Quality, contracts, reputation, or external demand yet.
 

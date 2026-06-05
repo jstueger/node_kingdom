@@ -720,6 +720,37 @@ Implemented notes:
 - Added region backplates, heavier spine connectors, endpoint styling, and compact mystery styling.
 - Added content validation for unlock-tree visual role, weight, and region fields.
 
+## Phase 21.6: Capability Map Readability Pass
+
+Goal: reduce map clutter and make the current progression route easier to read.
+
+Status: complete.
+
+Scope:
+
+- Make hidden future nodes much smaller.
+- Increase spacing between map nodes, especially along the spine.
+- Remove full descriptions from map overview cards.
+- Keep full explanations in building detail views and browser titles.
+- Soften domain regions so they read as atmosphere rather than containers.
+- Reduce the visual prominence of the lifetime summary strip.
+- Strengthen spine, frontier, and endpoint emphasis.
+
+Exit criteria:
+
+- The main map reads as an overview before it reads as a purchase panel.
+- Mystery and far-future nodes no longer compete with active/revealed nodes.
+- Domain regions group content without adding heavy boxes around boxes.
+- Existing progression, unlock, and detail-view behavior remains unchanged.
+
+Implemented notes:
+
+- Map cards now show identity, branch hint, status, and cost/action only.
+- Hidden mystery nodes are compact markers with hover/title hints.
+- The map grid spacing is wider and the spine connectors are stronger.
+- Domain regions are now softer radial bands.
+- The lifetime summary strip is dimmed and separated from the map.
+
 ## Phase 22: Quality And Demand Prep
 
 Goal: introduce Quality only once it has a clear gameplay purpose.

@@ -4,15 +4,15 @@ import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES,
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
-const UNLOCK_CELL_W = 210;
-const UNLOCK_CELL_H = 150;
+const UNLOCK_CELL_W = 285;
+const UNLOCK_CELL_H = 190;
 const UNLOCK_LABEL_H = 34;
 const UNLOCK_NODE_SIZES = {
-  endpoint: { w: 206, h: 118 },
-  major: { w: 190, h: 112 },
-  normal: { w: 158, h: 92 },
-  minor: { w: 132, h: 78 },
-  mystery: { w: 132, h: 70 }
+  endpoint: { w: 214, h: 104 },
+  major: { w: 188, h: 94 },
+  normal: { w: 150, h: 74 },
+  minor: { w: 126, h: 62 },
+  mystery: { w: 92, h: 48 }
 };
 const UNLOCK_REGION_LABELS = {
   woodland: 'Woodland',
@@ -302,9 +302,9 @@ function unlockActionHtml(key, status) {
   return `<button class="unlock-buy" data-unlock="${key}" ${status.disabled ? 'disabled' : ''}>${status.button}</button>`;
 }
 
-function unlockDetailActionHtml(node, status) {
-  if (status.key !== 'bought') return '';
-  return `<button class="unlock-detail" data-building="${node.building}">Details</button>`;
+function unlockMapMetaHtml(node, status) {
+  if (status.key === 'bought') return '';
+  return `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>`;
 }
 
 function unlockVisual(node) {
@@ -407,22 +407,18 @@ function buildingTechHtml(state) {
     const visual = unlockVisual(node);
     const size = unlockNodeSize(node, status);
     const title = isMystery ? node.identity.hiddenLabel : node.identity.revealedLabel;
-    const icon = isMystery ? '?' : definition?.icon;
-    const desc = isMystery ? (node.identity.hiddenDescription || 'Reveal this branch through kingdom progress.') : node.description;
+    const icon = isMystery ? '' : definition?.icon;
     const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
-    const detailAction = !isMystery ? unlockDetailActionHtml(node, status) : '';
+    const detailAction = '';
     const pos = unlockNodePosition(node, minX, minY);
     const detailData = status.key === 'bought' ? `data-building-detail="${node.building}"` : '';
-    const descHtml = isMystery
-      ? `<div class="building-tech-desc mystery-hint">${desc}</div>`
-      : `<div class="building-tech-desc">${desc}</div>`;
+    const titleText = isMystery ? (node.identity.hiddenDescription || title) : node.description;
     return `
-      <div class="building-tech-node ${status.key} role-${visual.role} weight-${visual.weight} region-${visual.region}" ${detailData} style="left:${pos.x}px;top:${pos.y}px;width:${size.w}px">
+      <div class="building-tech-node ${status.key} role-${visual.role} weight-${visual.weight} region-${visual.region}" ${detailData} title="${titleText}" style="left:${pos.x}px;top:${pos.y}px;width:${size.w}px">
         <div class="building-tech-card">
           <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
           ${node.branch ? `<div class="unlock-branch-pill">${node.branch}</div>` : ''}
-          ${descHtml}
-          ${!isMystery ? `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>` : ''}
+          ${!isMystery ? unlockMapMetaHtml(node, status) : ''}
           ${action}
           ${detailAction}
         </div>
