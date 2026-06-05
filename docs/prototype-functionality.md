@@ -324,6 +324,8 @@ Tech controls:
 
 - Click `Tech` in the top bar to open the Tech Tree frame.
 - Click `Main`, press `Escape`, or click `Main` inside the Tech Tree frame to return to the Main frame.
+- Use the top-bar zoom buttons or mouse wheel over the Building Tree map to zoom.
+- Hold the left mouse button and drag over the Building Tree map to pan.
 
 Each tech can currently be bought once. Buying a tech spends its cost, marks the tech as purchased, and applies its effect. Current tech costs are money-only, while the content model still supports resource costs for future phases.
 
@@ -342,7 +344,7 @@ Tech cards can be:
 
 Discovered techs may be shown before they are buyable when doing so clarifies a prerequisite or near-term milestone.
 
-The opening tech tree includes a Building Tree section rendered as a capability map. Its main spine is Sawmill to Market to Mine to Forge to Blacksmith to Barracks to Outfitter. Side branches sit in subtle domain regions such as Woodland, Market Road, Ore & Flame, Wilds & Hide, Records, and Muster Yard. Map nodes show compact overview information; full descriptions live in detail views and hover/title hints. Hidden nodes render as compact mystery landmarks before their true identity is revealed. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
+The opening tech tree includes a Building Tree section rendered as a capability map. Its main spine is Sawmill to Market to Mine to Forge to Blacksmith to Barracks to Outfitter. Side branches sit in subtle domain regions such as Woodland, Market Road, Ore & Flame, Wilds & Hide, Records, and Muster Yard. Map nodes show compact overview information; full descriptions live in detail views and hover/title hints. Hidden nodes render as compact mystery landmarks before their true identity is revealed. The first map opening focuses on the Sawmill, then preserves the player's Tech Tree zoom and pan position afterwards, including across save/load. Market is activated for free from this tree. After early Market sales, the hidden branch is revealed as the Mine unlock.
 
 The current expanded Building Tree also contains future-shape branches for Carpenter, Hunters, Leather Worker, Tailor, Forge, Coal Mine, Blacksmith, Barracks, Outfitter, and School. These entries use the existing unlock and recipe systems, but do not add Quality, contracts, reputation, or external demand yet.
 

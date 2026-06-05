@@ -346,6 +346,10 @@ export function setupInput(context) {
     return !target.closest('.bld') && !target.closest('.port');
   }
 
+  function isTechMapDragTarget(target) {
+    return Boolean(target.closest('#techMapViewport')) && !target.closest('button');
+  }
+
   function updatePlacementDrag(event) {
     const drag = state.interaction.placementDrag;
     if (!drag || drag.pointerId !== event.pointerId) return;
@@ -484,13 +488,71 @@ export function setupInput(context) {
     state.view = 'main';
     context.renderAll();
   });
-  document.getElementById('zoomOutBtn').addEventListener('click', () => context.setZoom(state.camera.zoom - 0.25));
-  document.getElementById('zoomInBtn').addEventListener('click', () => context.setZoom(state.camera.zoom + 0.25));
+  document.getElementById('zoomOutBtn').addEventListener('click', () => {
+    if (state.view === 'tech') context.setTechZoom(state.techCamera.zoom - 0.15);
+    else context.setZoom(state.camera.zoom - 0.25);
+  });
+  document.getElementById('zoomInBtn').addEventListener('click', () => {
+    if (state.view === 'tech') context.setTechZoom(state.techCamera.zoom + 0.15);
+    else context.setZoom(state.camera.zoom + 0.25);
+  });
 
   ui.gameEl.addEventListener('wheel', (event) => {
     event.preventDefault();
     context.setZoom(state.camera.zoom + (event.deltaY < 0 ? 0.1 : -0.1), event);
   }, { passive: false });
+
+  ui.techWindow.addEventListener('wheel', (event) => {
+    if (state.view !== 'tech' || state.techTreeView?.mode === 'detail' || !event.target.closest('#techMapViewport')) return;
+    event.preventDefault();
+    context.setTechZoom(state.techCamera.zoom + (event.deltaY < 0 ? 0.08 : -0.08), event);
+  }, { passive: false });
+
+  ui.techWindow.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0 || state.view !== 'tech' || state.techTreeView?.mode === 'detail' || !isTechMapDragTarget(event.target)) return;
+    state.interaction.techPan = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      offsetX: state.techCamera.panOffset.x,
+      offsetY: state.techCamera.panOffset.y,
+      active: false,
+      captured: false
+    };
+  });
+
+  ui.techWindow.addEventListener('pointermove', (event) => {
+    const pan = state.interaction.techPan;
+    if (!pan || pan.id !== event.pointerId) return;
+    const dx = event.clientX - pan.x;
+    const dy = event.clientY - pan.y;
+    if (!pan.active && Math.hypot(dx, dy) < 4) return;
+    if (!pan.captured) {
+      ui.techWindow.setPointerCapture(event.pointerId);
+      pan.captured = true;
+    }
+    pan.active = true;
+    state.interaction.suppressNextTechClick = true;
+    ui.techWindow.classList.add('panning');
+    state.techCamera.panOffset.x = pan.offsetX + dx;
+    state.techCamera.panOffset.y = pan.offsetY + dy;
+    context.applyTechCamera();
+  });
+
+  ui.techWindow.addEventListener('pointerup', (event) => {
+    const pan = state.interaction.techPan;
+    if (!pan || pan.id !== event.pointerId) return;
+    if (pan.captured) ui.techWindow.releasePointerCapture(event.pointerId);
+    state.interaction.techPan = null;
+    ui.techWindow.classList.remove('panning');
+  });
+
+  ui.techWindow.addEventListener('pointercancel', (event) => {
+    const pan = state.interaction.techPan;
+    if (!pan || pan.id !== event.pointerId) return;
+    state.interaction.techPan = null;
+    ui.techWindow.classList.remove('panning');
+  });
 
   ui.gameEl.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || state.mode !== 'idle' || !isGridDragTarget(event.target)) return;

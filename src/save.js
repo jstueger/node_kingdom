@@ -27,6 +27,7 @@ export function saveGame({ state, toast }) {
       revealedTechButton: state.interaction.revealedTechButton,
       revealedMineHint: state.interaction.revealedMineHint
     },
+    techCamera: state.techCamera,
     techs: state.techs,
     buildings: [...state.buildings.values()],
     conns: state.connections
@@ -60,6 +61,7 @@ export function loadGame(context) {
   state.interaction.revealedTechButton = Boolean(payload.uiUnlocks?.revealedTechButton);
   state.interaction.revealedMineHint = Boolean(payload.uiUnlocks?.revealedMineHint);
   state.interaction.buildingsMenuOpen = false;
+  state.techCamera = normalizeTechCamera(payload.techCamera);
   state.stats = {
     lifetimeProduced: { ...(payload.stats?.lifetimeProduced || {}) },
     lifetimeSold: { ...(payload.stats?.lifetimeSold || {}) },
@@ -132,6 +134,17 @@ function scaleMoney(amount, scale) {
   return Math.floor((amount || 0) * scale);
 }
 
+function normalizeTechCamera(saved) {
+  return {
+    zoom: Number.isFinite(saved?.zoom) ? saved.zoom : 1.45,
+    panOffset: {
+      x: Number.isFinite(saved?.panOffset?.x) ? saved.panOffset.x : 0,
+      y: Number.isFinite(saved?.panOffset?.y) ? saved.panOffset.y : 0
+    },
+    initialized: Boolean(saved?.initialized)
+  };
+}
+
 function scaleMoneyMap(values, scale) {
   return Object.fromEntries(Object.entries(values).map(([resource, amount]) => {
     return [resource, resource === 'gold' ? scaleMoney(amount, scale) : amount];
@@ -163,6 +176,7 @@ export function resetWorld(context, confirmFirst = true) {
   state.world.rows = ROWS;
   state.camera.panOffset = { x: 0, y: 0 };
   state.camera.zoom = 1;
+  state.techCamera = { zoom: 1.45, panOffset: { x: 0, y: 0 }, initialized: false };
   state.clock.lastTickAt = performance.now();
   state.interaction = createInteractionState();
   state.grid = createGrid(state.world.cols, state.world.rows);

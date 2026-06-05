@@ -18,9 +18,11 @@ export function createInteractionState() {
     pan: null,
     moving: null,
     placementDrag: null,
+    techPan: null,
     movingInvalid: false,
     suppressNextSidebarClick: false,
     suppressNextGridClick: false,
+    suppressNextTechClick: false,
     buildingsMenuOpen: false,
     revealedBuildingsButton: false,
     revealedTechButton: false,
@@ -53,6 +55,11 @@ export function createState() {
     camera: {
       zoom: 1,
       panOffset: { x: 0, y: 0 }
+    },
+    techCamera: {
+      zoom: 1.45,
+      panOffset: { x: 0, y: 0 },
+      initialized: false
     },
     clock: {
       lastTickAt: 0

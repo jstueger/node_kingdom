@@ -3,7 +3,7 @@ import { loadContent } from './content-loader.js';
 await loadContent();
 
 const { CONTENT } = await import('./data.js');
-const { applyPan, applyZoom, localPoint, setZoom } = await import('./camera.js');
+const { applyPan, applyTechCamera, applyZoom, focusTechMapOnNode, localPoint, setTechZoom, setZoom } = await import('./camera.js');
 const { setupInput } = await import('./input.js');
 const { renderAll, renderBuildings, renderConnections, renderGoals, renderPanels, renderSidebar, renderTechTree, renderTopbar, renderWorld, updateProgressBars } = await import('./render.js');
 const { loadGame, resetWorld, saveGame } = await import('./save.js');
@@ -59,7 +59,13 @@ const context = {
   applyWorldSize: () => applyWorldSize(state, ui),
   applyZoom: () => applyZoom(state, ui),
   applyPan: () => applyPan(state, ui),
+  applyTechCamera: () => applyTechCamera(state, ui),
   setZoom: (nextZoom, anchorEvent = null) => setZoom(state, ui, nextZoom, anchorEvent),
+  setTechZoom: (nextZoom, anchorEvent = null) => setTechZoom(state, ui, nextZoom, anchorEvent),
+  syncTechMapCamera: () => {
+    if (!state.techCamera.initialized) focusTechMapOnNode(state, ui);
+    else applyTechCamera(state, ui);
+  },
   localPoint: (event) => localPoint(state, ui, event),
   drawBg: () => drawBg(state, ui),
   gridFree: (gx, gy, w, h) => gridFree(state, gx, gy, w, h),

@@ -414,7 +414,7 @@ function buildingTechHtml(state) {
     const detailData = status.key === 'bought' ? `data-building-detail="${node.building}"` : '';
     const titleText = isMystery ? (node.identity.hiddenDescription || title) : node.description;
     return `
-      <div class="building-tech-node ${status.key} role-${visual.role} weight-${visual.weight} region-${visual.region}" ${detailData} title="${titleText}" style="left:${pos.x}px;top:${pos.y}px;width:${size.w}px">
+      <div class="building-tech-node ${status.key} role-${visual.role} weight-${visual.weight} region-${visual.region}" data-unlock-node-id="${node.id}" ${detailData} title="${titleText}" style="left:${pos.x}px;top:${pos.y}px;width:${size.w}px">
         <div class="building-tech-card">
           <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
           ${node.branch ? `<div class="unlock-branch-pill">${node.branch}</div>` : ''}
@@ -448,7 +448,12 @@ function buildingDetailHtml(state, type) {
 }
 
 function techMapHtml(state) {
-  let html = lifetimeSummaryHtml(state) + buildingTechHtml(state);
+  let html = `${lifetimeSummaryHtml(state)}
+    <div id="techMapViewport" class="tech-map-viewport">
+      <div id="techMapStage" class="tech-map-stage">
+        ${buildingTechHtml(state)}
+      </div>
+    </div>`;
   const visibleTechs = Object.entries(state.techs).filter(([, tech]) => isTechDiscovered(state, tech));
   const treeLabels = { kingdom: 'Kingdom', technology: 'Technology', science: 'Science' };
   for (const tree of ['kingdom', 'technology', 'science']) {
@@ -691,9 +696,11 @@ function renderProgressionButtons(context) {
   ui.buildingWindow.classList.toggle('hidden', !buildingsVisible || !state.interaction.buildingsMenuOpen || state.view !== 'main');
   ui.techWindow.classList.toggle('hidden', state.view !== 'tech');
   ui.mainBtn.classList.toggle('hidden', state.view === 'main');
-  ui.zoomOutBtn.classList.toggle('hidden', state.view !== 'main');
-  ui.zoomInBtn.classList.toggle('hidden', state.view !== 'main');
-  ui.zoomLabel.classList.toggle('hidden', state.view !== 'main');
+  const zoomVisible = state.view === 'main' || state.view === 'tech';
+  ui.zoomOutBtn.classList.toggle('hidden', !zoomVisible);
+  ui.zoomInBtn.classList.toggle('hidden', !zoomVisible);
+  ui.zoomLabel.classList.toggle('hidden', !zoomVisible);
+  if (state.view === 'tech') ui.zoomLabel.textContent = `${Math.round(state.techCamera.zoom * 100)}%`;
   ui.buildingsBtn.classList.toggle('hidden', !buildingsVisible);
   ui.techBtn.classList.toggle('hidden', !techVisible);
   ui.mainBtn.classList.toggle('active', state.view === 'main');
@@ -747,6 +754,10 @@ export function renderTechTree(context) {
   });
   cards.querySelectorAll('.building-tech-node.bought[data-building-detail]').forEach(node => {
     node.addEventListener('click', event => {
+      if (state.interaction.suppressNextTechClick) {
+        state.interaction.suppressNextTechClick = false;
+        return;
+      }
       if (event.target.closest('button')) return;
       actions.openUnlockDetail(node.dataset.buildingDetail);
     });
@@ -757,6 +768,7 @@ export function renderTechTree(context) {
   cards.querySelectorAll('.addon-buy').forEach(button => {
     button.addEventListener('click', () => actions.buyAddon(button.dataset.addon));
   });
+  if (techTreeView.mode === 'map') context.syncTechMapCamera?.();
 }
 
 export function renderWorld(context) {
