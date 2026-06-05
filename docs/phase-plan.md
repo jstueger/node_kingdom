@@ -690,6 +690,36 @@ Implemented notes:
 - Added School to the Building Tree.
 - Added hardening coverage for addon Manager slot unlocks and invalid buyable placeholders.
 
+## Phase 21.5: Capability Map Layout
+
+Goal: make the main unlock tree read as a kingdom capability map instead of a flat card grid.
+
+Status: complete.
+
+Scope:
+
+- Add optional visual metadata for unlock-tree nodes.
+- Emphasize the main progression spine.
+- Render side branches and endpoint nodes with distinct visual weight.
+- Replace branch column labels with subtle domain regions.
+- Render hidden nodes as compact mystery landmarks.
+- Keep building detail sub-trees card-based.
+- Do not split known/buildable building state in this phase.
+
+Exit criteria:
+
+- The central path from Sawmill through Outfitter is visually legible.
+- Side domains such as Woodland, Wilds & Hide, Records, and Ore & Flame read as map regions.
+- Hidden future nodes look like mystery landmarks rather than disabled form rows.
+- Existing unlock behavior and building detail upgrade behavior remain unchanged.
+
+Implemented notes:
+
+- Added `visual.role`, `visual.weight`, and `visual.region` metadata to unlock-tree content.
+- Relayout now uses a central Sawmill -> Market -> Mine -> Forge -> Blacksmith -> Barracks -> Outfitter spine.
+- Added region backplates, heavier spine connectors, endpoint styling, and compact mystery styling.
+- Added content validation for unlock-tree visual role, weight, and region fields.
+
 ## Phase 22: Quality And Demand Prep
 
 Goal: introduce Quality only once it has a clear gameplay purpose.

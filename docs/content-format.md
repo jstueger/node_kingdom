@@ -29,7 +29,7 @@ Authoring fields are meant to be readable and stable for editing:
 - Goals use `description`, `visibleWhen`, `completeWhen`, and `reward`.
 - Addons use `track`, `description`, `visibleWhen`, `cost`, `effects`, optional `unlocks`, and optional `placeholder`.
 - Managers use `slots` and `costs`.
-- Unlock tree nodes use `kind`, `building`, optional `branch`, `parent` or `parents`, `position`, `identity`, `description`, `revealWhen`, `unlockWhen`, `cost`, and `unlocks`. `identity` includes `hiddenLabel`, `revealedLabel`, and optional `hiddenDescription`.
+- Unlock tree nodes use `kind`, `building`, optional `branch`, `parent` or `parents`, `position`, `identity`, `description`, optional `visual`, `revealWhen`, `unlockWhen`, `cost`, and `unlocks`. `identity` includes `hiddenLabel`, `revealedLabel`, and optional `hiddenDescription`. `visual` can define `role`, `weight`, and `region` for capability-map rendering.
 - Start state uses `grid`, `startingGold`, optional `hint`, `unlockedBuildings`, and optional starting `buildings`.
 
 Example recipe output:
@@ -83,6 +83,7 @@ Validation checks:
 - tech prerequisites, visibility conditions, unlock targets, and cycles
 - goal visibility/completion references
 - addon targets, effect references, manager-slot unlocks, and placeholder shape
+- unlock-tree visual roles, weights, regions, duplicate positions, and parent cycles
 - manager slot/cost targets
 - start-state grid, gold, hint, unlocked building ids, starting building placement, starting recipes, and starting inventory
 - buildings that are neither in start state nor unlocked by any tech or unlock-tree node

@@ -3,13 +3,14 @@
     "kind": "buildingUnlock",
     "building": "sawmill",
     "branch": "Wood",
-    "position": { "x": 0, "y": 0 },
+    "position": { "x": 0, "y": 1 },
     "identity": {
       "hiddenLabel": "Sawmill",
       "revealedLabel": "Sawmill",
       "hiddenDescription": "A first woodworking station."
     },
     "description": "Turns Wood into Planks.",
+    "visual": { "role": "spine", "weight": "major", "region": "woodland" },
     "revealWhen": {},
     "unlockWhen": {},
     "cost": {},
@@ -20,13 +21,14 @@
     "building": "lumber",
     "parent": "sawmill_unlock",
     "branch": "Wood",
-    "position": { "x": 0, "y": 1 },
+    "position": { "x": 0, "y": 2 },
     "identity": {
       "hiddenLabel": "Wood Source",
       "revealedLabel": "Lumber Camp",
       "hiddenDescription": "A source of raw Wood for the first production chain."
     },
     "description": "Feeds the Sawmill with Wood.",
+    "visual": { "role": "side", "weight": "normal", "region": "woodland" },
     "revealWhen": { "lifetimeProduced": { "plank": 1 } },
     "unlockWhen": { "lifetimeProduced": { "plank": 1 } },
     "cost": { "gold": 50 },
@@ -37,13 +39,14 @@
     "building": "carpenter",
     "parent": "sawmill_unlock",
     "branch": "Wood",
-    "position": { "x": 1, "y": 0 },
+    "position": { "x": 0, "y": 0 },
     "identity": {
       "hiddenLabel": "Woodcraft",
       "revealedLabel": "Carpenter",
       "hiddenDescription": "A future workshop for sturdier wood goods."
     },
     "description": "Turns Planks into Beams and Furniture.",
+    "visual": { "role": "side", "weight": "normal", "region": "woodland" },
     "revealWhen": { "lifetimeProduced": { "plank": 3 } },
     "unlockWhen": { "lifetimeProduced": { "plank": 5 }, "lifetimeEarned": { "gold": 100 } },
     "cost": { "gold": 160 },
@@ -61,6 +64,7 @@
       "hiddenDescription": "A way to turn stocked goods into money."
     },
     "description": "Sells stocked goods for money.",
+    "visual": { "role": "spine", "weight": "major", "region": "market_road" },
     "revealWhen": { "lifetimeProduced": { "plank": 2 } },
     "unlockWhen": { "lifetimeProduced": { "plank": 2 } },
     "cost": {},
@@ -78,6 +82,7 @@
       "hiddenDescription": "A future source of metal materials."
     },
     "description": "Unlocks Iron Mines for the first ore chain.",
+    "visual": { "role": "spine", "weight": "major", "region": "ore_flame" },
     "revealWhen": { "lifetimeEarned": { "gold": 30 } },
     "unlockWhen": { "lifetimeEarned": { "gold": 60 } },
     "cost": { "gold": 80 },
@@ -88,13 +93,14 @@
     "building": "coal_mine",
     "parent": "forge_unlock",
     "branch": "Metal",
-    "position": { "x": 3, "y": 0 },
+    "position": { "x": 3, "y": 2 },
     "identity": {
       "hiddenLabel": "Fuel Source",
       "revealedLabel": "Coal Mine",
       "hiddenDescription": "A hotter fuel source for advanced metalwork."
     },
     "description": "Produces Coal for steel production.",
+    "visual": { "role": "side", "weight": "minor", "region": "ore_flame" },
     "revealWhen": { "lifetimeProduced": { "iron_bar": 1 } },
     "unlockWhen": { "lifetimeProduced": { "iron_bar": 1 }, "lifetimeEarned": { "gold": 140 } },
     "cost": { "gold": 140 },
@@ -112,6 +118,7 @@
       "hiddenDescription": "A workshop for turning ore into metal bars."
     },
     "description": "Turns Iron Ore and fuel into Iron Bars or Steel Bars.",
+    "visual": { "role": "spine", "weight": "major", "region": "ore_flame" },
     "revealWhen": { "lifetimeProduced": { "iron_ore": 6 } },
     "unlockWhen": { "lifetimeProduced": { "iron_ore": 6 }, "lifetimeEarned": { "gold": 120 } },
     "cost": { "gold": 120 },
@@ -129,6 +136,7 @@
       "hiddenDescription": "A future workshop for finished metal goods."
     },
     "description": "Crafts Swords from Bars and Planks.",
+    "visual": { "role": "spine", "weight": "major", "region": "ore_flame" },
     "revealWhen": { "lifetimeProduced": { "iron_bar": 2, "plank": 3 } },
     "unlockWhen": { "lifetimeProduced": { "iron_bar": 2, "plank": 3 }, "lifetimeEarned": { "gold": 220 } },
     "cost": { "gold": 220 },
@@ -139,13 +147,14 @@
     "building": "school",
     "parent": "blacksmith_unlock",
     "branch": "Science",
-    "position": { "x": 5, "y": 0 },
+    "position": { "x": 4, "y": 0 },
     "identity": {
       "hiddenLabel": "Records",
       "revealedLabel": "School",
       "hiddenDescription": "A future knowledge building for science progression."
     },
     "description": "Produces Knowledge for science upgrades.",
+    "visual": { "role": "side", "weight": "minor", "region": "records" },
     "revealWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 600 } },
     "unlockWhen": { "lifetimeProduced": { "sword": 1 }, "lifetimeEarned": { "gold": 600 } },
     "cost": { "gold": 350 },
@@ -156,13 +165,14 @@
     "building": "hunters",
     "parent": "lumber_unlock",
     "branch": "Leather",
-    "position": { "x": 0, "y": 2 },
+    "position": { "x": 0, "y": 3 },
     "identity": {
       "hiddenLabel": "Woodland Camp",
       "revealedLabel": "Hunters",
       "hiddenDescription": "A future camp for hides and food."
     },
     "description": "Produces Hides and Game Meat.",
+    "visual": { "role": "side", "weight": "normal", "region": "wilds_hide" },
     "revealWhen": { "lifetimeProduced": { "wood": 10 } },
     "unlockWhen": { "lifetimeProduced": { "wood": 15 }, "lifetimeEarned": { "gold": 120 } },
     "cost": { "gold": 120 },
@@ -173,13 +183,14 @@
     "building": "leather_worker",
     "parent": "hunters_unlock",
     "branch": "Leather",
-    "position": { "x": 1, "y": 2 },
+    "position": { "x": 1, "y": 3 },
     "identity": {
       "hiddenLabel": "Tannery",
       "revealedLabel": "Leather Worker",
       "hiddenDescription": "A future workshop for processing hides."
     },
     "description": "Turns Hides into Leather and simple Armor.",
+    "visual": { "role": "side", "weight": "normal", "region": "wilds_hide" },
     "revealWhen": { "lifetimeProduced": { "hide": 3 } },
     "unlockWhen": { "lifetimeProduced": { "hide": 6 }, "lifetimeEarned": { "gold": 180 } },
     "cost": { "gold": 180 },
@@ -190,13 +201,14 @@
     "building": "tailor",
     "parent": "leather_worker_unlock",
     "branch": "Leather",
-    "position": { "x": 2, "y": 2 },
+    "position": { "x": 2, "y": 3 },
     "identity": {
       "hiddenLabel": "Clothier",
       "revealedLabel": "Tailor",
       "hiddenDescription": "A future workshop for finished garments."
     },
     "description": "Turns Leather into Garments.",
+    "visual": { "role": "side", "weight": "normal", "region": "wilds_hide" },
     "revealWhen": { "lifetimeProduced": { "leather": 2 } },
     "unlockWhen": { "lifetimeProduced": { "leather": 4 }, "lifetimeEarned": { "gold": 220 } },
     "cost": { "gold": 220 },
@@ -214,6 +226,7 @@
       "hiddenDescription": "A future military support building."
     },
     "description": "Bundles Swords, Armor, and Planks into Guard Kits.",
+    "visual": { "role": "spine", "weight": "major", "region": "muster_yard" },
     "revealWhen": { "lifetimeProduced": { "sword": 1 } },
     "unlockWhen": { "lifetimeProduced": { "sword": 2, "armor": 1 }, "lifetimeEarned": { "gold": 300 } },
     "cost": { "gold": 300 },
@@ -231,6 +244,7 @@
       "hiddenDescription": "A future endpoint combining several production domains."
     },
     "description": "Combines Guard Kits, Garments, and Furniture into Expedition Gear.",
+    "visual": { "role": "endpoint", "weight": "endpoint", "region": "muster_yard" },
     "revealWhen": { "lifetimeProduced": { "guard_kit": 1, "garment": 1 } },
     "unlockWhen": { "lifetimeProduced": { "guard_kit": 1, "garment": 1, "furniture": 1 }, "lifetimeEarned": { "gold": 360 } },
     "cost": { "gold": 360 },

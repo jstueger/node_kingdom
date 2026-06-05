@@ -3,6 +3,8 @@ const GOLD_CONDITION_KEYS = ['lifetimeEarned'];
 const ADDON_EFFECT_RESOURCE_KEYS = ['storage', 'inputEfficiency', 'outputBonus'];
 const ADDON_EFFECT_KEYS = ['actionTicks', 'storage', 'storageAll', 'saleMultiplier', 'managerWork', 'inputEfficiency', 'outputBonus'];
 const ADDON_TRACKS = ['manager', 'speed', 'quality', 'recipes', 'storage', 'efficiency', 'sale'];
+const UNLOCK_VISUAL_ROLES = ['spine', 'side', 'endpoint'];
+const UNLOCK_VISUAL_WEIGHTS = ['major', 'normal', 'minor', 'endpoint'];
 
 export function validateContent(content) {
   const errors = [];
@@ -38,6 +40,7 @@ function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTre
     requireString(node.identity?.revealedLabel, `Unlock tree node "${id}" is missing identity.revealedLabel`, errors);
     if (node.identity?.hiddenDescription !== undefined) requireString(node.identity.hiddenDescription, `Unlock tree node "${id}" has invalid identity.hiddenDescription`, errors);
     requireString(node.description, `Unlock tree node "${id}" is missing description`, errors);
+    validateUnlockTreeVisual(node.visual || {}, `Unlock tree node "${id}" visual`, errors);
     validateCondition(node.revealWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" revealWhen`, errors);
     validateCondition(node.unlockWhen || {}, itemIds, techIds, buildingIds, `Unlock tree node "${id}" unlockWhen`, errors);
     validateCost(node.cost || {}, itemIds, `Unlock tree node "${id}" cost`, errors);
@@ -49,6 +52,13 @@ function validateUnlockTree(unlockTree, itemIds, buildingIds, techIds, unlockTre
   }
   validateUnlockTreePositions(unlockTree, errors);
   validateUnlockTreeCycles(unlockTree, errors);
+}
+
+function validateUnlockTreeVisual(visual, label, errors) {
+  if (!visual || !Object.keys(visual).length) return;
+  if (visual.role !== undefined && !UNLOCK_VISUAL_ROLES.includes(visual.role)) errors.push(`${label}.role has unknown value "${visual.role}"`);
+  if (visual.weight !== undefined && !UNLOCK_VISUAL_WEIGHTS.includes(visual.weight)) errors.push(`${label}.weight has unknown value "${visual.weight}"`);
+  if (visual.region !== undefined) requireString(visual.region, `${label}.region`, errors);
 }
 
 function validateUnlockTreePositions(unlockTree, errors) {

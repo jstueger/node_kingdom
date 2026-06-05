@@ -4,9 +4,24 @@ import { areUnlockNodeConditionsMet, isUnlockNodeAffordable, UNLOCK_NODE_STATES,
 import { nodeViewState } from './view-models.js';
 
 const TICK_SECONDS = 1;
-const UNLOCK_CELL_W = 190;
-const UNLOCK_CELL_H = 280;
+const UNLOCK_CELL_W = 210;
+const UNLOCK_CELL_H = 150;
 const UNLOCK_LABEL_H = 34;
+const UNLOCK_NODE_SIZES = {
+  endpoint: { w: 206, h: 118 },
+  major: { w: 190, h: 112 },
+  normal: { w: 158, h: 92 },
+  minor: { w: 132, h: 78 },
+  mystery: { w: 132, h: 70 }
+};
+const UNLOCK_REGION_LABELS = {
+  woodland: 'Woodland',
+  market_road: 'Market Road',
+  ore_flame: 'Ore & Flame',
+  wilds_hide: 'Wilds & Hide',
+  records: 'Records',
+  muster_yard: 'Muster Yard'
+};
 const ADDON_TRACKS = [
   { key: 'manager', label: 'Manager' },
   { key: 'speed', label: 'Speed' },
@@ -292,6 +307,62 @@ function unlockDetailActionHtml(node, status) {
   return `<button class="unlock-detail" data-building="${node.building}">Details</button>`;
 }
 
+function unlockVisual(node) {
+  return {
+    role: node.visual?.role || 'side',
+    weight: node.visual?.weight || 'normal',
+    region: node.visual?.region || node.branch || 'kingdom'
+  };
+}
+
+function unlockNodeSize(node, status) {
+  if (status?.key === 'mystery') return UNLOCK_NODE_SIZES.mystery;
+  return UNLOCK_NODE_SIZES[unlockVisual(node).weight] || UNLOCK_NODE_SIZES.normal;
+}
+
+function unlockNodePosition(node, minX, minY) {
+  return {
+    x: (node.position.x - minX) * UNLOCK_CELL_W,
+    y: (node.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H
+  };
+}
+
+function unlockRegionLabel(region) {
+  return UNLOCK_REGION_LABELS[region] || region.replace(/_/g, ' ');
+}
+
+function unlockRegionsHtml(nodes, minX, minY) {
+  const regions = new Map();
+  for (const node of nodes) {
+    const visual = unlockVisual(node);
+    const pos = unlockNodePosition(node, minX, minY);
+    const size = unlockNodeSize(node);
+    const current = regions.get(visual.region) || {
+      minX: pos.x,
+      minY: pos.y,
+      maxX: pos.x + size.w,
+      maxY: pos.y + size.h
+    };
+    current.minX = Math.min(current.minX, pos.x);
+    current.minY = Math.min(current.minY, pos.y);
+    current.maxX = Math.max(current.maxX, pos.x + size.w);
+    current.maxY = Math.max(current.maxY, pos.y + size.h);
+    regions.set(visual.region, current);
+  }
+  return [...regions.entries()].map(([region, bounds]) => {
+    const padX = 22;
+    const padY = 20;
+    const left = Math.max(0, bounds.minX - padX);
+    const top = Math.max(0, bounds.minY - padY);
+    const width = bounds.maxX - bounds.minX + padX * 2;
+    const height = bounds.maxY - bounds.minY + padY * 2;
+    return `
+      <div class="unlock-region region-${region}" style="left:${left}px;top:${top}px;width:${width}px;height:${height}px">
+        <div class="unlock-region-label">${unlockRegionLabel(region)}</div>
+      </div>`;
+  }).join('');
+}
+
 function unlockTreeEdgesHtml(state, nodes, minX, minY, cols, rows) {
   const width = Math.max(1, cols) * UNLOCK_CELL_W;
   const height = Math.max(1, rows) * UNLOCK_CELL_H + UNLOCK_LABEL_H;
@@ -303,28 +374,20 @@ function unlockTreeEdgesHtml(state, nodes, minX, minY, cols, rows) {
       if (!parent) continue;
       const parentStatus = unlockNodeStatus(state, parent).key;
       const childStatus = unlockNodeStatus(state, node).key;
-      const x1 = (parent.position.x - minX) * UNLOCK_CELL_W + 90;
-      const y1 = (parent.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H + 58;
-      const x2 = (node.position.x - minX) * UNLOCK_CELL_W + 90;
-      const y2 = (node.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H + 58;
+      const parentPos = unlockNodePosition(parent, minX, minY);
+      const childPos = unlockNodePosition(node, minX, minY);
+      const parentSize = unlockNodeSize(parent, { key: parentStatus });
+      const childSize = unlockNodeSize(node, { key: childStatus });
+      const x1 = parentPos.x + parentSize.w / 2;
+      const y1 = parentPos.y + parentSize.h / 2;
+      const x2 = childPos.x + childSize.w / 2;
+      const y2 = childPos.y + childSize.h / 2;
       const midY = y1 + (y2 - y1) * 0.5;
-      lines.push(`<path class="${parentStatus} ${childStatus}" d="M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}" />`);
+      const edgeRole = unlockVisual(parent).role === 'spine' && ['spine', 'endpoint'].includes(unlockVisual(node).role) ? 'spine-edge' : 'branch-edge';
+      lines.push(`<path class="${parentStatus} ${childStatus} ${edgeRole}" d="M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}" />`);
     }
   }
   return `<svg class="unlock-tree-lines" viewBox="0 0 ${width} ${height}" aria-hidden="true">${lines.join('')}</svg>`;
-}
-
-function unlockBranchLabelsHtml(nodes, minX) {
-  const labels = new Map();
-  for (const node of nodes) {
-    if (!node.branch) continue;
-    const current = labels.get(node.branch);
-    const x = node.position.x - minX;
-    labels.set(node.branch, current === undefined ? x : Math.min(current, x));
-  }
-  return [...labels.entries()].map(([branch, x]) => {
-    return `<div class="unlock-domain-label" style="left:${x * UNLOCK_CELL_W}px">${branch}</div>`;
-  }).join('');
 }
 
 function buildingTechHtml(state) {
@@ -336,25 +399,29 @@ function buildingTechHtml(state) {
   const maxY = Math.max(...positions.map(position => position.y));
   const cols = maxX - minX + 1;
   const rows = maxY - minY + 1;
-  const branchLabels = unlockBranchLabelsHtml(nodes, minX);
+  const regions = unlockRegionsHtml(nodes, minX, minY);
   const cards = nodes.map(node => {
     const definition = BUILDINGS[node.building];
     const status = unlockNodeStatus(state, node);
     const isMystery = status.key === 'mystery';
+    const visual = unlockVisual(node);
+    const size = unlockNodeSize(node, status);
     const title = isMystery ? node.identity.hiddenLabel : node.identity.revealedLabel;
     const icon = isMystery ? '?' : definition?.icon;
     const desc = isMystery ? (node.identity.hiddenDescription || 'Reveal this branch through kingdom progress.') : node.description;
     const action = !isMystery && status.key !== 'bought' ? unlockActionHtml(node.id, status) : '';
     const detailAction = !isMystery ? unlockDetailActionHtml(node, status) : '';
-    const left = (node.position.x - minX) * UNLOCK_CELL_W;
-    const top = (node.position.y - minY) * UNLOCK_CELL_H + UNLOCK_LABEL_H;
+    const pos = unlockNodePosition(node, minX, minY);
     const detailData = status.key === 'bought' ? `data-building-detail="${node.building}"` : '';
+    const descHtml = isMystery
+      ? `<div class="building-tech-desc mystery-hint">${desc}</div>`
+      : `<div class="building-tech-desc">${desc}</div>`;
     return `
-      <div class="building-tech-node ${status.key}" ${detailData} style="left:${left}px;top:${top}px">
+      <div class="building-tech-node ${status.key} role-${visual.role} weight-${visual.weight} region-${visual.region}" ${detailData} style="left:${pos.x}px;top:${pos.y}px;width:${size.w}px">
         <div class="building-tech-card">
           <div class="building-tech-head"><span>${icon} ${title}</span><span>${status.label}</span></div>
           ${node.branch ? `<div class="unlock-branch-pill">${node.branch}</div>` : ''}
-          <div class="building-tech-desc">${desc}</div>
+          ${descHtml}
           ${!isMystery ? `<div class="tech-meta">${unlockNodeCostHtml(node)}</div>` : ''}
           ${action}
           ${detailAction}
@@ -363,8 +430,8 @@ function buildingTechHtml(state) {
   }).join('');
   return `
     <div class="tech-group">Building Tree</div>
-    <div class="building-tech-chain" style="width:${cols * UNLOCK_CELL_W}px;height:${rows * UNLOCK_CELL_H + UNLOCK_LABEL_H}px">
-      ${branchLabels}
+    <div class="building-tech-chain capability-map" style="width:${cols * UNLOCK_CELL_W + 20}px;height:${rows * UNLOCK_CELL_H + UNLOCK_LABEL_H + 30}px">
+      ${regions}
       ${unlockTreeEdgesHtml(state, nodes, minX, minY, cols, rows)}
       ${cards}
     </div>`;

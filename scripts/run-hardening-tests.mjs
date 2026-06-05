@@ -201,4 +201,12 @@ test('content validation rejects buyable placeholders', () => {
   assert(result.errors.some(error => error.includes('placeholder')));
 });
 
+test('content validation rejects invalid unlock-tree visual metadata', () => {
+  const content = structuredClone(baseContent);
+  content.unlockTree.market_unlock.visual.role = 'spreadsheet';
+  const result = validateContent(content);
+  assert.equal(result.valid, false);
+  assert(result.errors.some(error => error.includes('visual.role')));
+});
+
 console.log('hardening tests ok');
