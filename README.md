@@ -1,124 +1,95 @@
-# Factory Node Prototype
+# Node Kingdom
 
-A small browser-based factory/city-builder prototype focused on free grid placement, node recipes, and direct output-to-input resource connectors.
+A playable, dependency-free browser prototype about building factory and city systems from directly connected production nodes.
 
-The core rule is:
+[Project page](https://juppstueger.com/projects/node-kingdom/) · [Licence](LICENSE)
+
+**Status:** Playable prototype. The opening progression, production network, technology tree, upgrades, managers, goals and local save system are implemented; balancing and further systems remain under development.
+
+The central rule is:
 
 > Every recipe-based node has one active output at a time. Crafters may have multiple recipes, but only one recipe is active.
 
 Markets are the exception: they do not use recipes and sell supported trade goods they receive.
 
-## Purpose Of This File
+## Run locally
 
-This README is the project entry point. It explains how to run the prototype, what it currently is at a glance, and where to find the deeper documents.
-
-- `docs/prototype-functionality.md`: current behavior spec for the playable prototype.
-- `docs/design-notes.md`: design intent, constraints, and near-term product direction.
-- `docs/phase-plan.md`: agreed phase roadmap for upcoming work.
-
-## How To Run
-
-No build step is required.
-
-Because the project uses ES modules, open it through a local web server rather than by double-clicking `index.html`.
+No build step or package installation is required. Because the project uses ES modules, serve it through a local web server instead of opening `index.html` directly.
 
 ```bash
+git clone https://github.com/jstueger/node_kingdom.git
 cd node_kingdom
 python3 -m http.server 8000
 ```
 
-Then open:
+Then open [http://localhost:8000](http://localhost:8000). VS Code Live Server also works.
 
-```text
-http://localhost:8000
-```
+## Current features
 
-VS Code Live Server also works.
+- Free grid placement using the Buildings pop-out menu.
+- Movable buildings and direct output-to-input resource connections.
+- A stocked starting Sawmill that introduces transformation before supply-chain construction.
+- In-node recipe switching for crafting buildings.
+- Manual production, crafting and selling with visible work progress.
+- Resource storage and a compact Gold/Silver/Copper currency display.
+- A progression-driven technology tree with building, Knowledge, grid, storage, crafting and market unlocks.
+- Building-specific storage, speed, manager pace, input efficiency, output and market-value upgrades.
+- Buyable Managers that automate assigned production nodes.
+- Early milestone goals with small currency rewards.
+- Content-driven items, buildings, recipes, technology, goals, addons, managers and starting state.
+- Save, load and reset through browser `localStorage`.
 
-## Feature Snapshot
+For the complete description of implemented behaviour, see [the prototype functionality document](docs/prototype-functionality.md).
 
-- Grid placement by selecting or dragging a building from the Buildings pop-out menu, then placing it on the Main screen.
-- Movable placed buildings.
-- A stocked Sawmill starts on the grid so the first action creates a Plank before the support chain is built.
-- Main and Tech Tree are exclusive top-level screens; Buildings is a pop-out menu on Main.
-- Lumber Camp and Market unlock through free early Market Access after the first Plank.
-- In-node recipe switching for crafters.
-- One outgoing connection per output and one incoming connection per input.
-- Universal single-input Market that sells stocked goods when worked.
-- Lifetime production thresholds that reveal new tech.
-- Resource storage, manual node work, and work progress meters.
-- Money-only opening costs with compact Gold/Silver/Copper display.
-- Early milestone goals with small money rewards.
-- Node-type upgrades bought from building subviews in the tech tree, including storage, speed, manager pace, input efficiency, output, and market value upgrades.
-- Science-unlocked Manager slots with buyable Managers that automate assigned nodes.
-- Tech Tree frame with building unlocks, Knowledge, grid, storage, crafting, and market upgrades.
-- Save/load/reset through browser `localStorage`.
+## Design documentation
 
-## Source Layout
+The repository contains both the playable prototype and the reasoning behind it:
+
+- [Prototype functionality](docs/prototype-functionality.md) describes current behaviour.
+- [Design notes](docs/design-notes.md) explain the design intent and constraints.
+- [Phase plan](docs/phase-plan.md) records the development roadmap.
+- [Content-driven editing](docs/content-driven-editing.md) explains how game data is authored.
+- [Content format](docs/content-format.md) documents the JSON structures.
+
+Additional documents in `docs/` preserve focused thinking about pacing, technology and the evolving game loop.
+
+## Architecture
+
+The browser is the runtime. The project deliberately has no production dependencies and loads its JavaScript directly as ES modules.
+
+The `content/` JSON files are the source of truth for authored game data. `src/content-loader.js` converts that data into the runtime shape, while `src/content-validation.js` checks references before the game begins.
 
 ```text
 node_kingdom/
-├── index.html
-├── styles.css
-├── README.md
-├── package.json
-├── content/
-│   ├── items.json
-│   ├── buildings.json
-│   ├── techs.json
-│   ├── goals.json
-│   ├── addons.json
-│   ├── managers.json
-│   ├── unlock-tree.json
-│   └── start-state.json
-├── docs/
-│   ├── design-notes.md
-│   ├── content-driven-editing.md
-│   ├── content-format.md
-│   ├── phase-plan.md
-│   └── prototype-functionality.md
-├── scripts/
-│   ├── check-unlock-tree-state.mjs
-│   ├── run-hardening-tests.mjs
-│   ├── test-helpers.mjs
-│   └── validate-content.mjs
-└── src/
-    ├── data.js
-    ├── content-loader.js
-    ├── content-validation.js
-    ├── progression-data.js
-    ├── state.js
-    ├── rules.js
-    ├── simulation.js
-    ├── render.js
-    ├── world.js
-    ├── camera.js
-    ├── save.js
-    ├── input.js
-    ├── view-models.js
-    └── main.js
+├── content/       # Authored game data
+├── docs/          # Design and implementation documentation
+├── scripts/       # Validation and hardening checks
+├── src/           # Game logic, state, input and rendering
+├── index.html     # Browser entry point
+├── styles.css     # Interface styling
+└── package.json   # Development commands
 ```
 
-## Development Notes
+The source is separated into state, rules, simulation, rendering, input, camera, persistence and content-loading modules so that future systems can be added without rebuilding the core.
 
-The project intentionally stays dependency-free for now. The browser is the runtime, content is loaded from JSON, and source files are loaded directly as ES modules.
+## Validation
 
-The `content/` JSON files are now the source of truth for items, buildings, recipes, techs, goals, addons, manager definitions, and start state. `src/content-loader.js` normalizes those authoring-friendly fields into the runtime shape, and `src/content-validation.js` checks references before the game starts.
-
-Run content validation with:
+Run the available project checks with:
 
 ```bash
-node scripts/validate-content.mjs
-```
-
-The same check is also available as `npm run validate:content`.
-
-Run the focused hardening checks with:
-
-```bash
+npm run validate:content
+npm run check:unlock-tree
 npm run test:hardening
 ```
 
-Production, crafting, and selling begin as manual work. The current opening starts from a pre-placed Sawmill with stored Wood so the player sees transformation before building the supply chain. Researched Manager slots and hired Managers then create the first automation layer for individual nodes. Addons can improve existing nodes through lower work requirements, faster manager progress, better inputs, extra output, storage, or sale value.
+These validate the content model, unlock-tree state and focused hardening scenarios.
 
-Good next engineering steps are expanding test coverage as new systems land, then continuing to split `input.js` or `render.js` only when interaction or UI complexity makes that worthwhile.
+## Contributing
+
+Bug reports and focused feedback are welcome through [GitHub Issues](https://github.com/jstueger/node_kingdom/issues).
+
+Node Kingdom is a personal experimental project. Please open an issue before submitting a substantial pull request so the proposed change can be discussed first. No particular response or release schedule is promised.
+
+## Licence
+
+Node Kingdom is available under the [MIT Licence](LICENSE).
